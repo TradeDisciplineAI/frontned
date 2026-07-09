@@ -1,0 +1,207 @@
+/* Reset margins and set core black backgrounds */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+  color: #fff;
+}
+
+#root {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* ==========================================================================
+   Globe.gl Home Page Styles
+   ========================================================================== */
+
+#ui-overlay {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  color: #00ff88;
+  z-index: 10;
+  pointer-events: none;
+  /* Lets you click through the text to spin the globe */
+  background: rgba(10, 15, 10, 0.75);
+  padding: 24px;
+  border: 1.5px solid #00ff88;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.home-overlay-title {
+  margin: 0;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.home-overlay-status {
+  margin: 0;
+  font-size: 13px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background-color: #ff3366;
+  border-radius: 50%;
+  margin-right: 8px;
+  box-shadow: 0 0 10px #ff3366;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Clickable enter button in overlay */
+.terminal-enter-btn {
+  pointer-events: auto;
+  /* Enable clicking */
+  margin-top: 8px;
+  padding: 10px 18px;
+  background-color: transparent;
+  color: #00ff88;
+  border: 1.5px solid #00ff88;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  outline: none;
+}
+
+.terminal-enter-btn:hover {
+  background-color: #00ff88;
+  color: #000000;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+  transform: translateY(-1px);
+}
+
+.terminal-enter-btn:active {
+  transform: translateY(0);
+}
+
+/* Country Legend Styles */
+.country-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+  pointer-events: auto;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+/* Custom Scrollbar for Country List */
+.country-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.country-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 4px;
+}
+
+.country-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+
+.country-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.country-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  color: #ffffff;
+}
+
+.country-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
+  transform: translateX(4px);
+}
+
+.country-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.country-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.country-flag {
+  font-size: 1.1rem;
+}
+
+.country-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.resume-rotate-btn {
+  pointer-events: auto;
+  margin-top: 4px;
+  padding: 6px 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.resume-rotate-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}

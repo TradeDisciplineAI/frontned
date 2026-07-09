@@ -1,0 +1,56 @@
+/* ── Dashboard Page ──────────────────────────────────────────────────────────
+ * Styles for the post-login dashboard landing screen.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.dashboard-page {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-bg-primary, #121212);
+  color: var(--color-text-primary, #ffffff);
+  font-family: var(--font-family-base);
+  padding: var(--space-10, 40px);
+  text-align: center;
+}
+
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4, 16px);
+}
+
+.dashboard-title {
+  font-size: var(--font-size-3xl, 2.5rem);
+  font-weight: var(--font-weight-bold, 700);
+}
+
+.dashboard-subtitle {
+  color: var(--color-text-secondary, #a1a1aa);
+  font-size: var(--font-size-lg, 1.1rem);
+}
+
+.logout-btn {
+  margin-top: var(--space-2, 8px);
+  padding: 12px 24px;
+  background-color: var(--color-accent-teal, #006d65);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--font-size-base, 1rem);
+  font-weight: var(--font-weight-semibold, 600);
+  cursor: pointer;
+  transition: background-color var(--transition-fast, 0.2s);
+}
+
+.logout-btn:hover {
+  background-color: var(--color-accent-teal-hover, #00564e);
+}
+
+.logout-btn:focus-visible {
+  outline: 2px solid var(--color-accent-white, #ffffff);
+  outline-offset: 3px;
+}
