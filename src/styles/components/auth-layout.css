@@ -138,7 +138,9 @@
   background: #ffffff;
   padding: 48px;
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
   gap: 28px;
@@ -206,7 +208,9 @@
   outline: none;
   background-color: #ffffff;
   color: var(--color-text-dark);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .auth-input-field.has-icon-right {
@@ -318,7 +322,9 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: background-color 0.2s, transform 0.1s;
+  transition:
+    background-color 0.2s,
+    transform 0.1s;
 }
 
 .auth-submit-btn:hover:not(:disabled) {

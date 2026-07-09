@@ -6,7 +6,7 @@ export const authService = {
    * Log in to the application.
    * Expects application/x-www-form-urlencoded payload as per OAuth2PasswordBearer.
    */
-  async login(username: string, password: string):Promise<Token> {
+  async login(username: string, password: string): Promise<Token> {
     const formData = new URLSearchParams();
     formData.append('username', username);
     formData.append('password', password);
@@ -95,5 +95,5 @@ export const authService = {
   async cleanupSessions(): Promise<Record<string, number>> {
     const response = await apiClient.post('/auth/cleanup');
     return response.data;
-  }
+  },
 };

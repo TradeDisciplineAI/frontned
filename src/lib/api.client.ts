@@ -36,17 +36,13 @@ apiClient.interceptors.response.use(
 
       try {
         // Attempt to get a new access token using the HttpOnly cookie
-        const { data } = await axios.post(
-          `${API_URL}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
-        
+        const { data } = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
+
         const newAccessToken = data.access_token;
-        
+
         // Update the store with the new token
         useUserStore.getState().setAccessToken(newAccessToken);
-        
+
         // Update the original request's header and retry
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return apiClient(originalRequest);
@@ -58,5 +54,5 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );

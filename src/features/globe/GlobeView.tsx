@@ -20,11 +20,22 @@ export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
 
   return (
     <div
-      style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#000' }}
+      style={{
+        position: 'relative',
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
+        backgroundColor: '#000',
+      }}
       aria-label="Interactive 3D Globe showing live national stock market overlays"
     >
       {/* ── UI Overlay ───────────────────────────────────────────────── */}
-      <div id="ui-overlay" className="home-overlay" role="complementary" aria-label="Market controls">
+      <div
+        id="ui-overlay"
+        className="home-overlay"
+        role="complementary"
+        aria-label="Market controls"
+      >
         <h1 className="home-overlay-title">National Stock Indices</h1>
         <p className="home-overlay-status">Live WebGL Market Volatility Overlay</p>
 

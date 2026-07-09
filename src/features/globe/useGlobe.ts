@@ -26,7 +26,10 @@ export function useGlobe(containerRef: RefObject<HTMLDivElement | null>) {
     const world = globeInstanceRef.current;
     if (world) {
       world.controls().autoRotate = false;
-      world.pointOfView({ lat, lng, altitude: GLOBE_CONFIG.FLY_TO_ALTITUDE }, GLOBE_CONFIG.FLY_TO_DURATION_MS);
+      world.pointOfView(
+        { lat, lng, altitude: GLOBE_CONFIG.FLY_TO_ALTITUDE },
+        GLOBE_CONFIG.FLY_TO_DURATION_MS,
+      );
     }
   };
 
@@ -55,7 +58,12 @@ export function useGlobe(containerRef: RefObject<HTMLDivElement | null>) {
       .pathColor((d: object) => (d as PathData).color)
       .pathStroke(GLOBE_CONFIG.PATH_STROKE)
       .labelsData(
-        NATIONS.map((n) => ({ lat: n.lat, lng: n.lng, text: `${n.flag} ${n.name}`, color: n.color })),
+        NATIONS.map((n) => ({
+          lat: n.lat,
+          lng: n.lng,
+          text: `${n.flag} ${n.name}`,
+          color: n.color,
+        })),
       )
       .labelLat((d: object) => (d as LabelData).lat)
       .labelLng((d: object) => (d as LabelData).lng)
@@ -131,10 +139,9 @@ export function useGlobe(containerRef: RefObject<HTMLDivElement | null>) {
           .polygonCapColor(() => 'rgba(255, 255, 255, 0.01)')
           .polygonSideColor(() => 'rgba(0, 0, 0, 0.05)')
           .polygonStrokeColor(() => 'rgba(255, 255, 255, 0.25)')
-          .polygonLabel(
-            (d: object) => {
-              const feature = d as GeoFeature;
-              return `
+          .polygonLabel((d: object) => {
+            const feature = d as GeoFeature;
+            return `
                 <div style="
                   background: rgba(10, 10, 10, 0.95);
                   border: 1px solid #ffffff;
@@ -149,8 +156,7 @@ export function useGlobe(containerRef: RefObject<HTMLDivElement | null>) {
                   <strong>${feature.properties.ADMIN}</strong>
                 </div>
               `;
-            },
-          )
+          })
           .onPolygonHover((hoverD: object | null) => {
             world
               .polygonCapColor((d: object) =>

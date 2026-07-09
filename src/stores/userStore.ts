@@ -15,10 +15,10 @@ interface UserState {
   setAccessToken: (token: string | null) => void;
   /** Set the user profile (used after successful login or /auth/me) */
   setUser: (user: UserResponse) => void;
-  
+
   /** Initialize auth state on app load. Attempts to refresh the token via cookie. */
   initAuth: () => Promise<void>;
-  
+
   /** Clear the session and log out locally and remotely */
   logout: () => Promise<void>;
 }
@@ -64,10 +64,10 @@ export const useUserStore = create<UserState>()(
         try {
           // Optionally call backend logout to destroy the HttpOnly cookie
           if (get().accessToken) {
-             await authService.logout();
+            await authService.logout();
           }
         } catch (e) {
-          console.error("Logout failed", e);
+          console.error('Logout failed', e);
         } finally {
           set({ user: null, isAuthenticated: false, accessToken: null });
         }

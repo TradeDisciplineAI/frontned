@@ -33,7 +33,16 @@ function AppContent() {
   if (isInitializing) {
     // A simple full-screen loader while we verify the session
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0b1120', color: '#fff' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          background: '#0b1120',
+          color: '#fff',
+        }}
+      >
         <h2>Starting Terminal...</h2>
       </div>
     );
@@ -75,19 +84,11 @@ function AppContent() {
       />
       <Route
         path={ROUTES.FORGOT_PASSWORD}
-        element={
-          <ForgotPassword
-            onBackToLogin={() => navigate(ROUTES.LOGIN)}
-          />
-        }
+        element={<ForgotPassword onBackToLogin={() => navigate(ROUTES.LOGIN)} />}
       />
       <Route
         path={ROUTES.RESET_PASSWORD}
-        element={
-          <ResetPassword
-            onBackToLogin={() => navigate(ROUTES.LOGIN)}
-          />
-        }
+        element={<ResetPassword onBackToLogin={() => navigate(ROUTES.LOGIN)} />}
       />
 
       {/* Protected Routes */}

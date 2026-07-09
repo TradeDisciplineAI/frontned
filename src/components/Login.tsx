@@ -10,16 +10,16 @@ interface LoginProps {
   onNavigateToForgot?: () => void;
 }
 
-export const Login: React.FC<LoginProps> = ({ 
-  onLoginSuccess, 
+export const Login: React.FC<LoginProps> = ({
+  onLoginSuccess,
   onNavigateToSignup,
-  onNavigateToForgot 
+  onNavigateToForgot,
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -30,7 +30,7 @@ export const Login: React.FC<LoginProps> = ({
     setErrorMsg(null);
 
     if (!email || !password) {
-      setErrorMsg("Please enter both email and password.");
+      setErrorMsg('Please enter both email and password.');
       return;
     }
 
@@ -44,9 +44,9 @@ export const Login: React.FC<LoginProps> = ({
     } catch (err: any) {
       console.error('Login failed', err);
       if (err.response?.status === 401 || err.response?.status === 400) {
-        setErrorMsg("Invalid email or password.");
+        setErrorMsg('Invalid email or password.');
       } else {
-        setErrorMsg("An unexpected error occurred. Please try again.");
+        setErrorMsg('An unexpected error occurred. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -62,21 +62,31 @@ export const Login: React.FC<LoginProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
-          
           {errorMsg && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '8px', padding: '12px',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
-              border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '6px',
-              fontSize: '0.85rem', fontWeight: 500
-            }} role="alert">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                color: '#ef4444',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+                fontWeight: 500,
+              }}
+              role="alert"
+            >
               <AlertCircle size={16} />
               <span>{errorMsg}</span>
             </div>
           )}
 
           <div className="input-group">
-            <label htmlFor="login-email" className="input-label">Email Address</label>
+            <label htmlFor="login-email" className="input-label">
+              Email Address
+            </label>
             <div className="input-wrapper">
               <span className="input-icon-left" aria-hidden="true">
                 <Mail size={18} />
@@ -96,7 +106,9 @@ export const Login: React.FC<LoginProps> = ({
           </div>
 
           <div className="input-group">
-            <label htmlFor="login-password" className="input-label">Password</label>
+            <label htmlFor="login-password" className="input-label">
+              Password
+            </label>
             <div className="input-wrapper">
               <input
                 id="login-password"
@@ -133,9 +145,9 @@ export const Login: React.FC<LoginProps> = ({
               />
               <span>Remember Me</span>
             </label>
-            <button 
+            <button
               type="button"
-              className="auth-link" 
+              className="auth-link"
               style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
               onClick={onNavigateToForgot}
             >
@@ -164,16 +176,22 @@ export const Login: React.FC<LoginProps> = ({
 
         <div className="login-footer">
           <span className="footer-grey-text">Don&apos;t have an account? </span>
-          <button 
-            type="button" 
-            className="auth-link" 
-            style={{ color: 'var(--color-brand-teal)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+          <button
+            type="button"
+            className="auth-link"
+            style={{
+              color: 'var(--color-brand-teal)',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+            }}
             onClick={onNavigateToSignup}
           >
             Sign Up
           </button>
         </div>
-        
+
         <div className="auth-footer-copyright">
           <div className="auth-footer-links">
             <a href="#privacy">Privacy Policy</a>

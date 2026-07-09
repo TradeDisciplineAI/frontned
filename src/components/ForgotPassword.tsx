@@ -36,18 +36,26 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin })
         <div className="form-header">
           <h2 className="form-title">Forgot Your Password?</h2>
           <p className="form-subtitle">
-            {isSuccess 
-              ? "If an account exists for that email, we've sent a password reset link." 
+            {isSuccess
+              ? "If an account exists for that email, we've sent a password reset link."
               : "Enter your email address and we'll send you a password reset link."}
           </p>
         </div>
 
         {isSuccess ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', alignItems: 'center', marginTop: '20px' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              alignItems: 'center',
+              marginTop: '20px',
+            }}
+          >
             <CheckCircle2 size={48} color="var(--color-brand-teal)" />
-            <button 
-              type="button" 
-              className="back-link" 
+            <button
+              type="button"
+              className="back-link"
               onClick={onBackToLogin}
               style={{ background: 'none', border: 'none', cursor: 'pointer' }}
             >
@@ -56,9 +64,16 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin })
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="auth-form" noValidate style={{ marginTop: '12px' }}>
+          <form
+            onSubmit={handleSubmit}
+            className="auth-form"
+            noValidate
+            style={{ marginTop: '12px' }}
+          >
             <div className="input-group">
-              <label htmlFor="forgot-email" className="input-label">Email Address</label>
+              <label htmlFor="forgot-email" className="input-label">
+                Email Address
+              </label>
               <div className="input-wrapper">
                 <span className="input-icon-left" aria-hidden="true">
                   <Mail size={18} />
@@ -91,9 +106,9 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin })
               )}
             </button>
 
-            <button 
-              type="button" 
-              className="back-link" 
+            <button
+              type="button"
+              className="back-link"
               onClick={onBackToLogin}
               style={{ background: 'none', border: 'none', cursor: 'pointer', marginTop: '24px' }}
             >

@@ -8,15 +8,12 @@ interface RegisterProps {
   onNavigateToLogin: () => void;
 }
 
-export const Register: React.FC<RegisterProps> = ({ 
-  onRegisterSuccess, 
-  onNavigateToLogin 
-}) => {
+export const Register: React.FC<RegisterProps> = ({ onRegisterSuccess, onNavigateToLogin }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -36,7 +33,11 @@ export const Register: React.FC<RegisterProps> = ({
     } catch (err: any) {
       console.error('Registration failed', err);
       // Display the validation detail from FastAPI if present
-      setErrorMsg(err.response?.data?.detail?.[0]?.msg || err.response?.data?.detail || "Registration failed. Username or email may already be in use.");
+      setErrorMsg(
+        err.response?.data?.detail?.[0]?.msg ||
+          err.response?.data?.detail ||
+          'Registration failed. Username or email may already be in use.',
+      );
     } finally {
       setIsLoading(false);
     }
@@ -50,22 +51,37 @@ export const Register: React.FC<RegisterProps> = ({
           <p className="form-subtitle">Join the institutional-grade AI trading platform.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form" noValidate style={{ marginTop: '12px' }}>
-          
+        <form
+          onSubmit={handleSubmit}
+          className="auth-form"
+          noValidate
+          style={{ marginTop: '12px' }}
+        >
           {errorMsg && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '8px', padding: '12px',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444',
-              border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '6px',
-              fontSize: '0.85rem', fontWeight: 500
-            }} role="alert">
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '12px',
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                color: '#ef4444',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+                fontWeight: 500,
+              }}
+              role="alert"
+            >
               <AlertCircle size={16} />
               <span>{errorMsg}</span>
             </div>
           )}
 
           <div className="input-group">
-            <label htmlFor="reg-username" className="input-label">Username</label>
+            <label htmlFor="reg-username" className="input-label">
+              Username
+            </label>
             <div className="input-wrapper">
               <span className="input-icon-left" aria-hidden="true">
                 <User size={18} />
@@ -86,7 +102,9 @@ export const Register: React.FC<RegisterProps> = ({
           </div>
 
           <div className="input-group">
-            <label htmlFor="reg-email" className="input-label">Email Address</label>
+            <label htmlFor="reg-email" className="input-label">
+              Email Address
+            </label>
             <div className="input-wrapper">
               <span className="input-icon-left" aria-hidden="true">
                 <Mail size={18} />
@@ -106,7 +124,9 @@ export const Register: React.FC<RegisterProps> = ({
           </div>
 
           <div className="input-group">
-            <label htmlFor="reg-password" className="input-label">Password</label>
+            <label htmlFor="reg-password" className="input-label">
+              Password
+            </label>
             <div className="input-wrapper">
               <input
                 id="reg-password"
@@ -130,7 +150,12 @@ export const Register: React.FC<RegisterProps> = ({
             </div>
           </div>
 
-          <button type="submit" className="auth-submit-btn" disabled={isLoading || !isValid} style={{ marginTop: '12px' }}>
+          <button
+            type="submit"
+            className="auth-submit-btn"
+            disabled={isLoading || !isValid}
+            style={{ marginTop: '12px' }}
+          >
             {isLoading ? (
               <>
                 <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
@@ -147,10 +172,16 @@ export const Register: React.FC<RegisterProps> = ({
 
         <div className="login-footer">
           <span className="footer-grey-text">Already have an account? </span>
-          <button 
-            type="button" 
-            className="auth-link" 
-            style={{ color: 'var(--color-brand-teal)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+          <button
+            type="button"
+            className="auth-link"
+            style={{
+              color: 'var(--color-brand-teal)',
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+            }}
             onClick={onNavigateToLogin}
           >
             Sign In

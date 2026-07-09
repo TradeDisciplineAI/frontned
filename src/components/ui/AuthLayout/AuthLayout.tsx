@@ -53,7 +53,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
             move is backed by cold, hard data.
           </p>
         </div>
-        
+
         <div className="auth-left-footer">
           <div className="secure-badge">
             <span className="shield-icon">⛨</span> SECURE TRADING ENVIRONMENT
@@ -62,9 +62,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
       </div>
 
       {/* Right Panel: Form Content passed as children */}
-      <div className="auth-right-panel">
-        {children}
-      </div>
+      <div className="auth-right-panel">{children}</div>
     </div>
   );
 };
