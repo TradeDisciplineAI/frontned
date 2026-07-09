@@ -1,0 +1,82 @@
+/* ── Design Tokens ──────────────────────────────────────────────────────────
+ *
+ * All design values are defined here as CSS custom properties.
+ * Use these variables throughout all component CSS files.
+ * DO NOT hard-code raw color values in component styles.
+ *
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Colors — Base */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-card: rgba(255, 255, 255, 0.04);
+  --color-bg-card-hover: rgba(255, 255, 255, 0.08);
+
+  /* Colors — Text */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #71717a;
+
+  /* Colors — Accents */
+  --color-accent-white: #ffffff;
+  --color-accent-silver: rgba(255, 255, 255, 0.7);
+  --color-accent-teal: #006d65;
+  --color-accent-teal-hover: #00564e;
+
+  /* Colors — Borders */
+  --color-border-subtle: rgba(255, 255, 255, 0.1);
+  --color-border-default: rgba(255, 255, 255, 0.2);
+  --color-border-strong: rgba(255, 255, 255, 0.4);
+
+  /* Typography */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-family-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.875rem;  /* 14px */
+  --font-size-base: 1rem;    /* 16px */
+  --font-size-lg: 1.125rem;  /* 18px */
+  --font-size-xl: 1.25rem;   /* 20px */
+  --font-size-2xl: 1.5rem;   /* 24px */
+  --font-size-3xl: 2rem;     /* 32px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows / Glows */
+  --glow-white-sm: 0 0 8px rgba(255, 255, 255, 0.15);
+  --glow-white-md: 0 0 16px rgba(255, 255, 255, 0.2);
+  --glow-white-lg: 0 0 24px rgba(255, 255, 255, 0.3);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+
+  /* Z-index layers */
+  --z-base: 0;
+  --z-overlay: 10;
+  --z-modal: 100;
+  --z-toast: 200;
+}

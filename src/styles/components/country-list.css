@@ -1,0 +1,91 @@
+/* ── Country List Legend ──────────────────────────────────────────────────────
+ * Interactive scrollable list of countries with their market colour indicators.
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.country-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 12px 0;
+  pointer-events: auto;
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 6px;
+  /* Remove default <nav> styles */
+  list-style: none;
+  padding-left: 0;
+}
+
+/* Custom Scrollbar */
+.country-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.country-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 4px;
+}
+
+.country-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+
+.country-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+/* Country item — now a <button> for keyboard accessibility */
+.country-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm, 6px);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.2s) ease;
+  font-size: 0.9rem;
+  color: #ffffff;
+  text-align: left;
+}
+
+.country-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+  box-shadow: var(--glow-white-sm, 0 0 8px rgba(255, 255, 255, 0.2));
+  transform: translateX(4px);
+}
+
+.country-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #ffffff;
+  box-shadow: var(--glow-white-md, 0 0 12px rgba(255, 255, 255, 0.35));
+  font-weight: var(--font-weight-semibold, 600);
+  color: #ffffff;
+}
+
+.country-item:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.country-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.country-flag {
+  font-size: 1.1rem;
+}
+
+.country-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+  flex-shrink: 0;
+}
