@@ -6,10 +6,16 @@ import { Register } from '@/components/Register';
 import { ForgotPassword } from '@/components/ForgotPassword';
 import { ResetPassword } from '@/components/ResetPassword';
 import { SuccessPage } from '@/components/SuccessPage';
+import { VerifyEmail } from '@/components/VerifyEmail';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
 import { ROUTES } from '@/constants/routes.constants';
+
+if (window.location.pathname === '/verify-email') {
+  const search = window.location.search;
+  window.location.replace(window.location.origin + '/#/verify-email' + search);
+}
 
 function AppContent() {
   const navigate = useNavigate();
@@ -81,6 +87,10 @@ function AppContent() {
             onBackToLogin={() => navigate(ROUTES.LOGIN)}
           />
         }
+      />
+      <Route
+        path={ROUTES.VERIFY_EMAIL}
+        element={<VerifyEmail />}
       />
       <Route
         path={ROUTES.FORGOT_PASSWORD}

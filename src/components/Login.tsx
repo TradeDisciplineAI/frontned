@@ -25,6 +25,20 @@ export const Login: React.FC<LoginProps> = ({
 
   const { setAccessToken, setUser } = useUserStore();
 
+  const [resendStatus, setResendStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleResendVerification = async () => {
+    if (!email) return;
+    try {
+      setResendStatus('loading');
+      await authService.resendVerification(email);
+      setResendStatus('success');
+    } catch (err) {
+      console.error(err);
+      setResendStatus('error');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -43,7 +57,9 @@ export const Login: React.FC<LoginProps> = ({
       onLoginSuccess();
     } catch (err: any) {
       console.error('Login failed', err);
-      if (err.response?.status === 401 || err.response?.status === 400) {
+      if (err.response?.status === 403) {
+        setErrorMsg(err.response.data?.detail || 'Please verify your email before logging in.');
+      } else if (err.response?.status === 401 || err.response?.status === 400) {
         setErrorMsg('Invalid email or password.');
       } else {
         setErrorMsg('An unexpected error occurred. Please try again.');
@@ -66,7 +82,7 @@ export const Login: React.FC<LoginProps> = ({
             <div
               style={{
                 display: 'flex',
-                alignItems: 'center',
+                flexDirection: 'column',
                 gap: '8px',
                 padding: '12px',
                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -78,8 +94,42 @@ export const Login: React.FC<LoginProps> = ({
               }}
               role="alert"
             >
-              <AlertCircle size={16} />
-              <span>{errorMsg}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span>{errorMsg}</span>
+              </div>
+              {errorMsg.toLowerCase().includes('verify') && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingLeft: '24px' }}>
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={resendStatus === 'loading'}
+                    style={{
+                      alignSelf: 'flex-start',
+                      fontSize: '0.75rem',
+                      color: 'var(--color-brand-teal)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: 0,
+                      textDecoration: 'underline',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {resendStatus === 'loading' ? 'Sending new link...' : 'Resend verification email'}
+                  </button>
+                  {resendStatus === 'success' && (
+                    <span style={{ fontSize: '0.75rem', color: '#10b981' }}>
+                      Verification link resent successfully!
+                    </span>
+                  )}
+                  {resendStatus === 'error' && (
+                    <span style={{ fontSize: '0.75rem', color: '#ef4444' }}>
+                      Failed to resend. Please try again.
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

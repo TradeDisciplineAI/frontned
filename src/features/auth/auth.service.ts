@@ -76,16 +76,16 @@ export const authService = {
   /**
    * Verify a user's email using a verification token.
    */
-  async verifyEmail(token: string): Promise<{ message: string }> {
-    const response = await apiClient.post('/auth/verify-email', { token });
+  async verifyEmail(token: string): Promise<{ message: string; access_token?: string; token_type?: string }> {
+    const response = await apiClient.post<{ message: string; access_token?: string; token_type?: string }>('/auth/verify-email', { token });
     return response.data;
   },
 
   /**
    * Resend email verification link.
    */
-  async resendVerification(email: string): Promise<{ message: string }> {
-    const response = await apiClient.post('/auth/resend-verification', { email });
+  async resendVerification(username_or_email: string): Promise<{ message: string }> {
+    const response = await apiClient.post('/auth/resend-verification', { username_or_email });
     return response.data;
   },
 
