@@ -205,3 +205,361 @@ body {
   color: #fff;
   border-color: rgba(255, 255, 255, 0.3);
 }
+
+/* ==========================================================================
+   Background Effects (Z-Index: 6, 7)
+   ========================================================================== */
+.shooting-star-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 6; /* In front of canvas, behind UI */
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.shooting-star {
+  position: absolute;
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  opacity: 0;
+  transform: rotate(-45deg);
+  animation: comet-shoot 20s linear infinite;
+}
+
+.violet-comet {
+  width: 350px;
+  height: 1.5px;
+  background: linear-gradient(90deg, #ff00ff 0%, transparent 100%);
+  box-shadow: 0 0 12px #ff00ff, 0 0 4px #ff00ff;
+  animation: comet-shoot 18s linear infinite;
+}
+
+.comet-1 { top: 15%; left: 100%; animation-delay: 0s; animation-duration: 20s; }
+.comet-2 { top: 45%; left: 100%; animation-delay: 12s; animation-duration: 22s; }
+.comet-3 { top: 75%; left: 100%; animation-delay: 5s; animation-duration: 19s; }
+.comet-4 { top: 25%; left: 100%; animation-delay: 17s; animation-duration: 24s; }
+.comet-5 { top: 85%; left: 100%; animation-delay: 8s; animation-duration: 21s; }
+
+.comet-violet-1 { top: 30%; left: 100%; animation-delay: 8s; animation-duration: 18s; }
+.comet-violet-2 { top: 60%; left: 100%; animation-delay: 2s; animation-duration: 23s; }
+.comet-violet-3 { top: 10%; left: 100%; animation-delay: 14s; animation-duration: 20s; }
+
+@keyframes comet-shoot {
+  0% { transform: rotate(-45deg) translateX(0); opacity: 0; }
+  5% { opacity: 1; }
+  10% { transform: rotate(-45deg) translateX(-150vw); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* ==========================================================================
+   Background Blinking Stars
+   ========================================================================== */
+.twinkling-stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background-color: #fff;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+  animation: blink-star 15s infinite;
+}
+
+.big-star {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background-color: #fff;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 1), 0 0 4px #60a5fa;
+  animation: blink-star 12s infinite;
+}
+
+.mega-star {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background-color: #fff;
+  border-radius: 50%;
+  opacity: 0;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 8px #c084fc;
+  animation: blink-star 10s infinite;
+}
+
+/* Base stars */
+.star-1 { top: 15%; left: 20%; animation-delay: 0s; }
+.star-2 { top: 35%; left: 75%; animation-delay: 2s; }
+.star-3 { top: 60%; left: 15%; animation-delay: 4s; }
+.star-4 { top: 80%; left: 85%; animation-delay: 6s; }
+.star-5 { top: 25%; left: 50%; animation-delay: 8s; }
+.star-6 { top: 70%; left: 45%; animation-delay: 10s; }
+.star-7 { top: 45%; left: 10%; animation-delay: 12s; }
+.star-8 { top: 5%; left: 40%; animation-delay: 1s; }
+.star-9 { top: 90%; left: 20%; animation-delay: 3s; }
+.star-10 { top: 50%; left: 90%; animation-delay: 7s; }
+
+/* Big stars */
+.big-star-1 { top: 20%; left: 80%; animation-delay: 1s; }
+.big-star-2 { top: 50%; left: 25%; animation-delay: 5s; }
+.big-star-3 { top: 85%; left: 60%; animation-delay: 9s; }
+.big-star-4 { top: 10%; left: 10%; animation-delay: 3s; }
+.big-star-5 { top: 40%; left: 60%; animation-delay: 11s; }
+.big-star-6 { top: 75%; left: 80%; animation-delay: 7s; }
+
+/* Mega stars */
+.mega-star-1 { top: 30%; left: 15%; animation-delay: 2s; }
+.mega-star-2 { top: 65%; left: 70%; animation-delay: 6s; }
+.mega-star-3 { top: 95%; left: 45%; animation-delay: 10s; }
+
+@keyframes blink-star {
+  0% { opacity: 0; transform: scale(0.5); }
+  5% { opacity: 1; transform: scale(1.5); }
+  10% { opacity: 0; transform: scale(0.5); }
+  100% { opacity: 0; }
+}
+
+/* ==========================================================================
+   New Globe Landing Layout (Look First Then Leap)
+   ========================================================================== */
+
+.landing-page {
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: #040508;
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+  /* Apply the night sky background to the entire scrollable page */
+  background-image: url("https://unpkg.com/three-globe/example/img/night-sky.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.hero-section {
+  width: 100vw;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  scroll-snap-align: start;
+}
+
+.globe-section {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  scroll-snap-align: start;
+}
+
+.globe-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 5;
+}
+
+.globe-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70vw;
+  height: 70vw;
+  max-width: 800px;
+  max-height: 800px;
+  border-radius: 50%;
+  /* Cyan and Purple glow */
+  background: radial-gradient(circle, rgba(147, 51, 234, 0.4) 0%, rgba(59, 130, 246, 0.25) 40%, transparent 70%);
+  filter: blur(80px);
+  z-index: 4; /* Behind globe */
+  pointer-events: none;
+}
+
+.globe-navbar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 40px;
+  background: transparent;
+  border-bottom: 2px dashed rgba(59, 130, 246, 0.4);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  color: #000;
+  border-radius: 4px;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.nav-search {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 8px 16px;
+  width: 280px;
+}
+
+.nav-search input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  outline: none;
+  margin-left: 8px;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.nav-search input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.nav-links a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: #60a5fa;
+}
+
+.nav-profile {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 150px;
+}
+
+.nav-login-btn {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 8px 24px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-login-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.globe-hero {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10vh;
+  text-align: center;
+}
+
+.globe-hero h1 {
+  font-size: 7.5rem; /* Massively increased size */
+  font-weight: 800;
+  margin: 0 0 32px 0;
+  letter-spacing: -2.5px; /* Tighter letter spacing for large fonts */
+  line-height: 1.1;
+}
+
+.billing-toggle {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  font-size: 1rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+}
+
+.radio-custom {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  position: relative;
+  transition: all 0.2s;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+input[type="radio"]:checked + .radio-custom {
+  border-color: #fff;
+}
+
+input[type="radio"]:checked + .radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.discount-badge {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
