@@ -33,12 +33,27 @@ function AppContent() {
       return;
     }
 
+    if (window.location.pathname === '/reset-password') {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (token) {
+        window.location.replace(window.location.origin + '/#/reset-password/' + token);
+        return;
+      }
+    }
+
+    if (window.location.pathname.startsWith('/reset-password/')) {
+      const token = window.location.pathname.substring(16); // '/reset-password/'.length === 16
+      window.location.replace(window.location.origin + '/#/reset-password/' + token);
+      return;
+    }
+
     const initializeSession = async () => {
       // Extract Google OAuth token from URL hash if present on the callback route
       const hash = window.location.hash;
       if (hash.includes('/auth/callback') && hash.includes('token=')) {
         const tokenMatch = hash.match(/token=([^&]+)/);
-        if (tokenMatch) {
+        if (tokenMatch && tokenMatch[1]) {
           useUserStore.getState().setAccessToken(tokenMatch[1]);
         }
       }
