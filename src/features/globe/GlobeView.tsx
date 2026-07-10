@@ -16,74 +16,113 @@ interface GlobeViewProps {
  */
 export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const { activeCountry, flyTo, resumeRotation } = useGlobe(containerRef);
+  useGlobe(containerRef);
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
-        backgroundColor: '#000',
-      }}
-      aria-label="Interactive 3D Globe showing live national stock market overlays"
-    >
-      {/* ── UI Overlay ───────────────────────────────────────────────── */}
-      <div
-        id="ui-overlay"
-        className="home-overlay"
-        role="complementary"
-        aria-label="Market controls"
-      >
-        <h1 className="home-overlay-title">National Stock Indices</h1>
-        <p className="home-overlay-status">Live WebGL Market Volatility Overlay</p>
-
-        {/* Country legend — now uses <button> for keyboard accessibility */}
-        <nav className="country-list" aria-label="Country market selector">
-          {NATIONS.map((nation) => (
-            <button
-              key={nation.name}
-              type="button"
-              className={`country-item ${activeCountry === nation.name ? 'active' : ''}`}
-              onClick={() => flyTo(nation.name, nation.lat, nation.lng)}
-              aria-pressed={activeCountry === nation.name}
-              aria-label={`Focus globe on ${nation.name}`}
-            >
-              <div className="country-info">
-                <span className="country-flag" aria-hidden="true">
-                  {nation.flag}
-                </span>
-                <span>{nation.name}</span>
-              </div>
-              <div
-                className="country-indicator"
-                style={{ color: nation.color, backgroundColor: nation.color }}
-                aria-hidden="true"
-              />
-            </button>
-          ))}
-        </nav>
-
-        {activeCountry && (
-          <button type="button" className="resume-rotate-btn" onClick={resumeRotation}>
-            ↺ Resume Rotation
-          </button>
-        )}
-
-        <button type="button" className="terminal-enter-btn" onClick={onEnterApp}>
-          Access Terminal
-        </button>
+    <div className="landing-page">
+      {/* ── Fixed Overlays (Visible across scrolling) ────────────────── */}
+      <div className="shooting-star-container">
+        {/* White Comets */}
+        <div className="shooting-star comet-1"></div>
+        <div className="shooting-star comet-2"></div>
+        <div className="shooting-star comet-3"></div>
+        <div className="shooting-star comet-4"></div>
+        <div className="shooting-star comet-5"></div>
+        
+        {/* Violet Comets */}
+        <div className="shooting-star violet-comet comet-violet-1"></div>
+        <div className="shooting-star violet-comet comet-violet-2"></div>
+        <div className="shooting-star violet-comet comet-violet-3"></div>
       </div>
 
-      {/* ── Globe Canvas ─────────────────────────────────────────────── */}
-      <div
-        ref={containerRef}
-        style={{ width: '100%', height: '100%' }}
-        id="globeViz"
-        role="img"
-        aria-label="3D globe visualization — rotate with mouse, scroll to pan"
-      />
+      <div className="twinkling-stars">
+        {/* Normal stars */}
+        <div className="star star-1"></div>
+        <div className="star star-2"></div>
+        <div className="star star-3"></div>
+        <div className="star star-4"></div>
+        <div className="star star-5"></div>
+        <div className="star star-6"></div>
+        <div className="star star-7"></div>
+        <div className="star star-8"></div>
+        <div className="star star-9"></div>
+        <div className="star star-10"></div>
+        
+        {/* Big stars */}
+        <div className="big-star big-star-1"></div>
+        <div className="big-star big-star-2"></div>
+        <div className="big-star big-star-3"></div>
+        <div className="big-star big-star-4"></div>
+        <div className="big-star big-star-5"></div>
+        <div className="big-star big-star-6"></div>
+
+        {/* Mega stars */}
+        <div className="mega-star mega-star-1"></div>
+        <div className="mega-star mega-star-2"></div>
+        <div className="mega-star mega-star-3"></div>
+      </div>
+
+      {/* ── Section 1: Hero (100vh) ──────────────────────────────────── */}
+      <section className="hero-section">
+        {/* Navbar */}
+        <header className="globe-navbar">
+          <div className="nav-brand">
+            <span className="logo-icon">x</span>
+            <span className="brand-text">Discipline Co-pilot</span>
+          </div>
+          
+          <div className="nav-search">
+            <span className="search-icon">🔍</span>
+            <input type="text" placeholder="Search (Ctrl+K)" />
+          </div>
+
+          <nav className="nav-links">
+            <a href="#" className="active">Products</a>
+            <a href="#">Community</a>
+            <a href="#">Markets</a>
+            <a href="#">Brokers</a>
+            <a href="#">More</a>
+          </nav>
+
+          <div className="nav-profile">
+            <button className="nav-login-btn" onClick={onEnterApp}>Log in</button>
+          </div>
+        </header>
+
+        {/* Hero Content */}
+        <div className="globe-hero">
+          <h1>Look First Then Leap</h1>
+          
+          <div className="billing-toggle">
+            <label className="radio-label">
+              <input type="radio" name="billing" />
+              <span className="radio-custom"></span>
+              Monthly
+            </label>
+            <label className="radio-label">
+              <input type="radio" name="billing" defaultChecked />
+              <span className="radio-custom"></span>
+              Annually
+            </label>
+            <span className="discount-badge">Save up to 17% 🤑</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Section 2: Globe (100vh) ─────────────────────────────────── */}
+      <section className="globe-section">
+        <div className="globe-glow"></div>
+        
+        <div className="globe-wrapper">
+          <div
+            ref={containerRef}
+            style={{ width: '100%', height: '100%' }}
+            id="globeViz"
+            role="img"
+            aria-label="3D globe visualization"
+          />
+        </div>
+      </section>
     </div>
   );
 };

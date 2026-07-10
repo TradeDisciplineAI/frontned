@@ -29,6 +29,7 @@
     "react-dom": "^19.2.7",
     "react-error-boundary": "^5.0.0",
     "react-router-dom": "^7.18.1",
+    "three": "^0.185.1",
     "zustand": "^5.0.6"
   },
   "devDependencies": {
@@ -38,6 +39,7 @@
     "@types/node": "^24.13.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.185.1",
     "@vitejs/plugin-react": "^6.0.3",
     "jsdom": "^26.1.0",
     "oxlint": "^1.71.0",
