@@ -6,6 +6,11 @@ import path from 'path';
 export default defineConfig({
   plugins: [react()],
 
+  // ── Dev Server ───────────────────────────────────────────────────────────────
+  server: {
+    port: 3000,
+  },
+
   // ── Path Aliases ────────────────────────────────────────────────────────────
   // Enables: import { X } from '@/features/...' instead of '../../../features/...'
   resolve: {

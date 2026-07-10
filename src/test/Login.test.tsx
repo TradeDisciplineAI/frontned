@@ -15,10 +15,10 @@ vi.mock('../features/auth/auth.service', () => ({
 /**
  * Helper to render the Login component within a Router context.
  */
-const renderLogin = (onSuccess = vi.fn(), onBack = vi.fn()) =>
+const renderLogin = (onSuccess = vi.fn()) =>
   render(
     <MemoryRouter>
-      <Login onLoginSuccess={onSuccess} onBackToHome={onBack} />
+      <Login onLoginSuccess={onSuccess} />
     </MemoryRouter>,
   );
 

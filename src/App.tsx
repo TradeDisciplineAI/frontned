@@ -6,6 +6,8 @@ import { Register } from '@/components/Register';
 import { ForgotPassword } from '@/components/ForgotPassword';
 import { ResetPassword } from '@/components/ResetPassword';
 import { SuccessPage } from '@/components/SuccessPage';
+import { VerifyEmail } from '@/components/VerifyEmail';
+import { AuthCallback } from '@/components/AuthCallback';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
@@ -18,7 +20,44 @@ function AppContent() {
 
   // Run once on app load to restore session via HttpOnly cookie if present
   useEffect(() => {
+    if (window.location.pathname === '/verify-email') {
+      const search = window.location.search;
+      window.location.replace(window.location.origin + '/#/verify-email' + search);
+      return;
+    }
+
+    if (window.location.pathname === '/auth/callback') {
+      const hash = window.location.hash;
+      const cleanHash = hash.startsWith('#') ? hash.substring(1) : hash;
+      window.location.replace(window.location.origin + '/#/auth/callback?' + cleanHash);
+      return;
+    }
+
+    if (window.location.pathname === '/reset-password') {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (token) {
+        window.location.replace(window.location.origin + '/#/reset-password/' + token);
+        return;
+      }
+    }
+
+    if (window.location.pathname.startsWith('/reset-password/')) {
+      const token = window.location.pathname.substring(16); // '/reset-password/'.length === 16
+      window.location.replace(window.location.origin + '/#/reset-password/' + token);
+      return;
+    }
+
     const initializeSession = async () => {
+      // Extract Google OAuth token from URL hash if present on the callback route
+      const hash = window.location.hash;
+      if (hash.includes('/auth/callback') && hash.includes('token=')) {
+        const tokenMatch = hash.match(/token=([^&]+)/);
+        if (tokenMatch && tokenMatch[1]) {
+          useUserStore.getState().setAccessToken(tokenMatch[1]);
+        }
+      }
+
       await initAuth();
       setIsInitializing(false);
     };
@@ -82,6 +121,8 @@ function AppContent() {
           />
         }
       />
+      <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
+      <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallback />} />
       <Route
         path={ROUTES.FORGOT_PASSWORD}
         element={<ForgotPassword onBackToLogin={() => navigate(ROUTES.LOGIN)} />}
