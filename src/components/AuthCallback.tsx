@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { AuthLayout } from '@/components/ui/AuthLayout/AuthLayout';
-import { authService } from '@/features/auth/auth.service';
 import { useUserStore } from '@/stores/userStore';
 import { ROUTES } from '@/constants/routes.constants';
 

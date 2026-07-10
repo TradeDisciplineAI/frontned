@@ -28,16 +28,19 @@ function AppContent() {
 
     if (window.location.pathname === '/auth/callback') {
       const hash = window.location.hash;
-      window.location.replace(window.location.origin + '/#/auth/callback' + hash);
+      const cleanHash = hash.startsWith('#') ? hash.substring(1) : hash;
+      window.location.replace(window.location.origin + '/#/auth/callback?' + cleanHash);
       return;
     }
 
     const initializeSession = async () => {
-      // Extract Google OAuth token from URL hash if present
+      // Extract Google OAuth token from URL hash if present on the callback route
       const hash = window.location.hash;
-      const tokenMatch = hash.match(/token=([^&]+)/);
-      if (tokenMatch) {
-        useUserStore.getState().setAccessToken(tokenMatch[1]);
+      if (hash.includes('/auth/callback') && hash.includes('token=')) {
+        const tokenMatch = hash.match(/token=([^&]+)/);
+        if (tokenMatch) {
+          useUserStore.getState().setAccessToken(tokenMatch[1]);
+        }
       }
 
       await initAuth();

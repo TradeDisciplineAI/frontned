@@ -11,7 +11,9 @@ export const VerifyEmail: React.FC = () => {
   const navigate = useNavigate();
   const { setAccessToken, setUser } = useUserStore();
 
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [status, setStatus] = useState<'loading' | 'success' | 'success-manual' | 'error'>(
+    'loading',
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,10 +27,8 @@ export const VerifyEmail: React.FC = () => {
     }
 
     const performVerification = async () => {
-      let isVerified = false;
       try {
         const response = await authService.verifyEmail(token);
-        isVerified = true;
 
         // If the backend returns access token on successful verification, auto-login
         if (response.access_token) {
@@ -39,11 +39,9 @@ export const VerifyEmail: React.FC = () => {
             setUser(userProfile);
           } catch (profileErr) {
             console.error('Failed to fetch user profile after verification', profileErr);
-            // Even if profile fetch fails, the email is verified. Let them log in manually.
-            setStatus('error');
-            setErrorMessage(
-              'Email verified successfully, but failed to load profile. Please try logging in manually.',
-            );
+            // If profile fetch fails, user is still verified. Clear token and prompt manual sign in.
+            setAccessToken(null);
+            setStatus('success-manual');
             return;
           }
 
@@ -55,7 +53,7 @@ export const VerifyEmail: React.FC = () => {
           }, 2000);
         } else {
           // Fallback if no token returned (require user to sign in manually)
-          setStatus('success');
+          setStatus('success-manual');
         }
       } catch (err: any) {
         console.error('Verification failed', err);
@@ -93,7 +91,7 @@ export const VerifyEmail: React.FC = () => {
           </>
         )}
 
-        {status === 'success' && (
+        {(status === 'success' || status === 'success-manual') && (
           <>
             <div
               style={{
@@ -112,9 +110,31 @@ export const VerifyEmail: React.FC = () => {
             <div className="form-header" style={{ alignItems: 'center' }}>
               <h2 className="form-title">Email Verified!</h2>
               <p className="form-subtitle">
-                Your account is verified. Logging you in and redirecting to the dashboard...
+                {status === 'success'
+                  ? 'Your account is verified. Logging you in and redirecting to the dashboard...'
+                  : 'Your account is verified. Please sign in to access your dashboard.'}
               </p>
             </div>
+            {status === 'success-manual' && (
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '16px',
+                  marginTop: '16px',
+                }}
+              >
+                <button
+                  className="auth-submit-btn"
+                  onClick={() => navigate(ROUTES.LOGIN)}
+                  style={{ width: '100%' }}
+                >
+                  <span>Sign In</span>
+                  <ArrowRight size={18} />
+                </button>
+              </div>
+            )}
           </>
         )}
 
