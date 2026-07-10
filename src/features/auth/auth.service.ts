@@ -76,8 +76,14 @@ export const authService = {
   /**
    * Verify a user's email using a verification token.
    */
-  async verifyEmail(token: string): Promise<{ message: string; access_token?: string; token_type?: string }> {
-    const response = await apiClient.post<{ message: string; access_token?: string; token_type?: string }>('/auth/verify-email', { token });
+  async verifyEmail(
+    token: string,
+  ): Promise<{ message: string; access_token?: string; token_type?: string }> {
+    const response = await apiClient.post<{
+      message: string;
+      access_token?: string;
+      token_type?: string;
+    }>('/auth/verify-email', { token });
     return response.data;
   },
 

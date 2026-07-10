@@ -15,6 +15,7 @@ export const VerifyEmail: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
     const token = searchParams.get('token');
 
     if (!token) {
@@ -24,18 +25,32 @@ export const VerifyEmail: React.FC = () => {
     }
 
     const performVerification = async () => {
+      let isVerified = false;
       try {
         const response = await authService.verifyEmail(token);
-        
+        isVerified = true;
+
         // If the backend returns access token on successful verification, auto-login
         if (response.access_token) {
           setAccessToken(response.access_token);
-          const userProfile = await authService.getMe();
-          setUser(userProfile);
+
+          try {
+            const userProfile = await authService.getMe();
+            setUser(userProfile);
+          } catch (profileErr) {
+            console.error('Failed to fetch user profile after verification', profileErr);
+            // Even if profile fetch fails, the email is verified. Let them log in manually.
+            setStatus('error');
+            setErrorMessage(
+              'Email verified successfully, but failed to load profile. Please try logging in manually.',
+            );
+            return;
+          }
+
           setStatus('success');
-          
+
           // Redirect to dashboard after a short delay
-          setTimeout(() => {
+          timeoutId = setTimeout(() => {
             navigate(ROUTES.DASHBOARD);
           }, 2000);
         } else {
@@ -46,12 +61,18 @@ export const VerifyEmail: React.FC = () => {
         console.error('Verification failed', err);
         setStatus('error');
         setErrorMessage(
-          err.response?.data?.detail || 'Invalid or expired email verification token.'
+          err.response?.data?.detail || 'Invalid or expired email verification token.',
         );
       }
     };
 
     performVerification();
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [searchParams, setAccessToken, setUser, navigate]);
 
   return (
@@ -114,7 +135,9 @@ export const VerifyEmail: React.FC = () => {
               <XCircle size={36} color="#ef4444" strokeWidth={2.5} />
             </div>
             <div className="form-header" style={{ alignItems: 'center' }}>
-              <h2 className="form-title" style={{ color: '#ef4444' }}>Verification Failed</h2>
+              <h2 className="form-title" style={{ color: '#ef4444' }}>
+                Verification Failed
+              </h2>
               <p className="form-subtitle">{errorMessage}</p>
             </div>
 

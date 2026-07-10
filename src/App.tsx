@@ -7,15 +7,11 @@ import { ForgotPassword } from '@/components/ForgotPassword';
 import { ResetPassword } from '@/components/ResetPassword';
 import { SuccessPage } from '@/components/SuccessPage';
 import { VerifyEmail } from '@/components/VerifyEmail';
+import { AuthCallback } from '@/components/AuthCallback';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
 import { ROUTES } from '@/constants/routes.constants';
-
-if (window.location.pathname === '/verify-email') {
-  const search = window.location.search;
-  window.location.replace(window.location.origin + '/#/verify-email' + search);
-}
 
 function AppContent() {
   const navigate = useNavigate();
@@ -24,7 +20,26 @@ function AppContent() {
 
   // Run once on app load to restore session via HttpOnly cookie if present
   useEffect(() => {
+    if (window.location.pathname === '/verify-email') {
+      const search = window.location.search;
+      window.location.replace(window.location.origin + '/#/verify-email' + search);
+      return;
+    }
+
+    if (window.location.pathname === '/auth/callback') {
+      const hash = window.location.hash;
+      window.location.replace(window.location.origin + '/#/auth/callback' + hash);
+      return;
+    }
+
     const initializeSession = async () => {
+      // Extract Google OAuth token from URL hash if present
+      const hash = window.location.hash;
+      const tokenMatch = hash.match(/token=([^&]+)/);
+      if (tokenMatch) {
+        useUserStore.getState().setAccessToken(tokenMatch[1]);
+      }
+
       await initAuth();
       setIsInitializing(false);
     };
@@ -88,10 +103,8 @@ function AppContent() {
           />
         }
       />
-      <Route
-        path={ROUTES.VERIFY_EMAIL}
-        element={<VerifyEmail />}
-      />
+      <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
+      <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallback />} />
       <Route
         path={ROUTES.FORGOT_PASSWORD}
         element={<ForgotPassword onBackToLogin={() => navigate(ROUTES.LOGIN)} />}
