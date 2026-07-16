@@ -1,6 +1,8 @@
 import React, { useRef } from 'react';
 import { useGlobe } from './useGlobe';
 import { NATIONS } from './nations.constants';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/overlay.css';
 import '@/styles/components/country-list.css';
 
@@ -16,6 +18,7 @@ interface GlobeViewProps {
  */
 export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
   useGlobe(containerRef);
 
   return (
@@ -28,7 +31,7 @@ export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
         <div className="shooting-star comet-3"></div>
         <div className="shooting-star comet-4"></div>
         <div className="shooting-star comet-5"></div>
-        
+
         {/* Violet Comets */}
         <div className="shooting-star violet-comet comet-violet-1"></div>
         <div className="shooting-star violet-comet comet-violet-2"></div>
@@ -47,7 +50,7 @@ export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
         <div className="star star-8"></div>
         <div className="star star-9"></div>
         <div className="star star-10"></div>
-        
+
         {/* Big stars */}
         <div className="big-star big-star-1"></div>
         <div className="big-star big-star-2"></div>
@@ -70,7 +73,7 @@ export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
             <span className="logo-icon">x</span>
             <span className="brand-text">Discipline Co-pilot</span>
           </div>
-          
+
           <div className="nav-search">
             <span className="search-icon">🔍</span>
             <input type="text" placeholder="Search (Ctrl+K)" />
@@ -92,7 +95,7 @@ export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
         {/* Hero Content */}
         <div className="globe-hero">
           <h1>Look First Then Leap</h1>
-          
+
           <div className="billing-toggle">
             <label className="radio-label">
               <input type="radio" name="billing" />
@@ -106,13 +109,15 @@ export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
             </label>
             <span className="discount-badge">Save up to 17% 🤑</span>
           </div>
+
+          <button className="terminal-enter-btn" style={{ marginTop: '32px', padding: '16px 48px', fontSize: '1.1rem', letterSpacing: '2px' }} onClick={() => navigate(ROUTES.EXPLORE)}>Explore</button>
         </div>
       </section>
 
       {/* ── Section 2: Globe (100vh) ─────────────────────────────────── */}
       <section className="globe-section">
         <div className="globe-glow"></div>
-        
+
         <div className="globe-wrapper">
           <div
             ref={containerRef}
