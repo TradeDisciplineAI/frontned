@@ -1,0 +1,211 @@
+/* Ultra-Precise Match to the User's Screenshot */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.market-dashboard {
+  background-color: #ffffff;
+  min-height: 100vh;
+  padding: 30px 40px;
+  color: #111111;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+.top-nav {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.nav-pills {
+  display: flex;
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  border-radius: 40px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.nav-pill {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 40px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555555;
+  cursor: pointer;
+}
+
+.nav-pill:hover {
+  color: #111111;
+}
+
+.nav-pill.active {
+  background: #2a2a2a;
+  color: #ffffff;
+}
+
+.market-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.market-list-section {
+  background: #ffffff;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #111111;
+  display: flex;
+  align-items: center;
+}
+
+.heading-arrow {
+  margin-left: 2px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #111111;
+}
+
+.stock-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.stock-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #f6f6f6;
+}
+
+.stock-row:last-child {
+  border-bottom: none;
+}
+
+.stock-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 220px;
+}
+
+.stock-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.icon-blue {
+  background-color: #0d6de0;
+}
+
+.icon-purple {
+  background-color: #6a309e;
+}
+
+.stock-names {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stock-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #111111;
+}
+
+.stock-ticker {
+  background-color: #f7f7f7;
+  color: #333333;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.stock-middle {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  flex: 1;
+  justify-content: flex-end;
+  padding-right: 40px;
+}
+
+.price {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #111111;
+}
+
+.currency {
+  font-size: 0.6rem;
+  color: #555555;
+  font-weight: 600;
+}
+
+.stock-right {
+  display: flex;
+  justify-content: flex-end;
+  width: 90px;
+}
+
+.pill-gain {
+  background-color: #1d9c73;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.pill-loss {
+  background-color: #cc3a4a;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: #888888;
+}
+
+@media (max-width: 1200px) {
+  .market-sections {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}

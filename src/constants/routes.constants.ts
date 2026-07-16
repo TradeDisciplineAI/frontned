@@ -7,6 +7,7 @@ export const ROUTES = {
   VERIFY_EMAIL: '/verify-email',
   AUTH_CALLBACK: '/auth/callback',
   SUCCESS: '/success',
+  EXPLORE: '/explore',
   DASHBOARD: '/dashboard',
 } as const;
 

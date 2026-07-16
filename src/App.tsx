@@ -9,6 +9,7 @@ import { SuccessPage } from '@/components/SuccessPage';
 import { VerifyEmail } from '@/components/VerifyEmail';
 import { AuthCallback } from '@/components/AuthCallback';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
+import { LiveMarketDashboard } from '@/pages/LiveMarketDashboard';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
 import { ROUTES } from '@/constants/routes.constants';
@@ -97,7 +98,7 @@ function AppContent() {
         path={ROUTES.LOGIN}
         element={
           <Login
-            onLoginSuccess={() => navigate(ROUTES.DASHBOARD)}
+            onLoginSuccess={() => navigate(ROUTES.EXPLORE)}
             onNavigateToSignup={() => navigate(ROUTES.REGISTER)}
             onNavigateToForgot={() => navigate(ROUTES.FORGOT_PASSWORD)}
           />
@@ -131,6 +132,7 @@ function AppContent() {
         path={ROUTES.RESET_PASSWORD}
         element={<ResetPassword onBackToLogin={() => navigate(ROUTES.LOGIN)} />}
       />
+      <Route path={ROUTES.EXPLORE} element={<LiveMarketDashboard />} />
 
       {/* Protected Routes */}
       <Route
