@@ -2,11 +2,27 @@ import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://localhost:8001';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
   withCredentials: true, // Crucial for sending/receiving the HttpOnly refresh token cookie
   timeout: 5000,
+});
+
+export const marketApiClient = axios.create({
+  baseURL: MARKET_API_URL,
+  withCredentials: true,
+  timeout: 5000,
+});
+
+// Request Interceptor for marketApiClient: Attach access token
+marketApiClient.interceptors.request.use((config) => {
+  const token = useUserStore.getState().accessToken;
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
 // Request Interceptor: Attach the access token if available

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import '@/styles/components/live-market.css';
 
+const MARKET_WS_URL = import.meta.env.VITE_MARKET_WS_BASE_URL || 'ws://localhost:8001';
+
 export const LiveMarketDashboard: React.FC = () => {
     const [marketData, setMarketData] = useState({ gainers: [], losers: [] });
     const [activeTab, setActiveTab] = useState('Stocks');
 
     useEffect(() => {
-        // 1. Connect to the FastAPI WebSocket Bridge
-        const ws = new WebSocket("ws://localhost:8000/dashboard/ws/market");
+        // 1. Connect to the Market Service WebSocket
+        const ws = new WebSocket(`${MARKET_WS_URL}/dashboard/ws/market`);
 
         // 2. Listen for live updates being pushed from FastAPI
         ws.onmessage = (event) => {
