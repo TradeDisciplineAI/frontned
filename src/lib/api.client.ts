@@ -34,42 +34,37 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Response Interceptor: Handle 401s and automatic token refresh
-apiClient.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+// Reusable response interceptor to handle 401s and automatic token refresh
+const handleResponseError = (client: any) => async (error: any) => {
+  const originalRequest = error.config;
 
-    // If it's a 401 and we haven't already retried this request
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      // Prevent infinite loops on the refresh endpoint itself
-      if (originalRequest.url === '/auth/refresh') {
-        // Refresh failed (cookie expired/invalid) -> force logout
-        useUserStore.getState().logout();
-        return Promise.reject(error);
-      }
-
-      originalRequest._retry = true;
-
-      try {
-        // Attempt to get a new access token using the HttpOnly cookie
-        const { data } = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
-
-        const newAccessToken = data.access_token;
-
-        // Update the store with the new token
-        useUserStore.getState().setAccessToken(newAccessToken);
-
-        // Update the original request's header and retry
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        // Refresh failed (e.g., cookie expired) -> logout
-        useUserStore.getState().logout();
-        return Promise.reject(refreshError);
-      }
+  if (error.response?.status === 401 && !originalRequest._retry) {
+    if (originalRequest.url?.includes('/auth/refresh')) {
+      useUserStore.getState().logout();
+      return Promise.reject(error);
     }
 
-    return Promise.reject(error);
-  },
+    originalRequest._retry = true;
+
+    try {
+      const { data } = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
+      const newAccessToken = data.access_token;
+      useUserStore.getState().setAccessToken(newAccessToken);
+
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      return client(originalRequest);
+    } catch (refreshError) {
+      useUserStore.getState().logout();
+      return Promise.reject(refreshError);
+    }
+  }
+
+  return Promise.reject(error);
+};
+
+apiClient.interceptors.response.use((response) => response, handleResponseError(apiClient));
+
+marketApiClient.interceptors.response.use(
+  (response) => response,
+  handleResponseError(marketApiClient),
 );
