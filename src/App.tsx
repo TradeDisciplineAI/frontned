@@ -98,7 +98,7 @@ function AppContent() {
         path={ROUTES.LOGIN}
         element={
           <Login
-            onLoginSuccess={() => navigate(ROUTES.EXPLORE)}
+            onLoginSuccess={() => navigate(ROUTES.DASHBOARD)}
             onNavigateToSignup={() => navigate(ROUTES.REGISTER)}
             onNavigateToForgot={() => navigate(ROUTES.FORGOT_PASSWORD)}
           />

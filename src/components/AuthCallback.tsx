@@ -12,8 +12,8 @@ export const AuthCallback: React.FC = () => {
   useEffect(() => {
     if (isAuthenticated) {
       // Clean up fragment from url and navigate to dashboard
-      window.history.replaceState(null, '', '/#/explore');
-      navigate(ROUTES.EXPLORE);
+      window.history.replaceState(null, '', '/#/dashboard');
+      navigate(ROUTES.DASHBOARD);
     } else {
       navigate(ROUTES.LOGIN);
     }
