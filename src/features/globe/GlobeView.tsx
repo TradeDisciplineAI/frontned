@@ -80,7 +80,9 @@ export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
           </div>
 
           <nav className="nav-links">
-            <a href="#" className="active">Products</a>
+            <a href="#" className="active">
+              Products
+            </a>
             <a href="#">Community</a>
             <a href="#">Markets</a>
             <a href="#">Brokers</a>
@@ -88,7 +90,9 @@ export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
           </nav>
 
           <div className="nav-profile">
-            <button className="nav-login-btn" onClick={onEnterApp}>Log in</button>
+            <button className="nav-login-btn" onClick={onEnterApp}>
+              Log in
+            </button>
           </div>
         </header>
 
@@ -110,7 +114,18 @@ export const GlobeView: React.FC<GlobeViewProps> = ({ onEnterApp }) => {
             <span className="discount-badge">Save up to 17% 🤑</span>
           </div>
 
-          <button className="terminal-enter-btn" style={{ marginTop: '32px', padding: '16px 48px', fontSize: '1.1rem', letterSpacing: '2px' }} onClick={() => navigate(ROUTES.EXPLORE)}>Explore</button>
+          <button
+            className="terminal-enter-btn"
+            style={{
+              marginTop: '32px',
+              padding: '16px 48px',
+              fontSize: '1.1rem',
+              letterSpacing: '2px',
+            }}
+            onClick={() => navigate(ROUTES.EXPLORE)}
+          >
+            Explore
+          </button>
         </div>
       </section>
 

@@ -102,35 +102,35 @@ export function useGlobe(containerRef: RefObject<HTMLDivElement | null>) {
     let scrollAngle = 0;
     const handleWheel = (e: WheelEvent) => {
       if (!world) return;
-      
+
       const currentPov = world.pointOfView();
       let newAltitude = currentPov.altitude;
-      
+
       // Calculate new altitude (zoom)
       // Reverse logic: Scroll DOWN (deltaY > 0) -> Zoom IN (decrease altitude)
       // Scroll UP (deltaY < 0) -> Zoom OUT (increase altitude)
       const zoomSpeed = 0.002;
       newAltitude -= e.deltaY * zoomSpeed;
-      
+
       // Bounds: 1.5 = Large globe (Image 1), 4.0 = Small globe (Image 2)
       if (newAltitude < 1.5) newAltitude = 1.5;
       if (newAltitude > 4.0) newAltitude = 4.0;
-      
-      // If scrolling UP and the globe is already at its smallest (4.0), 
+
+      // If scrolling UP and the globe is already at its smallest (4.0),
       // release the scroll event so the user scrolls back to the top of the page!
       if (e.deltaY < 0 && currentPov.altitude >= 3.99) {
-        return; 
+        return;
       }
-      
+
       // Otherwise, prevent page scroll and apply zoom & rotation to the globe
       e.preventDefault();
-      
+
       // Rotation
       scrollAngle += e.deltaY * GLOBE_CONFIG.SCROLL_SENSITIVITY;
-      
+
       world.pointOfView({ lat: currentPov.lat, lng: scrollAngle, altitude: newAltitude });
     };
-    
+
     // Attach to container, passive: false so we can preventDefault
     container.addEventListener('wheel', handleWheel, { passive: false });
 
