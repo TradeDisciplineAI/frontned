@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/stores/userStore';
 import { portfolioService } from '@/services/portfolio.service';
+import { Sidebar } from '@/components/Sidebar';
 import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/live-market.css';
 
@@ -16,7 +17,12 @@ export const LiveMarketDashboard: React.FC = () => {
     null,
   );
 
-  const isAuthenticated = useUserStore((s) => s.isAuthenticated);
+  const { user, logout, isAuthenticated } = useUserStore();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate(ROUTES.HOME);
+  };
 
   // 1. Listen to market data WebSocket
   useEffect(() => {
@@ -90,7 +96,7 @@ export const LiveMarketDashboard: React.FC = () => {
     return symbol.substring(0, 2).toUpperCase();
   };
 
-  return (
+  const dashboardContent = (
     <div className="market-dashboard">
       {/* Dynamic Feedback Banner */}
       {feedback && (
@@ -130,10 +136,8 @@ export const LiveMarketDashboard: React.FC = () => {
           margin: '0 auto 40px auto',
         }}
       >
-        {/* Left spacing block for balance */}
         <div style={{ width: '150px' }} />
 
-        {/* Navigation Pills */}
         <div className="nav-pills" style={{ margin: 0 }}>
           {['Stocks', 'Crypto', 'Futures', 'Forex', 'Economy', 'Brokers'].map((tab) => (
             <button
@@ -146,7 +150,6 @@ export const LiveMarketDashboard: React.FC = () => {
           ))}
         </div>
 
-        {/* Right Dashboard navigation button */}
         <div style={{ width: '150px', display: 'flex', justifyContent: 'flex-end' }}>
           {isAuthenticated && (
             <button
@@ -186,28 +189,21 @@ export const LiveMarketDashboard: React.FC = () => {
               <span className="heading-arrow">&gt;</span>
             </h2>
           </div>
-
-          <div className="stock-list">
+          <div className="market-list">
             {marketData.gainers && marketData.gainers.length > 0 ? (
               marketData.gainers.map((stock: any) => (
-                <div className="stock-row" key={stock.symbol}>
-                  <div className="stock-left">
-                    <div className="stock-icon icon-blue">{getInitials(stock.symbol)}</div>
-                    <div className="stock-names">
-                      <div className="stock-name">{stock.symbol.split('.')[0]}</div>
+                <div key={stock.symbol} className="market-row">
+                  <div className="stock-info-col">
+                    <div className="stock-icon-circle">{getInitials(stock.symbol)}</div>
+                    <div>
                       <div className="stock-ticker">{stock.symbol}</div>
                     </div>
                   </div>
-                  <div className="stock-middle">
-                    <span className="price">{formatPrice(stock.price)}</span>
-                    <span className="currency">{stock.currency || 'USD'}</span>
-                  </div>
-                  <div
-                    className="stock-right"
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
-                  >
-                    <div className="pill-gain">+{Math.abs(stock.percent_change).toFixed(2)}%</div>
-
+                  <div className="stock-pricing-col">
+                    <span className="stock-current-price">{formatPrice(stock.price)}</span>
+                    <span className="stock-change-pill positive">
+                      +{formatPrice(stock.percent_change)}%
+                    </span>
                     {isAuthenticated && (
                       <button
                         onClick={() => handleAddStockToPortfolio(stock.symbol)}
@@ -252,28 +248,21 @@ export const LiveMarketDashboard: React.FC = () => {
               <span className="heading-arrow">&gt;</span>
             </h2>
           </div>
-
-          <div className="stock-list">
+          <div className="market-list">
             {marketData.losers && marketData.losers.length > 0 ? (
               marketData.losers.map((stock: any) => (
-                <div className="stock-row" key={stock.symbol}>
-                  <div className="stock-left">
-                    <div className="stock-icon icon-purple">{getInitials(stock.symbol)}</div>
-                    <div className="stock-names">
-                      <div className="stock-name">{stock.symbol.split('.')[0]}</div>
+                <div key={stock.symbol} className="market-row">
+                  <div className="stock-info-col">
+                    <div className="stock-icon-circle">{getInitials(stock.symbol)}</div>
+                    <div>
                       <div className="stock-ticker">{stock.symbol}</div>
                     </div>
                   </div>
-                  <div className="stock-middle">
-                    <span className="price">{formatPrice(stock.price)}</span>
-                    <span className="currency">{stock.currency || 'USD'}</span>
-                  </div>
-                  <div
-                    className="stock-right"
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
-                  >
-                    <div className="pill-loss">-{Math.abs(stock.percent_change).toFixed(2)}%</div>
-
+                  <div className="stock-pricing-col">
+                    <span className="stock-current-price">{formatPrice(stock.price)}</span>
+                    <span className="stock-change-pill negative">
+                      {formatPrice(stock.percent_change)}%
+                    </span>
                     {isAuthenticated && (
                       <button
                         onClick={() => handleAddStockToPortfolio(stock.symbol)}
@@ -312,4 +301,22 @@ export const LiveMarketDashboard: React.FC = () => {
       </div>
     </div>
   );
+
+  if (isAuthenticated) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          minHeight: '100vh',
+          background: 'var(--color-bg-primary)',
+          color: '#f3f4f6',
+        }}
+      >
+        <Sidebar user={user} onLogout={handleLogout} />
+        <div style={{ flex: 1, height: '100vh', overflowY: 'auto' }}>{dashboardContent}</div>
+      </div>
+    );
+  }
+
+  return dashboardContent;
 };
