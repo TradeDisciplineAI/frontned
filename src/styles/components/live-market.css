@@ -3,10 +3,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .market-dashboard {
-  background-color: #ffffff;
+  background-color: var(--color-bg-primary, #0b1120);
   min-height: 100vh;
   padding: 30px 40px;
-  color: #111111;
+  color: var(--color-text-primary, #ffffff);
   font-family: 'Inter', sans-serif;
   box-sizing: border-box;
 }
@@ -19,12 +19,12 @@
 
 .nav-pills {
   display: flex;
-  background: #ffffff;
-  border: 1px solid #eaeaea;
+  background: var(--color-bg-secondary, #0f172a);
+  border: 1px solid var(--color-border-subtle, #1e293b);
   border-radius: 40px;
   padding: 4px;
   gap: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .nav-pill {
@@ -34,16 +34,17 @@
   border-radius: 40px;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #555555;
+  color: var(--color-text-secondary, #9ca3af);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .nav-pill:hover {
-  color: #111111;
+  color: var(--color-text-primary, #ffffff);
 }
 
 .nav-pill.active {
-  background: #2a2a2a;
+  background: var(--color-brand-teal, #0d9488);
   color: #ffffff;
 }
 
@@ -56,7 +57,11 @@
 }
 
 .market-list-section {
-  background: #ffffff;
+  background: var(--color-bg-secondary, #0f172a);
+  border: 1px solid var(--color-border-subtle, #1e293b);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .section-header {
@@ -67,43 +72,43 @@
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
-  color: #111111;
+  color: var(--color-text-primary, #ffffff);
   display: flex;
   align-items: center;
 }
 
 .heading-arrow {
-  margin-left: 2px;
+  margin-left: 6px;
   font-size: 1.4rem;
   font-weight: 600;
-  color: #111111;
+  color: var(--color-brand-teal, #0d9488);
 }
 
-.stock-list {
+.market-list {
   display: flex;
   flex-direction: column;
 }
 
-.stock-row {
+.market-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 0;
-  border-bottom: 1px solid #f6f6f6;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border-subtle, #1e293b);
 }
 
-.stock-row:last-child {
+.market-row:last-child {
   border-bottom: none;
 }
 
-.stock-left {
+.stock-info-col {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 220px;
 }
 
-.stock-icon {
+.stock-icon-circle {
   width: 38px;
   height: 38px;
   border-radius: 50%;
@@ -113,94 +118,64 @@
   color: #ffffff;
   font-size: 0.9rem;
   font-weight: 700;
-}
-
-.icon-blue {
-  background-color: #0d6de0;
-}
-
-.icon-purple {
-  background-color: #6a309e;
-}
-
-.stock-names {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.stock-name {
-  font-weight: 500;
-  font-size: 0.95rem;
-  color: #111111;
+  background-color: rgba(13, 148, 136, 0.15);
+  border: 1px solid rgba(13, 148, 136, 0.3);
+  text-transform: uppercase;
 }
 
 .stock-ticker {
-  background-color: #f7f7f7;
-  color: #333333;
-  font-size: 0.65rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text-secondary, #9ca3af);
+  font-size: 0.7rem;
   font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
   display: inline-block;
   width: fit-content;
   text-transform: uppercase;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.stock-middle {
+.stock-pricing-col {
   display: flex;
-  align-items: baseline;
-  gap: 2px;
+  align-items: center;
+  gap: 12px;
   flex: 1;
   justify-content: flex-end;
-  padding-right: 40px;
 }
 
-.price {
-  font-weight: 500;
+.stock-current-price {
+  font-weight: 600;
   font-size: 0.95rem;
-  color: #111111;
+  color: var(--color-text-primary, #ffffff);
 }
 
-.currency {
-  font-size: 0.6rem;
-  color: #555555;
-  font-weight: 600;
-}
-
-.stock-right {
-  display: flex;
-  justify-content: flex-end;
-  width: 90px;
-}
-
-.pill-gain {
-  background-color: #1d9c73;
-  color: #ffffff;
+.stock-change-pill {
   font-weight: 600;
   font-size: 0.8rem;
   padding: 4px 8px;
-  border-radius: 4px;
-  min-width: 60px;
+  border-radius: 6px;
+  min-width: 65px;
   text-align: center;
 }
 
-.pill-loss {
-  background-color: #cc3a4a;
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 0.8rem;
-  padding: 4px 8px;
-  border-radius: 4px;
-  min-width: 60px;
-  text-align: center;
+.stock-change-pill.positive {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.stock-change-pill.negative {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
 .loading-state {
   text-align: center;
   padding: 40px;
-  color: #888888;
+  color: var(--color-text-secondary, #9ca3af);
 }
 
 @media (max-width: 1200px) {

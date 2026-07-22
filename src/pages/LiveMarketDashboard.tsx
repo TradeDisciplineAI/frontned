@@ -125,6 +125,66 @@ export const LiveMarketDashboard: React.FC = () => {
         </div>
       )}
 
+      {/* Guest Logo Header */}
+      {!isAuthenticated && (
+        <header
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            maxWidth: '1300px',
+            margin: '0 auto 40px auto',
+            paddingBottom: '20px',
+            borderBottom: '1px solid var(--color-border-subtle, #1e293b)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: 'var(--color-brand-teal)',
+                boxShadow: '0 0 10px var(--color-brand-teal)',
+              }}
+            />
+            <h1
+              style={{
+                fontSize: '1.2rem',
+                fontWeight: 800,
+                margin: 0,
+                letterSpacing: '0.05em',
+                color: '#ffffff',
+              }}
+            >
+              TRADING COPILOT
+            </h1>
+          </div>
+          <button
+            onClick={() => navigate(ROUTES.LOGIN)}
+            style={{
+              background: 'var(--color-brand-teal)',
+              border: 'none',
+              color: '#ffffff',
+              borderRadius: '8px',
+              padding: '8px 18px',
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.filter = 'brightness(1.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.filter = 'none';
+            }}
+          >
+            Login / Signup
+          </button>
+        </header>
+      )}
+
       <div
         className="top-nav"
         style={{
