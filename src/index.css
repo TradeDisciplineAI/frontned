@@ -4,7 +4,7 @@ body {
   padding: 0;
   background-color: #000;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow: hidden;
+  overflow: auto;
   color: #fff;
 }
 
@@ -236,25 +236,77 @@ body {
   width: 350px;
   height: 1.5px;
   background: linear-gradient(90deg, #ff00ff 0%, transparent 100%);
-  box-shadow: 0 0 12px #ff00ff, 0 0 4px #ff00ff;
+  box-shadow:
+    0 0 12px #ff00ff,
+    0 0 4px #ff00ff;
   animation: comet-shoot 18s linear infinite;
 }
 
-.comet-1 { top: 15%; left: 100%; animation-delay: 0s; animation-duration: 20s; }
-.comet-2 { top: 45%; left: 100%; animation-delay: 12s; animation-duration: 22s; }
-.comet-3 { top: 75%; left: 100%; animation-delay: 5s; animation-duration: 19s; }
-.comet-4 { top: 25%; left: 100%; animation-delay: 17s; animation-duration: 24s; }
-.comet-5 { top: 85%; left: 100%; animation-delay: 8s; animation-duration: 21s; }
+.comet-1 {
+  top: 15%;
+  left: 100%;
+  animation-delay: 0s;
+  animation-duration: 20s;
+}
+.comet-2 {
+  top: 45%;
+  left: 100%;
+  animation-delay: 12s;
+  animation-duration: 22s;
+}
+.comet-3 {
+  top: 75%;
+  left: 100%;
+  animation-delay: 5s;
+  animation-duration: 19s;
+}
+.comet-4 {
+  top: 25%;
+  left: 100%;
+  animation-delay: 17s;
+  animation-duration: 24s;
+}
+.comet-5 {
+  top: 85%;
+  left: 100%;
+  animation-delay: 8s;
+  animation-duration: 21s;
+}
 
-.comet-violet-1 { top: 30%; left: 100%; animation-delay: 8s; animation-duration: 18s; }
-.comet-violet-2 { top: 60%; left: 100%; animation-delay: 2s; animation-duration: 23s; }
-.comet-violet-3 { top: 10%; left: 100%; animation-delay: 14s; animation-duration: 20s; }
+.comet-violet-1 {
+  top: 30%;
+  left: 100%;
+  animation-delay: 8s;
+  animation-duration: 18s;
+}
+.comet-violet-2 {
+  top: 60%;
+  left: 100%;
+  animation-delay: 2s;
+  animation-duration: 23s;
+}
+.comet-violet-3 {
+  top: 10%;
+  left: 100%;
+  animation-delay: 14s;
+  animation-duration: 20s;
+}
 
 @keyframes comet-shoot {
-  0% { transform: rotate(-45deg) translateX(0); opacity: 0; }
-  5% { opacity: 1; }
-  10% { transform: rotate(-45deg) translateX(-150vw); opacity: 0; }
-  100% { opacity: 0; }
+  0% {
+    transform: rotate(-45deg) translateX(0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  10% {
+    transform: rotate(-45deg) translateX(-150vw);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ==========================================================================
@@ -288,7 +340,9 @@ body {
   background-color: #fff;
   border-radius: 50%;
   opacity: 0;
-  box-shadow: 0 0 14px rgba(255, 255, 255, 1), 0 0 4px #60a5fa;
+  box-shadow:
+    0 0 14px rgba(255, 255, 255, 1),
+    0 0 4px #60a5fa;
   animation: blink-star 12s infinite;
 }
 
@@ -299,40 +353,129 @@ body {
   background-color: #fff;
   border-radius: 50%;
   opacity: 0;
-  box-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 8px #c084fc;
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 1),
+    0 0 8px #c084fc;
   animation: blink-star 10s infinite;
 }
 
 /* Base stars */
-.star-1 { top: 15%; left: 20%; animation-delay: 0s; }
-.star-2 { top: 35%; left: 75%; animation-delay: 2s; }
-.star-3 { top: 60%; left: 15%; animation-delay: 4s; }
-.star-4 { top: 80%; left: 85%; animation-delay: 6s; }
-.star-5 { top: 25%; left: 50%; animation-delay: 8s; }
-.star-6 { top: 70%; left: 45%; animation-delay: 10s; }
-.star-7 { top: 45%; left: 10%; animation-delay: 12s; }
-.star-8 { top: 5%; left: 40%; animation-delay: 1s; }
-.star-9 { top: 90%; left: 20%; animation-delay: 3s; }
-.star-10 { top: 50%; left: 90%; animation-delay: 7s; }
+.star-1 {
+  top: 15%;
+  left: 20%;
+  animation-delay: 0s;
+}
+.star-2 {
+  top: 35%;
+  left: 75%;
+  animation-delay: 2s;
+}
+.star-3 {
+  top: 60%;
+  left: 15%;
+  animation-delay: 4s;
+}
+.star-4 {
+  top: 80%;
+  left: 85%;
+  animation-delay: 6s;
+}
+.star-5 {
+  top: 25%;
+  left: 50%;
+  animation-delay: 8s;
+}
+.star-6 {
+  top: 70%;
+  left: 45%;
+  animation-delay: 10s;
+}
+.star-7 {
+  top: 45%;
+  left: 10%;
+  animation-delay: 12s;
+}
+.star-8 {
+  top: 5%;
+  left: 40%;
+  animation-delay: 1s;
+}
+.star-9 {
+  top: 90%;
+  left: 20%;
+  animation-delay: 3s;
+}
+.star-10 {
+  top: 50%;
+  left: 90%;
+  animation-delay: 7s;
+}
 
 /* Big stars */
-.big-star-1 { top: 20%; left: 80%; animation-delay: 1s; }
-.big-star-2 { top: 50%; left: 25%; animation-delay: 5s; }
-.big-star-3 { top: 85%; left: 60%; animation-delay: 9s; }
-.big-star-4 { top: 10%; left: 10%; animation-delay: 3s; }
-.big-star-5 { top: 40%; left: 60%; animation-delay: 11s; }
-.big-star-6 { top: 75%; left: 80%; animation-delay: 7s; }
+.big-star-1 {
+  top: 20%;
+  left: 80%;
+  animation-delay: 1s;
+}
+.big-star-2 {
+  top: 50%;
+  left: 25%;
+  animation-delay: 5s;
+}
+.big-star-3 {
+  top: 85%;
+  left: 60%;
+  animation-delay: 9s;
+}
+.big-star-4 {
+  top: 10%;
+  left: 10%;
+  animation-delay: 3s;
+}
+.big-star-5 {
+  top: 40%;
+  left: 60%;
+  animation-delay: 11s;
+}
+.big-star-6 {
+  top: 75%;
+  left: 80%;
+  animation-delay: 7s;
+}
 
 /* Mega stars */
-.mega-star-1 { top: 30%; left: 15%; animation-delay: 2s; }
-.mega-star-2 { top: 65%; left: 70%; animation-delay: 6s; }
-.mega-star-3 { top: 95%; left: 45%; animation-delay: 10s; }
+.mega-star-1 {
+  top: 30%;
+  left: 15%;
+  animation-delay: 2s;
+}
+.mega-star-2 {
+  top: 65%;
+  left: 70%;
+  animation-delay: 6s;
+}
+.mega-star-3 {
+  top: 95%;
+  left: 45%;
+  animation-delay: 10s;
+}
 
 @keyframes blink-star {
-  0% { opacity: 0; transform: scale(0.5); }
-  5% { opacity: 1; transform: scale(1.5); }
-  10% { opacity: 0; transform: scale(0.5); }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  5% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+  10% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 /* ==========================================================================
@@ -348,7 +491,7 @@ body {
   scroll-behavior: smooth;
   scroll-snap-type: y mandatory;
   /* Apply the night sky background to the entire scrollable page */
-  background-image: url("https://unpkg.com/three-globe/example/img/night-sky.png");
+  background-image: url('https://unpkg.com/three-globe/example/img/night-sky.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -390,7 +533,12 @@ body {
   max-height: 800px;
   border-radius: 50%;
   /* Cyan and Purple glow */
-  background: radial-gradient(circle, rgba(147, 51, 234, 0.4) 0%, rgba(59, 130, 246, 0.25) 40%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(147, 51, 234, 0.4) 0%,
+    rgba(59, 130, 246, 0.25) 40%,
+    transparent 70%
+  );
   filter: blur(80px);
   z-index: 4; /* Behind globe */
   pointer-events: none;
@@ -535,15 +683,15 @@ body {
   transition: all 0.2s;
 }
 
-input[type="radio"] {
+input[type='radio'] {
   display: none;
 }
 
-input[type="radio"]:checked + .radio-custom {
+input[type='radio']:checked + .radio-custom {
   border-color: #fff;
 }
 
-input[type="radio"]:checked + .radio-custom::after {
+input[type='radio']:checked + .radio-custom::after {
   content: '';
   position: absolute;
   top: 50%;

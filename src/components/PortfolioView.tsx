@@ -88,6 +88,14 @@ export const PortfolioView: React.FC = () => {
   const holdingsCount = portfolio?.holdings?.length || 0;
   const isFull = holdingsCount >= 5;
 
+  const formatPrice = (price?: number) => {
+    if (!price) return '0.00';
+    if (price < 0.01) {
+      return price.toExponential(5);
+    }
+    return price.toFixed(2);
+  };
+
   return (
     <div className="portfolio-card">
       {error && (
@@ -194,6 +202,65 @@ export const PortfolioView: React.FC = () => {
                       </span>
                     </div>
                   </div>
+
+                  {/* Live Rate Info matching Explore page design */}
+                  {holding.price !== undefined && holding.price !== null && (
+                    <div
+                      className="holding-rates"
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '20px',
+                        marginLeft: 'auto',
+                        marginRight: '24px',
+                      }}
+                    >
+                      <div
+                        className="holding-price-details"
+                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}
+                      >
+                        <span style={{ fontWeight: 600, fontSize: '1rem', color: '#ffffff' }}>
+                          {formatPrice(holding.price)}
+                        </span>
+                        <span
+                          style={{
+                            fontSize: '0.7rem',
+                            color: '#9ca3af',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {holding.currency || 'USD'}
+                        </span>
+                      </div>
+
+                      {holding.percent_change !== undefined && holding.percent_change !== null && (
+                        <div
+                          className={`percent-badge ${holding.percent_change >= 0 ? 'gain' : 'loss'}`}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            fontWeight: 700,
+                            fontSize: '0.85rem',
+                            minWidth: '75px',
+                            textAlign: 'center',
+                            background:
+                              holding.percent_change >= 0
+                                ? 'rgba(16, 185, 129, 0.1)'
+                                : 'rgba(239, 68, 68, 0.1)',
+                            border:
+                              holding.percent_change >= 0
+                                ? '1px solid rgba(16, 185, 129, 0.2)'
+                                : '1px solid rgba(239, 68, 68, 0.2)',
+                            color: holding.percent_change >= 0 ? '#10b981' : '#ef4444',
+                          }}
+                        >
+                          {holding.percent_change >= 0 ? '+' : ''}
+                          {holding.percent_change.toFixed(2)}%
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <button
                     onClick={() => handleRemoveHolding(holding.symbol)}
                     className="remove-btn"

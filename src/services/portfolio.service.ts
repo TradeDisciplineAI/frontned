@@ -4,6 +4,9 @@ export interface Holding {
   id: string;
   symbol: string;
   created_at: string;
+  price?: number;
+  percent_change?: number;
+  currency?: string;
 }
 
 export interface Portfolio {
