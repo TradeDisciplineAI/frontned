@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useTransition } from 'react';
-import { portfolioService, Portfolio } from '@/services/portfolio.service';
+import { portfolioService } from '@/services/portfolio.service';
+import type { Portfolio } from '@/services/portfolio.service';
 import '@/styles/components/portfolio.css';
 
 export const PortfolioView: React.FC = () => {
