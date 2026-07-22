@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '@/stores/userStore';
 import { portfolioService } from '@/services/portfolio.service';
+import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/live-market.css';
 
 const MARKET_WS_URL = import.meta.env.VITE_MARKET_WS_BASE_URL || 'ws://localhost:8001';
 
 export const LiveMarketDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [marketData, setMarketData] = useState({ gainers: [], losers: [] });
   const [activeTab, setActiveTab] = useState('Stocks');
   const [portfolioHoldings, setPortfolioHoldings] = useState<string[]>([]);
@@ -116,8 +119,22 @@ export const LiveMarketDashboard: React.FC = () => {
         </div>
       )}
 
-      <div className="top-nav">
-        <div className="nav-pills">
+      <div
+        className="top-nav"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          maxWidth: '1300px',
+          margin: '0 auto 40px auto',
+        }}
+      >
+        {/* Left spacing block for balance */}
+        <div style={{ width: '150px' }} />
+
+        {/* Navigation Pills */}
+        <div className="nav-pills" style={{ margin: 0 }}>
           {['Stocks', 'Crypto', 'Futures', 'Forex', 'Economy', 'Brokers'].map((tab) => (
             <button
               key={tab}
@@ -127,6 +144,36 @@ export const LiveMarketDashboard: React.FC = () => {
               {tab}
             </button>
           ))}
+        </div>
+
+        {/* Right Dashboard navigation button */}
+        <div style={{ width: '150px', display: 'flex', justifyContent: 'flex-end' }}>
+          {isAuthenticated && (
+            <button
+              onClick={() => navigate(ROUTES.DASHBOARD)}
+              style={{
+                background: 'transparent',
+                border: '1.5px solid #2a2a2a',
+                color: '#2a2a2a',
+                borderRadius: '40px',
+                padding: '8px 16px',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = '#2a2a2a';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#2a2a2a';
+              }}
+            >
+              Dashboard 📊
+            </button>
+          )}
         </div>
       </div>
 

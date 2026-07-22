@@ -1,6 +1,8 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { UserResponse } from '@/features/auth/auth.types';
 import { PortfolioView } from '@/components/PortfolioView';
+import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/dashboard.css';
 
 interface DashboardPageProps {
@@ -12,6 +14,8 @@ interface DashboardPageProps {
  * DashboardPage — Post-login dashboard landing.
  */
 export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) => {
+  const navigate = useNavigate();
+
   return (
     <div
       style={{
@@ -137,6 +141,71 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
               </div>
             </div>
           )}
+
+          {/* Navigation Links */}
+          <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div
+              style={{
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                color: '#9ca3af',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+                marginBottom: '4px',
+              }}
+            >
+              Navigation
+            </div>
+
+            <button
+              onClick={() => navigate(ROUTES.DASHBOARD)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                width: '100%',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                color: '#ffffff',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                textAlign: 'left',
+              }}
+            >
+              📊 Dashboard
+            </button>
+
+            <button
+              onClick={() => navigate(ROUTES.EXPLORE)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                width: '100%',
+                background: 'transparent',
+                border: '1px solid transparent',
+                color: '#9ca3af',
+                padding: '10px 14px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                textAlign: 'left',
+                transition: 'all 0.2s',
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#9ca3af';
+              }}
+            >
+              🌍 Explore Markets
+            </button>
+          </div>
         </div>
 
         {/* Logout Button */}
