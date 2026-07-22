@@ -86,10 +86,15 @@ export const LiveMarketDashboard: React.FC = () => {
 
   const formatPrice = (price: number) => {
     if (!price) return '0.00';
-    if (price < 0.01) {
+    if (Math.abs(price) < 0.01) {
       return price.toExponential(5);
     }
     return price.toFixed(2);
+  };
+
+  const formatPercent = (percent: number) => {
+    if (!percent) return '0.00';
+    return percent.toFixed(2);
   };
 
   const getInitials = (symbol: string) => {
@@ -262,7 +267,7 @@ export const LiveMarketDashboard: React.FC = () => {
                   <div className="stock-pricing-col">
                     <span className="stock-current-price">{formatPrice(stock.price)}</span>
                     <span className="stock-change-pill positive">
-                      +{formatPrice(stock.percent_change)}%
+                      +{formatPercent(stock.percent_change)}%
                     </span>
                     {isAuthenticated && (
                       <button
@@ -321,7 +326,7 @@ export const LiveMarketDashboard: React.FC = () => {
                   <div className="stock-pricing-col">
                     <span className="stock-current-price">{formatPrice(stock.price)}</span>
                     <span className="stock-change-pill negative">
-                      {formatPrice(stock.percent_change)}%
+                      {formatPercent(stock.percent_change)}%
                     </span>
                     {isAuthenticated && (
                       <button
