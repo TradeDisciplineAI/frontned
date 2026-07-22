@@ -13,114 +13,174 @@ interface DashboardPageProps {
  */
 export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) => {
   return (
-    <main
-      className="dashboard-page"
+    <div
       style={{
-        padding: '40px 20px',
-        minHeight: '100vh',
         display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        minHeight: '100vh',
+        background: 'var(--color-bg-primary)',
+        color: '#f3f4f6',
       }}
     >
-      <div
-        className="dashboard-content"
-        style={{ width: '100%', maxWidth: '900px', textAlign: 'center' }}
+      {/* Sidebar Panel */}
+      <aside
+        style={{
+          width: '320px',
+          background: 'var(--color-bg-secondary)',
+          backdropFilter: 'blur(20px)',
+          borderRight: '1px solid var(--color-border-subtle)',
+          padding: '30px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+          flexShrink: 0,
+        }}
       >
-        <h1 className="dashboard-title">Welcome, {user?.username || 'Trader'}!</h1>
-        <p className="dashboard-subtitle" style={{ color: '#9ca3af', marginBottom: '24px' }}>
-          You have successfully logged in to AI Trading Discipline Copilot.
-        </p>
-
-        <div
-          style={{
-            display: 'flex',
-            gap: '24px',
-            width: '100%',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            alignItems: 'stretch',
-          }}
-        >
-          {/* Profile Card */}
-          {user && (
+        <div>
+          {/* Brand Header */}
+          <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div
               style={{
-                flex: '1 1 300px',
-                padding: '24px',
-                background: 'rgba(17, 24, 39, 0.7)',
-                backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '16px',
-                textAlign: 'left',
-                boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: 'var(--color-brand-teal)',
+                boxShadow: '0 0 10px var(--color-brand-teal)',
+              }}
+            />
+            <h2
+              style={{
+                fontSize: '1.2rem',
+                fontWeight: 800,
+                margin: 0,
+                letterSpacing: '0.05em',
+                color: '#ffffff',
               }}
             >
-              <div>
-                <h3
-                  style={{
-                    marginBottom: '16px',
-                    borderBottom: '1px solid rgba(255,255,255,0.1)',
-                    paddingBottom: '8px',
-                    color: '#60a5fa',
-                    fontWeight: 700,
-                  }}
-                >
-                  Profile Details
-                </h3>
-                <p style={{ margin: '8px 0' }}>
-                  <strong>Email:</strong> {user.email}
-                </p>
-                <p style={{ margin: '8px 0' }}>
-                  <strong>Role:</strong> {user.role}
-                </p>
-                <p style={{ margin: '8px 0' }}>
-                  <strong>Verified:</strong> {user.is_verified ? '✅ Yes' : '❌ No'}
-                </p>
-                <p style={{ fontSize: '0.8rem', color: '#a1a1aa', marginTop: '16px' }}>
-                  Account created: {new Date(user.created_at).toLocaleDateString()}
-                </p>
-              </div>
+              TRADING COPILOT
+            </h2>
+          </div>
 
-              <button
-                type="button"
-                className="logout-btn"
-                onClick={onLogout}
+          {/* User Session Status */}
+          <div
+            style={{
+              marginBottom: '24px',
+              padding: '16px',
+              background: 'rgba(13, 148, 136, 0.08)',
+              border: '1px solid rgba(13, 148, 136, 0.2)',
+              borderRadius: '12px',
+            }}
+          >
+            <div
+              style={{
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                color: 'var(--color-brand-teal)',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+              }}
+            >
+              Session Status
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
+              <div
                 style={{
-                  marginTop: '24px',
-                  width: '100%',
-                  background: 'rgba(239, 68, 68, 0.1)',
-                  border: '1px solid rgba(239, 68, 68, 0.2)',
-                  color: '#ef4444',
-                  padding: '10px',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  transition: 'all 0.2s',
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: user ? '#10b981' : '#ef4444',
                 }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-                  e.currentTarget.style.borderColor = '#ef4444';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
-                  e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+              />
+              <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>
+                {user ? 'Logged In' : 'Not Logged In'}
+              </span>
+            </div>
+          </div>
+
+          {/* Profile Card */}
+          {user && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div
+                style={{
+                  fontSize: '0.75rem',
+                  textTransform: 'uppercase',
+                  color: '#9ca3af',
+                  fontWeight: 700,
+                  letterSpacing: '0.05em',
                 }}
               >
-                Logout
-              </button>
+                Trader Profile
+              </div>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '8px',
+                  background: 'rgba(255, 255, 255, 0.02)',
+                  padding: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.04)',
+                  borderRadius: '12px',
+                }}
+              >
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                  <strong style={{ color: '#9ca3af' }}>User:</strong> {user.username}
+                </p>
+                <p style={{ margin: 0, fontSize: '0.9rem', wordBreak: 'break-all' }}>
+                  <strong style={{ color: '#9ca3af' }}>Email:</strong> {user.email}
+                </p>
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                  <strong style={{ color: '#9ca3af' }}>Role:</strong> {user.role}
+                </p>
+                <p style={{ margin: 0, fontSize: '0.9rem' }}>
+                  <strong style={{ color: '#9ca3af' }}>Verified:</strong>{' '}
+                  {user.is_verified ? 'Yes' : 'No'}
+                </p>
+              </div>
             </div>
           )}
-
-          {/* Portfolio Management Card */}
-          <div style={{ flex: '2 1 500px', textAlign: 'left' }}>
-            <PortfolioView />
-          </div>
         </div>
-      </div>
-    </main>
+
+        {/* Logout Button */}
+        <button
+          type="button"
+          className="logout-btn"
+          onClick={onLogout}
+          style={{
+            width: '100%',
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            color: '#ef4444',
+            padding: '12px',
+            borderRadius: '10px',
+            cursor: 'pointer',
+            fontWeight: 600,
+            transition: 'all 0.2s',
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+            e.currentTarget.style.borderColor = '#ef4444';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+          }}
+        >
+          Logout
+        </button>
+      </aside>
+
+      {/* Main Content Area */}
+      <main style={{ flex: 1, padding: '40px 60px', overflowY: 'auto' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, margin: '0 0 8px 0', color: '#ffffff' }}>
+            Welcome back, {user?.username || 'Trader'}!
+          </h1>
+          <p style={{ color: '#9ca3af', margin: '0 0 32px 0', fontSize: '1rem' }}>
+            Monitor and manage your active stock portfolios in real-time.
+          </p>
+
+          <PortfolioView />
+        </div>
+      </main>
+    </div>
   );
 };
