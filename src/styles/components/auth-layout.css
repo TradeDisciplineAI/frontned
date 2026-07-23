@@ -1,62 +1,47 @@
 /* ==========================================================================
-   Shared Authentication Layout Styles
+   Shared Authentication Layout Styles — Vercel Monochromatic Dark Theme
    ========================================================================== */
-
-:root {
-  --color-bg-left: #0b1120; /* Darker blue/black background for the left panel */
-  --color-bg-right: #f8fafc; /* Very light gray/blue background for the right panel forms */
-  --color-text-dark: #09090b;
-  --color-text-muted: #64748b;
-  --color-text-grey: #475569;
-  --color-brand-teal: #0d9488;
-  --color-brand-teal-hover: #0f766e;
-  --color-border: #e2e8f0;
-  --color-border-hover: #cbd5e1;
-  --color-input-focus: #0d9488;
-}
 
 .auth-screen-wrapper {
   display: flex;
-  width: 100vw;
+  width: 100%;
   min-height: 100vh;
   position: absolute;
   top: 0;
   left: 0;
   z-index: 100;
-  background-color: var(--color-bg-right);
-  color: var(--color-text-dark);
+  background-color: #000000;
+  color: #ededed;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Left Panel Style (Brand Showcase) */
 .auth-left-panel {
   flex: 1;
-  background-color: var(--color-bg-left);
+  background: #050505;
+  border-right: 1px solid #1a1a1a;
   padding: 48px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
   min-height: 100vh;
-  color: #ffffff; /* Text is white on the dark left panel */
+  color: #ffffff;
+  box-sizing: border-box;
 }
 
 .brand-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   color: #ffffff;
-}
-
-.brand-logo-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .brand-logo-text {
   font-weight: 700;
   font-size: 1.15rem;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  color: #ffffff;
 }
 
 .banner-image-container {
@@ -64,27 +49,28 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 40px 0;
+  margin: 32px 0;
 }
 
 .banner-image {
   max-width: 100%;
-  max-height: 480px;
+  max-height: 420px;
   object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+  border-radius: 8px;
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
 }
 
 .banner-text-content {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 520px;
+  gap: 12px;
+  max-width: 500px;
   flex-grow: 1;
 }
 
 .banner-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   line-height: 1.25;
   color: #ffffff;
@@ -93,14 +79,10 @@
 }
 
 .banner-subtitle {
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.6;
-  color: #94a3b8;
+  color: #888888;
   margin: 0;
-}
-
-.auth-left-footer {
-  margin-top: 20px;
 }
 
 .secure-badge {
@@ -108,88 +90,83 @@
   align-items: center;
   gap: 8px;
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: 0.05em;
-  color: var(--color-brand-teal);
-}
-
-.shield-icon {
-  font-size: 1rem;
+  color: #0070f3;
 }
 
 /* Right Panel Style (Form Content) */
 .auth-right-panel {
   flex: 1;
-  background-color: var(--color-bg-right);
+  background-color: #000000;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 48px;
   min-height: 100vh;
-  color: var(--color-text-dark);
   position: relative;
+  box-sizing: border-box;
 }
 
-/* Card layout for the form area to match screenshots */
 .auth-form-card {
   width: 100%;
-  max-width: 440px;
-  background: #ffffff;
-  padding: 48px;
-  border-radius: 12px;
-  box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.05),
-    0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  max-width: 420px;
+  background: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
 .auth-form-card.no-card {
   background: transparent;
   box-shadow: none;
+  border: none;
   padding: 0;
 }
 
 .form-header {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .form-title {
-  font-size: 2rem;
+  font-size: 1.75rem;
   font-weight: 700;
-  color: var(--color-text-dark);
+  color: #ffffff;
   letter-spacing: -0.02em;
   margin: 0;
 }
 
 .form-subtitle {
-  font-size: 0.95rem;
-  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  color: #888888;
   line-height: 1.5;
   margin: 0;
 }
 
-/* Form Styles */
+/* Form Controls */
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .input-label {
   font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-text-grey);
+  font-weight: 500;
+  color: #ededed;
 }
 
 .input-wrapper {
@@ -201,72 +178,69 @@
 
 .auth-input-field {
   width: 100%;
-  padding: 12px 16px;
-  font-size: 0.95rem;
-  border: 1.5px solid var(--color-border);
-  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  border: 1px solid #222222;
+  border-radius: 6px;
   outline: none;
-  background-color: #ffffff;
-  color: var(--color-text-dark);
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s;
+  background: #000000;
+  color: #ffffff;
+  transition: border-color 0.15s ease;
 }
 
 .auth-input-field.has-icon-right {
-  padding-right: 48px;
+  padding-right: 42px;
 }
 
 .auth-input-field.has-icon-left {
-  padding-left: 48px;
+  padding-left: 42px;
 }
 
 .auth-input-field:hover {
-  border-color: var(--color-border-hover);
+  border-color: #333333;
 }
 
 .auth-input-field:focus {
-  border-color: var(--color-input-focus);
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  border-color: #555555;
 }
 
 .auth-input-field::placeholder {
-  color: #a1a1aa;
+  color: #555555;
+}
+
+.input-icon-right,
+.input-icon-left {
+  position: absolute;
+  color: #666666;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
 }
 
 .input-icon-right {
-  position: absolute;
-  right: 16px;
-  color: #a1a1aa;
-  display: flex;
-  align-items: center;
-  pointer-events: none;
+  right: 12px;
 }
 
 .input-icon-left {
-  position: absolute;
-  left: 16px;
-  color: #a1a1aa;
-  display: flex;
-  align-items: center;
-  pointer-events: none;
+  left: 12px;
 }
 
 .input-icon-btn-right {
   position: absolute;
-  right: 16px;
-  color: #a1a1aa;
+  right: 12px;
+  color: #666666;
   background: none;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   outline: none;
-  transition: color 0.15s;
+  transition: color 0.15s ease;
 }
 
 .input-icon-btn-right:hover {
-  color: var(--color-text-dark);
+  color: #ffffff;
 }
 
 /* Actions Row */
@@ -282,61 +256,55 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  color: var(--color-text-grey);
-  font-weight: 500;
+  color: #888888;
+  font-weight: 400;
 }
 
 .custom-checkbox {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  border: 1.5px solid var(--color-border);
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  border: 1px solid #333333;
   cursor: pointer;
-  accent-color: var(--color-brand-teal);
+  accent-color: #ffffff;
 }
 
 .auth-link {
-  color: var(--color-text-dark);
+  color: #0070f3;
   text-decoration: none;
-  font-weight: 600;
-  transition: color 0.15s;
-  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.15s ease;
+  font-size: 0.85rem;
 }
 
 .auth-link:hover {
   text-decoration: underline;
 }
 
-/* Submit Button */
+/* Submit Button — Crisp White Vercel Style */
 .auth-submit-btn {
   width: 100%;
-  padding: 14px;
-  background-color: var(--color-brand-teal);
-  color: white;
+  padding: 11px;
+  background: #ffffff;
+  color: #000000;
   border: none;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition:
-    background-color 0.2s,
-    transform 0.1s;
+  transition: opacity 0.15s ease;
 }
 
 .auth-submit-btn:hover:not(:disabled) {
-  background-color: var(--color-brand-teal-hover);
-}
-
-.auth-submit-btn:active:not(:disabled) {
-  transform: scale(0.995);
+  opacity: 0.9;
 }
 
 .auth-submit-btn:disabled {
-  opacity: 0.7;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -344,17 +312,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  color: var(--color-text-grey);
+  gap: 6px;
+  color: #888888;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.85rem;
   margin-top: 16px;
-  transition: color 0.15s;
+  transition: color 0.15s ease;
 }
 
 .back-link:hover {
-  color: var(--color-text-dark);
+  color: #ffffff;
 }
 
 /* Footer Copyright */
@@ -364,9 +332,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: #666666;
 }
 
 .auth-footer-links {
@@ -375,16 +343,72 @@
 }
 
 .auth-footer-links a {
-  color: #94a3b8;
+  color: #666666;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .auth-footer-links a:hover {
-  color: var(--color-text-dark);
+  color: #ffffff;
 }
 
-/* Responsive Breakpoints */
+/* Form Divider & Social Buttons (Vercel Style) */
+.form-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 16px 0;
+}
+
+.form-divider::before,
+.form-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.divider-text {
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #666666;
+}
+
+.google-oauth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  background-color: #0a0a0a;
+  border: 1px solid #222222;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  transition: all 0.15s ease;
+}
+
+.google-oauth-btn:hover {
+  background-color: #141414;
+  border-color: #333333;
+}
+
+.login-footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #888888;
+}
+
+.footer-grey-text {
+  color: #888888;
+}
+
 @media (max-width: 900px) {
   .auth-left-panel {
     display: none;

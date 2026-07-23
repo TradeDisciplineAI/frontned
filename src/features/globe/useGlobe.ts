@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import Globe, { type GlobeInstance } from 'globe.gl';
-import type { GeoJSON, GeoFeature, Coordinate, PathData, LabelData } from '@/types/globe.types';
+import type { GeoJSON, GeoFeature } from '@/types/globe.types';
 import { NATIONS } from './nations.constants';
 import { GLOBE_CONFIG } from './globe.constants';
 

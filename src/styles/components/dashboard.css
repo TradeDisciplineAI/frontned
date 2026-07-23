@@ -1,6 +1,4 @@
-/* ── Dashboard Page ──────────────────────────────────────────────────────────
- * Styles for the post-login dashboard landing screen.
- * ─────────────────────────────────────────────────────────────────────────── */
+/* ── Dashboard Page Modern Glassmorphism Styles ── */
 
 .dashboard-page {
   min-height: 100vh;
@@ -9,9 +7,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: var(--color-bg-primary, #121212);
-  color: var(--color-text-primary, #ffffff);
-  font-family: var(--font-family-base);
+  background-color: var(--color-bg-primary, #060913);
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 60%),
+    radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
+  color: var(--color-text-primary, #f8fafc);
+  font-family: var(--font-family-base, 'Plus Jakarta Sans', sans-serif);
   padding: var(--space-10, 40px);
   text-align: center;
 }
@@ -20,37 +21,53 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-4, 16px);
+  gap: var(--space-6, 24px);
+  max-width: 600px;
+  background: var(--color-bg-card, rgba(15, 23, 42, 0.65));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-xl, 20px);
+  padding: 48px;
+  box-shadow: var(--shadow-card, 0 16px 40px rgba(0, 0, 0, 0.5));
 }
 
 .dashboard-title {
-  font-size: var(--font-size-3xl, 2.5rem);
-  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-3xl, 2.25rem);
+  font-weight: var(--font-weight-extrabold, 800);
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
 }
 
 .dashboard-subtitle {
-  color: var(--color-text-secondary, #a1a1aa);
+  color: var(--color-text-secondary, #94a3b8);
   font-size: var(--font-size-lg, 1.1rem);
+  line-height: 1.6;
+  margin: 0;
 }
 
 .logout-btn {
-  margin-top: var(--space-2, 8px);
-  padding: 12px 24px;
-  background-color: var(--color-accent-teal, #006d65);
+  margin-top: var(--space-4, 16px);
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--color-brand-teal, #10b981) 0%, #059669 100%);
   color: #ffffff;
   border: none;
-  border-radius: var(--radius-md, 8px);
+  border-radius: var(--radius-md, 10px);
   font-size: var(--font-size-base, 1rem);
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: var(--font-weight-bold, 700);
   cursor: pointer;
-  transition: background-color var(--transition-fast, 0.2s);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+  transition: filter var(--transition-fast), transform var(--transition-fast);
 }
 
 .logout-btn:hover {
-  background-color: var(--color-accent-teal-hover, #00564e);
+  filter: brightness(1.15);
+  transform: translateY(-1px);
 }
 
 .logout-btn:focus-visible {
-  outline: 2px solid var(--color-accent-white, #ffffff);
+  outline: 2px solid var(--color-brand-teal, #10b981);
   outline-offset: 3px;
 }

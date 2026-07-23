@@ -1,7 +1,19 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import {
+  Zap,
+  Search,
+  LayoutGrid,
+  PieChart,
+  LineChart,
+  Bot,
+  Globe,
+  Settings,
+  LogOut,
+} from 'lucide-react';
 import type { UserResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
+import '@/styles/components/sidebar.css';
 
 interface SidebarProps {
   user: UserResponse | null;
@@ -12,243 +24,109 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isDashboardActive = location.pathname === ROUTES.DASHBOARD;
   const isExploreActive = location.pathname === ROUTES.EXPLORE;
+  const isDashboardActive = location.pathname === ROUTES.DASHBOARD;
+
+  const username = user?.username || 'Anjal Dev VK';
 
   return (
-    <aside
-      style={{
-        width: '320px',
-        background: 'var(--color-bg-secondary)',
-        backdropFilter: 'blur(20px)',
-        borderRight: '1px solid var(--color-border-subtle)',
-        padding: '30px 24px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        flexShrink: 0,
-        minHeight: '100vh',
-      }}
-    >
-      <div>
-        {/* Brand Header */}
-        <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div
-            style={{
-              width: '12px',
-              height: '12px',
-              borderRadius: '50%',
-              background: 'var(--color-brand-teal)',
-              boxShadow: '0 0 10px var(--color-brand-teal)',
-            }}
-          />
-          <h2
-            style={{
-              fontSize: '1.2rem',
-              fontWeight: 800,
-              margin: 0,
-              letterSpacing: '0.05em',
-              color: '#ffffff',
-            }}
-          >
-            TRADING COPILOT
-          </h2>
+    <aside className="vercel-sidebar">
+      {/* Scrollable Navigation Area */}
+      <div className="sidebar-scrollable-content">
+        {/* Top Workspace Header Selector */}
+        <div className="sidebar-workspace-bar">
+          <div className="sidebar-workspace-info">
+            <div className="sidebar-workspace-avatar">
+              <Zap size={12} strokeWidth={2.5} />
+            </div>
+            <span className="sidebar-workspace-name">{username}</span>
+          </div>
+          <span className="sidebar-workspace-badge">Pro</span>
         </div>
 
-        {/* User Session Status */}
-        <div
-          style={{
-            marginBottom: '24px',
-            padding: '16px',
-            background: 'rgba(13, 148, 136, 0.08)',
-            border: '1px solid rgba(13, 148, 136, 0.2)',
-            borderRadius: '12px',
-          }}
-        >
-          <div
-            style={{
-              fontSize: '0.75rem',
-              textTransform: 'uppercase',
-              color: 'var(--color-brand-teal)',
-              fontWeight: 700,
-              letterSpacing: '0.05em',
-            }}
-          >
-            Session Status
+        {/* Search Input Box */}
+        <div className="sidebar-search-box">
+          <div className="sidebar-search-placeholder">
+            <Search size={13} strokeWidth={2} />
+            <span>Find</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-            <div
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: user ? '#10b981' : '#ef4444',
-              }}
-            />
-            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>
-              {user ? 'Logged In' : 'Not Logged In'}
-            </span>
-          </div>
+          <span className="sidebar-search-key">F</span>
         </div>
 
-        {/* Profile Card */}
-        {user && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div
-              style={{
-                fontSize: '0.75rem',
-                textTransform: 'uppercase',
-                color: '#9ca3af',
-                fontWeight: 700,
-                letterSpacing: '0.05em',
-              }}
-            >
-              Trader Profile
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                background: 'rgba(255, 255, 255, 0.02)',
-                padding: '16px',
-                border: '1px solid rgba(255, 255, 255, 0.04)',
-                borderRadius: '12px',
-              }}
-            >
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                <strong style={{ color: '#9ca3af' }}>User:</strong> {user.username}
-              </p>
-              <p style={{ margin: 0, fontSize: '0.9rem', wordBreak: 'break-all' }}>
-                <strong style={{ color: '#9ca3af' }}>Email:</strong> {user.email}
-              </p>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                <strong style={{ color: '#9ca3af' }}>Role:</strong> {user.role}
-              </p>
-              <p style={{ margin: 0, fontSize: '0.9rem' }}>
-                <strong style={{ color: '#9ca3af' }}>Verified:</strong>{' '}
-                {user.is_verified ? 'Yes' : 'No'}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Navigation Links */}
-        <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <div
-            style={{
-              fontSize: '0.75rem',
-              textTransform: 'uppercase',
-              color: '#9ca3af',
-              fontWeight: 700,
-              letterSpacing: '0.05em',
-              marginBottom: '4px',
-            }}
-          >
-            Navigation
-          </div>
-
+        {/* Sidebar Navigation */}
+        <div className="sidebar-nav-list">
           <button
-            onClick={() => navigate(ROUTES.DASHBOARD)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              width: '100%',
-              background: isDashboardActive ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
-              border: isDashboardActive
-                ? '1px solid rgba(255, 255, 255, 0.08)'
-                : '1px solid transparent',
-              color: isDashboardActive ? '#ffffff' : '#9ca3af',
-              padding: '10px 14px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: 600,
-              textAlign: 'left',
-              transition: 'all 0.2s',
-            }}
-            onMouseOver={(e) => {
-              if (!isDashboardActive) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                e.currentTarget.style.color = '#ffffff';
-              }
-            }}
-            onMouseOut={(e) => {
-              if (!isDashboardActive) {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = '#9ca3af';
-              }
-            }}
+            className={`sidebar-nav-item ${isExploreActive ? 'active' : ''}`}
+            onClick={() => navigate(ROUTES.EXPLORE)}
           >
-            📊 Dashboard
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <LayoutGrid size={15} strokeWidth={2} />
+              </span>
+              <span>Explore Markets</span>
+            </div>
           </button>
 
           <button
-            onClick={() => navigate(ROUTES.EXPLORE)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              width: '100%',
-              background: isExploreActive ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
-              border: isExploreActive
-                ? '1px solid rgba(255, 255, 255, 0.08)'
-                : '1px solid transparent',
-              color: isExploreActive ? '#ffffff' : '#9ca3af',
-              padding: '10px 14px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: 600,
-              textAlign: 'left',
-              transition: 'all 0.2s',
-            }}
-            onMouseOver={(e) => {
-              if (!isExploreActive) {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                e.currentTarget.style.color = '#ffffff';
-              }
-            }}
-            onMouseOut={(e) => {
-              if (!isExploreActive) {
-                e.currentTarget.style.background = 'transparent';
-                e.currentTarget.style.color = '#9ca3af';
-              }
-            }}
+            className={`sidebar-nav-item ${isDashboardActive ? 'active' : ''}`}
+            onClick={() => navigate(ROUTES.DASHBOARD)}
           >
-            🌍 Explore Markets
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <PieChart size={15} strokeWidth={2} />
+              </span>
+              <span>Portfolio</span>
+            </div>
+          </button>
+
+          <button className="sidebar-nav-item">
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <LineChart size={15} strokeWidth={2} />
+              </span>
+              <span>Analytics</span>
+            </div>
+          </button>
+
+          <button className="sidebar-nav-item">
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <Bot size={15} strokeWidth={2} />
+              </span>
+              <span>AI Discipline</span>
+            </div>
+            <span className="sidebar-badge-beta">Beta</span>
+          </button>
+
+          <div className="sidebar-divider" />
+
+          <button className="sidebar-nav-item">
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <Globe size={15} strokeWidth={2} />
+              </span>
+              <span>Global Feeds</span>
+            </div>
+          </button>
+
+          <button className="sidebar-nav-item">
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <Settings size={15} strokeWidth={2} />
+              </span>
+              <span>Settings</span>
+            </div>
           </button>
         </div>
       </div>
 
-      {/* Logout Button */}
-      <button
-        type="button"
-        onClick={onLogout}
-        style={{
-          width: '100%',
-          background: 'rgba(239, 68, 68, 0.1)',
-          border: '1px solid rgba(239, 68, 68, 0.2)',
-          color: '#ef4444',
-          padding: '12px',
-          borderRadius: '10px',
-          cursor: 'pointer',
-          fontWeight: 700,
-          fontSize: '0.95rem',
-          transition: 'all 0.2s',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-        }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
-        }}
-      >
-        Logout
-      </button>
+      {/* Pinned Logout Button at Bottom of Sidebar */}
+      <div className="sidebar-pinned-bottom">
+        <button className="sidebar-logout-full-btn" onClick={onLogout}>
+          <LogOut size={14} strokeWidth={2} />
+          <span>Log Out</span>
+        </button>
+      </div>
     </aside>
   );
 };
