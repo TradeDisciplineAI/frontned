@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { useGlobe } from './useGlobe';
-import { NATIONS } from './nations.constants';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/overlay.css';

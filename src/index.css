@@ -1,16 +1,17 @@
 /* Reset margins and set core black backgrounds */
-body {
+html, body {
   margin: 0;
   padding: 0;
   background-color: #000;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  overflow: auto;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
   color: #fff;
+  width: 100%;
 }
 
 #root {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
 }
 
 /* ==========================================================================

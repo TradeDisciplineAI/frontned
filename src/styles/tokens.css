@@ -1,46 +1,51 @@
 /* ── Design Tokens ──────────────────────────────────────────────────────────
- *
- * All design values are defined here as CSS custom properties.
- * Use these variables throughout all component CSS files.
- * DO NOT hard-code raw color values in component styles.
- *
+ * Vercel / Linear Style Ultra-Clean Monochromatic Dark Theme Design System
  * ─────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Colors — Base */
+  /* Colors — Base Backgrounds */
   --color-bg-primary: #000000;
   --color-bg-secondary: #0a0a0a;
-  --color-bg-card: rgba(255, 255, 255, 0.04);
-  --color-bg-card-hover: rgba(255, 255, 255, 0.08);
+  --color-bg-tertiary: #111111;
+  --color-bg-card: #0a0a0a;
+  --color-bg-card-hover: #141414;
+  --color-bg-input: #0e0e0e;
 
   /* Colors — Text */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #a1a1aa;
-  --color-text-muted: #71717a;
+  --color-text-primary: #ededed;
+  --color-text-secondary: #888888;
+  --color-text-muted: #555555;
+  --color-text-white: #ffffff;
 
-  /* Colors — Accents */
-  --color-accent-white: #ffffff;
-  --color-accent-silver: rgba(255, 255, 255, 0.7);
-  --color-accent-teal: #006d65;
-  --color-accent-teal-hover: #00564e;
+  /* Colors — Accents & Indicators */
+  --color-brand-primary: #ffffff;
+  --color-brand-primary-text: #000000;
+  --color-accent-teal: #10b981;
+  --color-accent-blue: #0070f3;
+  --color-accent-rose: #ff4444;
+
+  /* Colors — Market Status */
+  --color-positive: #00e599;
+  --color-positive-bg: rgba(0, 229, 153, 0.1);
+  --color-negative: #ff4444;
+  --color-negative-bg: rgba(255, 68, 68, 0.1);
 
   /* Colors — Borders */
-  --color-border-subtle: rgba(255, 255, 255, 0.1);
-  --color-border-default: rgba(255, 255, 255, 0.2);
-  --color-border-strong: rgba(255, 255, 255, 0.4);
+  --color-border-subtle: #1a1a1a;
+  --color-border-default: #262626;
+  --color-border-strong: #333333;
+  --color-border-white: #ffffff;
 
   /* Typography */
-  --font-family-base:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-family-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
 
   --font-size-xs: 0.75rem; /* 12px */
   --font-size-sm: 0.875rem; /* 14px */
-  --font-size-base: 1rem; /* 16px */
-  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-base: 0.9375rem; /* 15px */
+  --font-size-lg: 1.0625rem; /* 17px */
   --font-size-xl: 1.25rem; /* 20px */
   --font-size-2xl: 1.5rem; /* 24px */
-  --font-size-3xl: 2rem; /* 32px */
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -55,25 +60,21 @@
   --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
 
-  /* Border Radius */
-  --radius-sm: 4px;
+  /* Border Radius (Vercel Style) */
+  --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
   --radius-full: 9999px;
 
   /* Shadows / Glows */
-  --glow-white-sm: 0 0 8px rgba(255, 255, 255, 0.15);
-  --glow-white-md: 0 0 16px rgba(255, 255, 255, 0.2);
-  --glow-white-lg: 0 0 24px rgba(255, 255, 255, 0.3);
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-dropdown: 0 12px 32px rgba(0, 0, 0, 0.8);
 
   /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
-  --transition-slow: 400ms ease;
+  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Z-index layers */
   --z-base: 0;

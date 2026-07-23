@@ -178,7 +178,7 @@ export const PortfolioView: React.FC = () => {
             </button>
           </form>
           {isFull && (
-            <p style={{ color: '#f59e0b', fontSize: '0.8rem', marginTop: '8px', marginContent: 0 }}>
+            <p style={{ color: '#f59e0b', fontSize: '0.8rem', marginTop: '8px', margin: 0 }}>
               💡 Your portfolio capacity is full (5/5 symbols limit). Remove an existing stock to
               add a new one.
             </p>
