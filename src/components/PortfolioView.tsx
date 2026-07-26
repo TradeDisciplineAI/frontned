@@ -3,7 +3,11 @@ import { portfolioService } from '@/services/portfolio.service';
 import type { Portfolio } from '@/services/portfolio.service';
 import '@/styles/components/portfolio.css';
 
-export const PortfolioView: React.FC = () => {
+interface PortfolioViewProps {
+  onSelectStock?: (symbol: string) => void;
+}
+
+export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock }) => {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [portfolioName, setPortfolioName] = useState('');
@@ -192,7 +196,12 @@ export const PortfolioView: React.FC = () => {
               </div>
             ) : (
               portfolio.holdings.map((holding) => (
-                <div key={holding.id} className="holding-item">
+                <div 
+                  key={holding.id} 
+                  className="holding-item"
+                  onClick={() => onSelectStock && onSelectStock(holding.symbol)}
+                  style={{ cursor: onSelectStock ? 'pointer' : 'default' }}
+                >
                   <div className="holding-info">
                     <div className="holding-avatar">{holding.symbol.substring(0, 2)}</div>
                     <div className="holding-details">
@@ -262,7 +271,10 @@ export const PortfolioView: React.FC = () => {
                   )}
 
                   <button
-                    onClick={() => handleRemoveHolding(holding.symbol)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleRemoveHolding(holding.symbol);
+                    }}
                     className="remove-btn"
                   >
                     Remove

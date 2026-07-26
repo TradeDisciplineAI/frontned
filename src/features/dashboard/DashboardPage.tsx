@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { UserResponse } from '@/features/auth/auth.types';
 import { PortfolioView } from '@/components/PortfolioView';
 import { Sidebar } from '@/components/Sidebar';
+import { TradingViewChart } from '@/components/TradingViewChart';
 import '@/styles/components/dashboard.css';
 
 interface DashboardPageProps {
@@ -13,6 +14,8 @@ interface DashboardPageProps {
  * DashboardPage — Post-login dashboard landing.
  */
 export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) => {
+  const [selectedStock, setSelectedStock] = useState<string | null>(null);
+
   return (
     <div
       style={{
@@ -35,7 +38,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
             Monitor and manage your active stock portfolios in real-time.
           </p>
 
-          <PortfolioView />
+          <TradingViewChart symbol={selectedStock} />
+
+          <PortfolioView onSelectStock={setSelectedStock} />
         </div>
       </main>
     </div>

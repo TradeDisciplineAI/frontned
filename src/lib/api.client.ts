@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://localhost:8001';
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://127.0.0.1:8001';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
