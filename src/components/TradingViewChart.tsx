@@ -15,6 +15,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol }) =>
   const [analysisData, setAnalysisData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const openModal = usePriceAlertStore((state) => state.openModal);
 
   useEffect(() => {
     if (!symbol || !chartContainerRef.current) return;
@@ -90,8 +91,6 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol }) =>
   }, [symbol]);
 
   if (!symbol) return null;
-
-  const openModal = usePriceAlertStore((state) => state.openModal);
 
   return (
     <div style={{ marginTop: '32px', padding: '24px', background: '#111827', borderRadius: '12px', border: '1px solid #1f2937' }}>
