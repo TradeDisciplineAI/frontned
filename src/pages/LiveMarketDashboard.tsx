@@ -32,6 +32,7 @@ export const LiveMarketDashboard: React.FC = () => {
     gainers: [],
     losers: [],
   });
+  const [isConnected, setIsConnected] = useState(false);
   const [activeMarketTab, setActiveMarketTab] = useState<'gainers' | 'losers' | 'all'>('gainers');
   const [portfolioHoldings, setPortfolioHoldings] = useState<string[]>([]);
   const [searchQuery] = useState('');
@@ -48,18 +49,56 @@ export const LiveMarketDashboard: React.FC = () => {
 
   // 1. Listen to market data WebSocket
   useEffect(() => {
-    const ws = new WebSocket(`${MARKET_WS_URL}/dashboard/ws/market`);
+    let ws: WebSocket;
+    let reconnectTimeout: ReturnType<typeof setTimeout>;
+    let reconnectAttempts = 0;
+    const MAX_RECONNECT_DELAY = 10000;
+    let isComponentMounted = true;
 
-    ws.onmessage = (event) => {
-      try {
-        const liveData = JSON.parse(event.data);
-        setMarketData(liveData);
-      } catch (err) {
-        console.error('Error parsing websocket message', err);
-      }
+    const connect = () => {
+      ws = new WebSocket(`${MARKET_WS_URL}/dashboard/ws/market`);
+
+      ws.onopen = () => {
+        if (isComponentMounted) {
+          setIsConnected(true);
+          reconnectAttempts = 0;
+        }
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const liveData = JSON.parse(event.data);
+          if (liveData && Array.isArray(liveData.gainers) && Array.isArray(liveData.losers)) {
+            setMarketData(liveData);
+          }
+        } catch (err) {
+          console.error('Error parsing websocket message', err);
+        }
+      };
+
+      ws.onclose = () => {
+        if (isComponentMounted) {
+          setIsConnected(false);
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), MAX_RECONNECT_DELAY);
+          reconnectAttempts++;
+          reconnectTimeout = setTimeout(connect, delay);
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.error('WebSocket error:', err);
+      };
     };
 
-    return () => ws.close();
+    connect();
+
+    return () => {
+      isComponentMounted = false;
+      clearTimeout(reconnectTimeout);
+      if (ws) {
+        ws.close();
+      }
+    };
   }, []);
 
   // 2. Fetch user's portfolio holdings if authenticated
@@ -198,8 +237,10 @@ export const LiveMarketDashboard: React.FC = () => {
             </div>
 
             <div className="vercel-alert-card" style={{ justifyContent: 'center', alignItems: 'center' }}>
-              <span style={{ fontSize: '13px', color: '#666666' }}>
-                Live WebSocket Market Stream Active (NSE / NASDAQ)
+              <span style={{ fontSize: '13px', color: isConnected ? '#666666' : '#ff4444' }}>
+                {isConnected
+                  ? 'Live WebSocket Market Stream Active (NSE / NASDAQ)'
+                  : 'Live WebSocket Market Stream Disconnected. Reconnecting...'}
               </span>
             </div>
           </div>

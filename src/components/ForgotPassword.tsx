@@ -20,8 +20,8 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBackToLogin })
       setIsLoading(true);
       await authService.forgotPassword(email);
       setIsSuccess(true);
-    } catch (err) {
-      console.error('Forgot password failed', err);
+    } catch (err: any) {
+      console.error('Forgot password failed:', err?.message, 'Status:', err?.response?.status);
       // The OpenAPI spec says it always returns a generic success message
       // to prevent account enumeration, so we can just show success anyway.
       setIsSuccess(true);

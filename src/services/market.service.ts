@@ -16,4 +16,11 @@ export const marketService = {
     });
     return data;
   },
+
+  // Analyze stock for TradingView chart data
+  async analyzeStock(symbol: string): Promise<any> {
+    if (!symbol) return null;
+    const { data } = await marketApiClient.get(`/dashboard/analyze-stock/${symbol}`);
+    return data;
+  },
 };

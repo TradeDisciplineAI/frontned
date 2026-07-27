@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://localhost:8001';
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://127.0.0.1:8001';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -34,6 +34,8 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+let refreshPromise: Promise<string> | null = null;
+
 // Reusable response interceptor to handle 401s and automatic token refresh
 const handleResponseError = (client: any) => async (error: any) => {
   const originalRequest = error.config;
@@ -46,9 +48,21 @@ const handleResponseError = (client: any) => async (error: any) => {
 
     originalRequest._retry = true;
 
+    if (!refreshPromise) {
+      refreshPromise = axios
+        .post(`${API_URL}/auth/refresh`, {}, { withCredentials: true, timeout: 5000 })
+        .then((res) => {
+          refreshPromise = null;
+          return res.data.access_token;
+        })
+        .catch((err) => {
+          refreshPromise = null;
+          throw err;
+        });
+    }
+
     try {
-      const { data } = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
-      const newAccessToken = data.access_token;
+      const newAccessToken = await refreshPromise;
       useUserStore.getState().setAccessToken(newAccessToken);
 
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;

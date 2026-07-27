@@ -50,15 +50,6 @@ function AppContent() {
     }
 
     const initializeSession = async () => {
-      // Extract Google OAuth token from URL hash if present on the callback route
-      const hash = window.location.hash;
-      if (hash.includes('/auth/callback') && hash.includes('token=')) {
-        const tokenMatch = hash.match(/token=([^&]+)/);
-        if (tokenMatch && tokenMatch[1]) {
-          useUserStore.getState().setAccessToken(tokenMatch[1]);
-        }
-      }
-
       await initAuth();
       setIsInitializing(false);
     };
