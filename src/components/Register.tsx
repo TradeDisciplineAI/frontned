@@ -31,7 +31,7 @@ export const Register: React.FC<RegisterProps> = ({ onRegisterSuccess, onNavigat
       await authService.register({ username, email, password });
       onRegisterSuccess();
     } catch (err: any) {
-      console.error('Registration failed', err);
+      console.error('Registration failed:', err?.message, 'Status:', err?.response?.status);
       // Display the validation detail from FastAPI if present
       setErrorMsg(
         err.response?.data?.detail?.[0]?.msg ||

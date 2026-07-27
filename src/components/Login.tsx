@@ -58,7 +58,7 @@ export const Login: React.FC<LoginProps> = ({
       setUser(userProfile);
       onLoginSuccess();
     } catch (err: any) {
-      console.error('Login failed', err);
+      console.error('Login failed:', err?.message, 'Status:', err?.response?.status);
       if (err.response?.status === 403) {
         setErrorMsg(err.response.data?.detail || 'Please verify your email before logging in.');
       } else if (err.response?.status === 401 || err.response?.status === 400) {

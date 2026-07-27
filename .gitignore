@@ -14,8 +14,8 @@ dist-ssr
 
 # Environment variables — NEVER commit real .env files
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
 # Editor directories — share settings but not personal configs
 .vscode/*

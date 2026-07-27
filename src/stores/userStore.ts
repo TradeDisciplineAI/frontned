@@ -54,9 +54,12 @@ export const useUserStore = create<UserState>()(
           // when it tries to get /auth/me, which will trigger the /auth/refresh flow automatically!
           const user = await authService.getMe();
           set({ user, isAuthenticated: true });
-        } catch (error) {
-          // If refresh fails, clear the state
-          set({ user: null, isAuthenticated: false, accessToken: null });
+        } catch (error: any) {
+          // If refresh fails due to auth (401/403), clear the state.
+          // Preserve state for network errors or 5xx so the app can retry later.
+          if (error?.response?.status === 401 || error?.response?.status === 403) {
+            set({ user: null, isAuthenticated: false, accessToken: null });
+          }
         }
       },
 

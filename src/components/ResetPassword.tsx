@@ -37,7 +37,7 @@ export const ResetPassword: React.FC<ResetPasswordProps> = ({ onBackToLogin }) =
       await authService.resetPassword(token, password);
       setIsSuccess(true);
     } catch (err: any) {
-      console.error('Reset failed', err);
+      console.error('Reset failed:', err?.message, 'Status:', err?.response?.status);
       setErrorMsg(
         err.response?.data?.detail?.[0]?.msg ||
           'Failed to reset password. The link may have expired.',
