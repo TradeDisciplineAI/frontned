@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, CandlestickSeries } from 'lightweight-charts';
 import type { IChartApi } from 'lightweight-charts';
+import { Bell } from 'lucide-react';
 import { marketService } from '@/services/market.service';
+import { usePriceAlertStore } from '@/stores/priceAlertStore';
 
 interface TradingViewChartProps {
   symbol: string | null;
@@ -32,7 +34,7 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol }) =>
           chartRef.current = null;
         }
 
-        if (response.chart_data && response.chart_data.length > 0) {
+        if (chartContainerRef.current && response.chart_data && response.chart_data.length > 0) {
           // Initialize TradingView Lightweight Chart
           const chart = createChart(chartContainerRef.current, {
             layout: {
@@ -89,10 +91,35 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol }) =>
 
   if (!symbol) return null;
 
+  const openModal = usePriceAlertStore((state) => state.openModal);
+
   return (
-    <div style={{ width: '100%', marginBottom: '32px', padding: '24px', background: '#111827', borderRadius: '12px', border: '1px solid #1f2937' }}>
+    <div style={{ marginTop: '32px', padding: '24px', background: '#111827', borderRadius: '12px', border: '1px solid #1f2937' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-        <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>{symbol} Chart Analysis</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>{symbol} Chart Analysis</h2>
+          {symbol && (
+            <button
+              onClick={() => openModal(symbol)}
+              style={{
+                padding: '6px 12px',
+                fontSize: '0.85rem',
+                borderRadius: '6px',
+                background: 'rgba(0, 229, 153, 0.1)',
+                border: '1px solid rgba(0, 229, 153, 0.3)',
+                color: '#00e599',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+              title={`Set Price Target Alarm for ${symbol}`}
+            >
+              <Bell size={13} strokeWidth={2.5} /> Set Target Alarm 🔔
+            </button>
+          )}
+        </div>
         
         {analysisData && (
           <div style={{ display: 'flex', gap: '12px' }}>
