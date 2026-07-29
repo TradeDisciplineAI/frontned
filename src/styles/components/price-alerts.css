@@ -1,0 +1,535 @@
+/* Vercel Dark Mode Price Target Alerts System Styles */
+
+/* Backdrop Overlay */
+.vercel-modal-backdrop,
+.vercel-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.vercel-drawer-backdrop {
+  justify-content: flex-end;
+}
+
+/* Modal Content Card */
+.vercel-modal-content {
+  background-color: #0a0a0a;
+  border: 1px solid #1a1a1a;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+  animation: scaleUp 0.15s ease-out;
+}
+
+/* Drawer Content Panel */
+.vercel-drawer-content {
+  background-color: #0a0a0a;
+  border-left: 1px solid #1a1a1a;
+  width: 100%;
+  max-width: 420px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
+  animation: slideLeft 0.2s ease-out;
+}
+
+/* Header Sections */
+.vercel-modal-header,
+.vercel-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.vercel-drawer-header {
+  padding: 20px 24px;
+}
+
+.vercel-modal-title-group,
+.vercel-drawer-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vercel-modal-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(0, 229, 153, 0.1);
+  border: 1px solid rgba(0, 229, 153, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vercel-modal-title,
+.vercel-drawer-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.vercel-modal-sub {
+  font-size: 12px;
+  color: #888888;
+  margin: 2px 0 0 0;
+}
+
+.vercel-drawer-count-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background: #111111;
+  border: 1px solid #222222;
+  color: #00e599;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.vercel-modal-close-btn,
+.vercel-drawer-close-btn,
+.vercel-icon-btn {
+  background: transparent;
+  border: 1px solid #222222;
+  color: #888888;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.vercel-modal-close-btn:hover,
+.vercel-drawer-close-btn:hover,
+.vercel-icon-btn:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+  border-color: #333333;
+}
+
+/* Form Styles */
+.vercel-alert-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.vercel-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vercel-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vercel-form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.vercel-current-price-tag {
+  font-size: 12px;
+  color: #00e599;
+  font-weight: 600;
+}
+
+.vercel-form-input {
+  width: 100%;
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.vercel-form-input:focus {
+  border-color: #00e599;
+}
+
+.vercel-form-input.uppercase {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  font-family: monospace;
+}
+
+/* Price Currency Input */
+.vercel-price-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.vercel-currency-symbol {
+  position: absolute;
+  left: 14px;
+  color: #666666;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.vercel-form-input.price {
+  padding-left: 28px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Condition Pills */
+.vercel-condition-pills {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.vercel-pill-btn {
+  background: #111111;
+  border: 1px solid #222222;
+  border-radius: 6px;
+  padding: 10px;
+  color: #666666;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.vercel-pill-btn:hover {
+  border-color: #333333;
+  color: #888888;
+}
+
+.vercel-pill-btn.active.above {
+  background: rgba(0, 229, 153, 0.1);
+  border-color: #00e599;
+  color: #00e599;
+}
+
+.vercel-pill-btn.active.below {
+  background: rgba(255, 68, 68, 0.1);
+  border-color: #ff4444;
+  color: #ff4444;
+}
+
+/* Quick Adjust Buttons */
+.vercel-quick-adjust-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.vercel-quick-btn {
+  flex: 1;
+  background: #141414;
+  border: 1px solid #222222;
+  border-radius: 4px;
+  padding: 4px 0;
+  color: #888888;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vercel-quick-btn:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+  border-color: #333333;
+}
+
+/* Alert Banner */
+.vercel-alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.vercel-alert-banner.error {
+  background: rgba(255, 68, 68, 0.12);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  color: #ff4444;
+}
+
+/* Footer Actions */
+.vercel-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #1a1a1a;
+}
+
+.vercel-btn-cancel {
+  background: transparent;
+  border: 1px solid #222222;
+  border-radius: 6px;
+  padding: 10px 18px;
+  color: #888888;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.vercel-btn-cancel:hover {
+  background: #141414;
+  color: #ffffff;
+}
+
+.vercel-btn-submit {
+  background: #00e599;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  color: #000000;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 0 16px rgba(0, 229, 153, 0.2);
+}
+
+.vercel-btn-submit:hover {
+  background: #00cc88;
+  box-shadow: 0 0 20px rgba(0, 229, 153, 0.35);
+}
+
+.vercel-btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Drawer Body & Items */
+.vercel-drawer-subbar {
+  padding: 16px 24px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.vercel-btn-create-alert {
+  width: 100%;
+  background: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px;
+  color: #000000;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.vercel-btn-create-alert:hover {
+  background: #e6e6e6;
+}
+
+.vercel-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+}
+
+.vercel-drawer-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 240px;
+  text-align: center;
+}
+
+.vercel-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vercel-group-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #666666;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 12px 0;
+}
+
+.vercel-alert-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #111111;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+  padding: 12px 14px;
+  transition: all 0.15s ease;
+}
+
+.vercel-alert-item:hover {
+  border-color: #262626;
+  background: #141414;
+}
+
+.vercel-alert-item.triggered {
+  border-color: rgba(255, 170, 0, 0.3);
+  background: rgba(255, 170, 0, 0.04);
+}
+
+.vercel-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vercel-symbol-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #1a1a1a;
+  border: 1px solid #262626;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vercel-symbol-avatar.triggered {
+  background: rgba(255, 170, 0, 0.15);
+  border-color: rgba(255, 170, 0, 0.4);
+}
+
+.vercel-symbol-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: monospace;
+}
+
+.vercel-condition-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.vercel-condition-badge.above {
+  background: rgba(0, 229, 153, 0.1);
+  color: #00e599;
+  border: 1px solid rgba(0, 229, 153, 0.25);
+}
+
+.vercel-condition-badge.below {
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.25);
+}
+
+.vercel-triggered-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffaa00;
+}
+
+.vercel-alert-time {
+  font-size: 11px;
+  color: #666666;
+}
+
+.vercel-alert-delete-btn {
+  background: transparent;
+  border: none;
+  color: #666666;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.vercel-alert-delete-btn:hover {
+  color: #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

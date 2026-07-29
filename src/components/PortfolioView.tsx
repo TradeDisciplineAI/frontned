@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useTransition } from 'react';
+import { Bell } from 'lucide-react';
 import { portfolioService } from '@/services/portfolio.service';
 import type { Portfolio } from '@/services/portfolio.service';
+import { usePriceAlertStore } from '@/stores/priceAlertStore';
 import '@/styles/components/portfolio.css';
 
 interface PortfolioViewProps {
@@ -14,6 +16,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock }) =
   const [newSymbol, setNewSymbol] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+  const openModal = usePriceAlertStore((state) => state.openModal);
 
   useEffect(() => {
     fetchPortfolio();
@@ -270,15 +273,39 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock }) =
                     </div>
                   )}
 
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleRemoveHolding(holding.symbol);
-                    }}
-                    className="remove-btn"
-                  >
-                    Remove
-                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal(holding.symbol, holding.price || undefined);
+                      }}
+                      className="portfolio-btn"
+                      style={{
+                        padding: '6px 12px',
+                        fontSize: '0.8rem',
+                        background: 'rgba(0, 229, 153, 0.1)',
+                        border: '1px solid rgba(0, 229, 153, 0.3)',
+                        color: '#00e599',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        fontWeight: 600,
+                      }}
+                      title="Set Price Target Alarm"
+                    >
+                      <Bell size={12} strokeWidth={2.5} /> Alarm
+                    </button>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveHolding(holding.symbol);
+                      }}
+                      className="remove-btn"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               ))
             )}

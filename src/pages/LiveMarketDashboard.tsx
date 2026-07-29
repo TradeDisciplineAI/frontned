@@ -10,13 +10,36 @@ import {
   Check,
   TrendingUp,
   TrendingDown,
+  Bell,
 } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
+import { usePriceAlertStore } from '@/stores/priceAlertStore';
 import { portfolioService } from '@/services/portfolio.service';
 import { Sidebar } from '@/components/Sidebar';
 import { StockSearchBar } from '@/components/StockSearchBar';
+import { PriceAlertModal } from '@/components/PriceAlertModal';
+import { ActiveAlertsDrawer } from '@/components/ActiveAlertsDrawer';
 import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/live-market.css';
+
+const playAlertChime = () => {
+  try {
+    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.35);
+  } catch (e) {
+    console.error('Audio chime error:', e);
+  }
+};
 
 const MARKET_WS_URL = import.meta.env.VITE_MARKET_WS_BASE_URL || 'ws://localhost:8001';
 
@@ -41,11 +64,20 @@ export const LiveMarketDashboard: React.FC = () => {
   );
 
   const { user, logout, isAuthenticated } = useUserStore();
+  const { openModal, toggleDrawer, fetchAlerts, alerts } = usePriceAlertStore();
+  const activeAlertsCount = alerts.filter((a) => !a.is_triggered).length;
 
   const handleLogout = async () => {
     await logout();
     navigate(ROUTES.HOME);
   };
+
+  // Fetch initial user alerts when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchAlerts();
+    }
+  }, [isAuthenticated, fetchAlerts]);
 
   // 1. Listen to market data WebSocket
   useEffect(() => {
@@ -68,7 +100,14 @@ export const LiveMarketDashboard: React.FC = () => {
       ws.onmessage = (event) => {
         try {
           const liveData = JSON.parse(event.data);
-          if (liveData && Array.isArray(liveData.gainers) && Array.isArray(liveData.losers)) {
+          if (liveData && liveData.type === 'PRICE_ALERT_TRIGGERED') {
+            playAlertChime();
+            setFeedback({
+              message: `🔔 PRICE ALERT: ${liveData.symbol} hit target price $${liveData.target_price}!`,
+              type: 'success',
+            });
+            fetchAlerts();
+          } else if (liveData && Array.isArray(liveData.gainers) && Array.isArray(liveData.losers)) {
             setMarketData(liveData);
           }
         } catch (err) {
@@ -209,6 +248,15 @@ export const LiveMarketDashboard: React.FC = () => {
                 placeholder="Search stocks or tickers..."
               />
             </div>
+            <button
+              className="vercel-btn-outline"
+              onClick={() => toggleDrawer()}
+              title="Price Target Alarms"
+              style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
+              <Bell size={14} strokeWidth={2} style={{ color: activeAlertsCount > 0 ? '#00e599' : 'inherit' }} />
+              <span style={{ fontSize: '12px', fontWeight: 600 }}>Alarms ({activeAlertsCount})</span>
+            </button>
             <button className="vercel-btn-outline" title="Filters">
               <SlidersHorizontal size={14} strokeWidth={2} />
             </button>
@@ -227,13 +275,22 @@ export const LiveMarketDashboard: React.FC = () => {
           {/* Top Alerts Card */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
             <div className="vercel-alert-card">
-              <h3 className="vercel-alert-title">Get alerted for anomalies</h3>
+              <h3 className="vercel-alert-title">Smart Price Target Alerts</h3>
               <p className="vercel-alert-desc">
-                Automatically monitor market volume and price anomalies and get notified instantly.
+                Monitor market thresholds and receive instant Web Audio & Resend email alarms.
               </p>
-              <button className="vercel-btn-outline" style={{ marginTop: '8px' }}>
-                Upgrade to Pro
-              </button>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                <button
+                  className="vercel-btn-outline"
+                  onClick={() => openModal()}
+                  style={{ color: '#00e599', borderColor: 'rgba(0,229,153,0.3)' }}
+                >
+                  + Set Price Alarm 🔔
+                </button>
+                <button className="vercel-btn-outline" onClick={() => toggleDrawer()}>
+                  View Active ({activeAlertsCount})
+                </button>
+              </div>
             </div>
 
             <div className="vercel-alert-card" style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -313,21 +370,33 @@ export const LiveMarketDashboard: React.FC = () => {
                           </div>
                         </div>
 
-                        <button
-                          className="vercel-add-btn"
-                          disabled={isAdded}
-                          onClick={() => handleAddStockToPortfolio(stock.symbol)}
-                        >
-                          {isAdded ? (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                              <Check size={13} strokeWidth={3} /> In Portfolio
-                            </span>
-                          ) : (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                              <Plus size={13} strokeWidth={3} /> Add Stock
-                            </span>
-                          )}
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            className="vercel-add-btn"
+                            disabled={isAdded}
+                            onClick={() => handleAddStockToPortfolio(stock.symbol)}
+                            style={{ flex: 1 }}
+                          >
+                            {isAdded ? (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <Check size={13} strokeWidth={3} /> In Portfolio
+                              </span>
+                            ) : (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <Plus size={13} strokeWidth={3} /> Add Stock
+                              </span>
+                            )}
+                          </button>
+
+                          <button
+                            className="vercel-btn-outline"
+                            onClick={() => openModal(stock.symbol, stock.price)}
+                            style={{ padding: '0 12px', color: '#00e599', borderColor: 'rgba(0,229,153,0.3)' }}
+                            title="Set Target Alarm"
+                          >
+                            <Bell size={13} strokeWidth={2.5} />
+                          </button>
+                        </div>
                       </div>
                     );
                   })
@@ -377,21 +446,33 @@ export const LiveMarketDashboard: React.FC = () => {
                           </div>
                         </div>
 
-                        <button
-                          className="vercel-add-btn"
-                          disabled={isAdded}
-                          onClick={() => handleAddStockToPortfolio(stock.symbol)}
-                        >
-                          {isAdded ? (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                              <Check size={13} strokeWidth={3} /> In Portfolio
-                            </span>
-                          ) : (
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                              <Plus size={13} strokeWidth={3} /> Add Stock
-                            </span>
-                          )}
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            className="vercel-add-btn"
+                            disabled={isAdded}
+                            onClick={() => handleAddStockToPortfolio(stock.symbol)}
+                            style={{ flex: 1 }}
+                          >
+                            {isAdded ? (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <Check size={13} strokeWidth={3} /> In Portfolio
+                              </span>
+                            ) : (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <Plus size={13} strokeWidth={3} /> Add Stock
+                              </span>
+                            )}
+                          </button>
+
+                          <button
+                            className="vercel-btn-outline"
+                            onClick={() => openModal(stock.symbol, stock.price)}
+                            style={{ padding: '0 12px', color: '#00e599', borderColor: 'rgba(0,229,153,0.3)' }}
+                            title="Set Target Alarm"
+                          >
+                            <Bell size={13} strokeWidth={2.5} />
+                          </button>
+                        </div>
                       </div>
                     );
                   })
@@ -403,6 +484,10 @@ export const LiveMarketDashboard: React.FC = () => {
           )}
         </div>
       </main>
+
+      {/* Price Alert Modal & Active Alerts Drawer */}
+      <PriceAlertModal />
+      <ActiveAlertsDrawer />
     </div>
   );
 };

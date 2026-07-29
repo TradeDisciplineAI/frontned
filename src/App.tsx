@@ -12,6 +12,8 @@ import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LiveMarketDashboard } from '@/pages/LiveMarketDashboard';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
+import { PriceAlertModal } from '@/components/PriceAlertModal';
+import { ActiveAlertsDrawer } from '@/components/ActiveAlertsDrawer';
 import { ROUTES } from '@/constants/routes.constants';
 
 function AppContent() {
@@ -80,61 +82,67 @@ function AppContent() {
   }
 
   return (
-    <Routes>
-      {/* Landing */}
-      <Route path={ROUTES.HOME} element={<GlobeView onEnterApp={() => navigate(ROUTES.LOGIN)} />} />
+    <>
+      <Routes>
+        {/* Landing */}
+        <Route path={ROUTES.HOME} element={<GlobeView onEnterApp={() => navigate(ROUTES.LOGIN)} />} />
 
-      {/* Auth Flows */}
-      <Route
-        path={ROUTES.LOGIN}
-        element={
-          <Login
-            onLoginSuccess={() => navigate(ROUTES.DASHBOARD)}
-            onNavigateToSignup={() => navigate(ROUTES.REGISTER)}
-            onNavigateToForgot={() => navigate(ROUTES.FORGOT_PASSWORD)}
-          />
-        }
-      />
-      <Route
-        path={ROUTES.REGISTER}
-        element={
-          <Register
-            onRegisterSuccess={() => navigate(ROUTES.SUCCESS)}
-            onNavigateToLogin={() => navigate(ROUTES.LOGIN)}
-          />
-        }
-      />
-      <Route
-        path={ROUTES.SUCCESS}
-        element={
-          <SuccessPage
-            onNavigateToDashboard={() => navigate(ROUTES.LOGIN)} // Needs to login first
-            onBackToLogin={() => navigate(ROUTES.LOGIN)}
-          />
-        }
-      />
-      <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
-      <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallback />} />
-      <Route
-        path={ROUTES.FORGOT_PASSWORD}
-        element={<ForgotPassword onBackToLogin={() => navigate(ROUTES.LOGIN)} />}
-      />
-      <Route
-        path={ROUTES.RESET_PASSWORD}
-        element={<ResetPassword onBackToLogin={() => navigate(ROUTES.LOGIN)} />}
-      />
-      <Route path={ROUTES.EXPLORE} element={<LiveMarketDashboard />} />
+        {/* Auth Flows */}
+        <Route
+          path={ROUTES.LOGIN}
+          element={
+            <Login
+              onLoginSuccess={() => navigate(ROUTES.DASHBOARD)}
+              onNavigateToSignup={() => navigate(ROUTES.REGISTER)}
+              onNavigateToForgot={() => navigate(ROUTES.FORGOT_PASSWORD)}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.REGISTER}
+          element={
+            <Register
+              onRegisterSuccess={() => navigate(ROUTES.SUCCESS)}
+              onNavigateToLogin={() => navigate(ROUTES.LOGIN)}
+            />
+          }
+        />
+        <Route
+          path={ROUTES.SUCCESS}
+          element={
+            <SuccessPage
+              onNavigateToDashboard={() => navigate(ROUTES.LOGIN)} // Needs to login first
+              onBackToLogin={() => navigate(ROUTES.LOGIN)}
+            />
+          }
+        />
+        <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
+        <Route path={ROUTES.AUTH_CALLBACK} element={<AuthCallback />} />
+        <Route
+          path={ROUTES.FORGOT_PASSWORD}
+          element={<ForgotPassword onBackToLogin={() => navigate(ROUTES.LOGIN)} />}
+        />
+        <Route
+          path={ROUTES.RESET_PASSWORD}
+          element={<ResetPassword onBackToLogin={() => navigate(ROUTES.LOGIN)} />}
+        />
+        <Route path={ROUTES.EXPLORE} element={<LiveMarketDashboard />} />
 
-      {/* Protected Routes */}
-      <Route
-        path={ROUTES.DASHBOARD}
-        element={
-          <AuthGuard>
-            <DashboardPage user={user} onLogout={handleLogout} />
-          </AuthGuard>
-        }
-      />
-    </Routes>
+        {/* Protected Routes */}
+        <Route
+          path={ROUTES.DASHBOARD}
+          element={
+            <AuthGuard>
+              <DashboardPage user={user} onLogout={handleLogout} />
+            </AuthGuard>
+          }
+        />
+      </Routes>
+
+      {/* Global Price Target Alarm Modal & Drawer */}
+      <PriceAlertModal />
+      <ActiveAlertsDrawer />
+    </>
   );
 }
 
