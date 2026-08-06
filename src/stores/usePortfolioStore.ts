@@ -188,6 +188,10 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
             'Successfully removed from your portfolio.',
             updatedHoldings.length,
           );
+        } else {
+          // If no portfolio object existed yet, fetch complete structure
+          set({ isSubmitting: false, modal: initialModalState });
+          await get().fetchPortfolio();
         }
       } catch (err: any) {
         const errorMsg = err.response?.data?.detail || `Failed to remove ${modal.symbol}.`;
