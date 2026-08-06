@@ -342,7 +342,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
                         lineHeight: '1.2',
                       }}
                     >
-                      Welcome back, {user?.username || 'Trader'} 👋
+                      Welcome back, {user?.username || 'Trader'}
                     </h1>
                     <p style={{ color: '#94a3b8', margin: 0, fontSize: '0.925rem' }}>
                       Your AI-guided investment portfolio is being audited in real-time.
