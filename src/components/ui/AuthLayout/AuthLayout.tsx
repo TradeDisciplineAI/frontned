@@ -42,7 +42,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
             boxSizing: 'border-box'
           }}>
             {/* Window bar */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '10px' }}>
               <div style={{ display: 'flex', gap: '6px' }}>
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }} />
                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b' }} />
@@ -52,7 +52,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
             </div>
 
             {/* Sparkline & details */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <div>
                 <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>ACTIVE POSITION</div>
                 <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff', marginTop: '2px' }}>AAPL · US Equity</div>
@@ -60,11 +60,39 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
               <span style={{ background: 'rgba(0, 229, 153, 0.15)', color: '#00e599', fontSize: '11px', fontWeight: 800, padding: '3px 8px', borderRadius: '6px' }}>+4.82%</span>
             </div>
 
-            <div style={{ height: '80px', width: '100%', display: 'flex', alignItems: 'flex-end', gap: '4px', paddingBottom: '10px', position: 'relative' }}>
-              {/* Draw a CSS bar chart / sparkline */}
-              {[40, 50, 45, 60, 55, 70, 65, 80, 75, 95].map((val, i) => (
-                <div key={i} style={{ flex: 1, height: `${val}%`, background: 'linear-gradient(to top, rgba(0, 229, 153, 0.15), rgba(0, 229, 153, 0.55))', borderRadius: '2px' }} />
-              ))}
+            {/* SVG Custom Premium Stock Chart */}
+            <div style={{ width: '100%', paddingBottom: '16px', position: 'relative' }}>
+              <svg width="100%" height="100px" viewBox="0 0 400 100" style={{ overflow: 'visible' }}>
+                <defs>
+                  <linearGradient id="chart-glow" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#00e599" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="#00e599" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                {/* Horizontal Grid lines */}
+                <line x1="0" y1="20" x2="400" y2="20" stroke="rgba(255,255,255,0.03)" strokeDasharray="4 4" />
+                <line x1="0" y1="50" x2="400" y2="50" stroke="rgba(255,255,255,0.03)" strokeDasharray="4 4" />
+                <line x1="0" y1="80" x2="400" y2="80" stroke="rgba(255,255,255,0.03)" strokeDasharray="4 4" />
+
+                {/* Gradient area under trendline */}
+                <path
+                  d="M0,80 C100,70 120,90 200,50 C260,20 320,40 400,15 L400,100 L0,100 Z"
+                  fill="url(#chart-glow)"
+                />
+
+                {/* Trend line */}
+                <path
+                  d="M0,80 C100,70 120,90 200,50 C260,20 320,40 400,15"
+                  fill="none"
+                  stroke="#00e599"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+
+                {/* Pulsing indicator at end of line */}
+                <circle cx="400" cy="15" r="4" fill="#00e599" />
+                <circle cx="400" cy="15" r="8" fill="none" stroke="#00e599" strokeWidth="1.5" style={{ opacity: 0.5 }} />
+              </svg>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px', fontSize: '11px', color: '#64748b' }}>
