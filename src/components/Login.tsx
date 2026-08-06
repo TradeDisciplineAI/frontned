@@ -75,7 +75,7 @@ export const Login: React.FC<LoginProps> = ({
     <AuthLayout>
       <div className="auth-form-card">
         <div className="form-header">
-          <h2 className="form-title">Welcome Back 👋</h2>
+          <h2 className="form-title">Welcome Back</h2>
           <p className="form-subtitle">Continue building disciplined investing.</p>
         </div>
 
