@@ -44,7 +44,7 @@ const playAlertChime = () => {
   }
 };
 
-const MARKET_WS_URL = import.meta.env.VITE_MARKET_WS_BASE_URL || 'ws://localhost:8001';
+const MARKET_WS_URL = import.meta.env.VITE_MARKET_WS_BASE_URL || 'ws://127.0.0.1:8001';
 
 interface MarketStock {
   symbol: string;
