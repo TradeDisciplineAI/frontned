@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Eye, EyeOff, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 import { authService } from '@/features/auth/auth.service';
 import { useUserStore } from '@/stores/userStore';
 import { AuthLayout } from '@/components/ui/AuthLayout/AuthLayout';
@@ -73,10 +73,10 @@ export const Login: React.FC<LoginProps> = ({
 
   return (
     <AuthLayout>
-      <div className="auth-form-card no-card">
+      <div className="auth-form-card">
         <div className="form-header">
-          <h2 className="form-title">Welcome Back</h2>
-          <p className="form-subtitle">Continue your journey to disciplined trading.</p>
+          <h2 className="form-title">Welcome Back 👋</h2>
+          <p className="form-subtitle">Continue building disciplined investing.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form" noValidate>
@@ -116,7 +116,7 @@ export const Login: React.FC<LoginProps> = ({
                     style={{
                       alignSelf: 'flex-start',
                       fontSize: '0.75rem',
-                      color: 'var(--color-brand-teal)',
+                      color: '#00e599',
                       background: 'none',
                       border: 'none',
                       cursor: 'pointer',
@@ -150,7 +150,7 @@ export const Login: React.FC<LoginProps> = ({
             </label>
             <div className="input-wrapper">
               <span className="input-icon-left" aria-hidden="true">
-                <Mail size={18} />
+                <Mail size={16} />
               </span>
               <input
                 id="login-email"
@@ -171,13 +171,16 @@ export const Login: React.FC<LoginProps> = ({
               Password
             </label>
             <div className="input-wrapper">
+              <span className="input-icon-left" aria-hidden="true">
+                <Lock size={16} />
+              </span>
               <input
                 id="login-password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="auth-input-field has-icon-right"
+                className="auth-input-field has-icon-left has-icon-right"
                 autoComplete="current-password"
                 disabled={isLoading}
                 required
@@ -189,7 +192,7 @@ export const Login: React.FC<LoginProps> = ({
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 disabled={isLoading}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
           </div>
@@ -219,13 +222,13 @@ export const Login: React.FC<LoginProps> = ({
           <button type="submit" className="auth-submit-btn" disabled={isLoading}>
             {isLoading ? (
               <>
-                <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} />
+                <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
                 <span>Authenticating...</span>
               </>
             ) : (
               <>
                 <span>Login</span>
-                <ArrowRight size={18} />
+                <ArrowRight size={16} />
               </>
             )}
           </button>
