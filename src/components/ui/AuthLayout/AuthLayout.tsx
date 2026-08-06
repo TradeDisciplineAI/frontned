@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp } from 'lucide-react';
+import { TrendingUp, CheckCircle2, Bot, BellRing, ShieldAlert } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/auth-layout.css';
@@ -30,75 +30,62 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
           <span className="brand-logo-text">TradeDisciplineAI</span>
         </div>
 
-        <div className="banner-image-container" style={{ width: '100%', margin: '40px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {/* Mock Terminal Card */}
+        <div className="banner-image-container" style={{ width: '100%', margin: '30px 0', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {/* Glassmorphic Promo Card */}
           <div style={{
-            background: 'linear-gradient(135deg, rgba(22, 32, 50, 0.4) 0%, rgba(11, 17, 32, 0.6) 100%)',
+            background: 'linear-gradient(180deg, #0a0a0a 0%, #000000 100%)',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
-            padding: '20px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+            padding: '24px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.8), 0 0 30px rgba(0, 229, 153, 0.03)',
             width: '100%',
-            boxSizing: 'border-box'
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px'
           }}>
-            {/* Window bar */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '10px' }}>
-              <div style={{ display: 'flex', gap: '6px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#ef4444' }} />
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#f59e0b' }} />
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
-              </div>
-              <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 600, letterSpacing: '0.05em' }}>TERMINAL PREVIEW</span>
+            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 700, letterSpacing: '0.05em', borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '10px' }}>
+              PLATFORM FEATURES
             </div>
-
-            {/* Sparkline & details */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+            
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <div style={{ background: 'rgba(0, 229, 153, 0.1)', color: '#00e599', padding: '8px', borderRadius: '8px', display: 'flex' }}>
+                <CheckCircle2 size={16} />
+              </div>
               <div>
-                <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600 }}>ACTIVE POSITION</div>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff', marginTop: '2px' }}>AAPL · US Equity</div>
+                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', margin: '0 0 2px 0' }}>Real-time Portfolio Tracking</h4>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Create watchlists, track holdings, and review performance weight allocation.</p>
               </div>
-              <span style={{ background: 'rgba(0, 229, 153, 0.15)', color: '#00e599', fontSize: '11px', fontWeight: 800, padding: '3px 8px', borderRadius: '6px' }}>+4.82%</span>
             </div>
 
-            {/* SVG Custom Premium Stock Chart */}
-            <div style={{ width: '100%', paddingBottom: '16px', position: 'relative' }}>
-              <svg width="100%" height="100px" viewBox="0 0 400 100" style={{ overflow: 'visible' }}>
-                <defs>
-                  <linearGradient id="chart-glow" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#00e599" stopOpacity="0.25" />
-                    <stop offset="100%" stopColor="#00e599" stopOpacity="0.0" />
-                  </linearGradient>
-                </defs>
-                {/* Horizontal Grid lines */}
-                <line x1="0" y1="20" x2="400" y2="20" stroke="rgba(255,255,255,0.03)" strokeDasharray="4 4" />
-                <line x1="0" y1="50" x2="400" y2="50" stroke="rgba(255,255,255,0.03)" strokeDasharray="4 4" />
-                <line x1="0" y1="80" x2="400" y2="80" stroke="rgba(255,255,255,0.03)" strokeDasharray="4 4" />
-
-                {/* Gradient area under trendline */}
-                <path
-                  d="M0,80 C100,70 120,90 200,50 C260,20 320,40 400,15 L400,100 L0,100 Z"
-                  fill="url(#chart-glow)"
-                />
-
-                {/* Trend line */}
-                <path
-                  d="M0,80 C100,70 120,90 200,50 C260,20 320,40 400,15"
-                  fill="none"
-                  stroke="#00e599"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
-
-                {/* Pulsing indicator at end of line */}
-                <circle cx="400" cy="15" r="4" fill="#00e599" />
-                <circle cx="400" cy="15" r="8" fill="none" stroke="#00e599" strokeWidth="1.5" style={{ opacity: 0.5 }} />
-              </svg>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <div style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6', padding: '8px', borderRadius: '8px', display: 'flex' }}>
+                <Bot size={16} />
+              </div>
+              <div>
+                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', margin: '0 0 2px 0' }}>AI Technical & Risk Signals</h4>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Receive automated support/resistance zones, trend indicators, and confidence ratings.</p>
+              </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '12px', fontSize: '11px', color: '#64748b' }}>
-              <span>Entry: $182.40</span>
-              <span>Current: $191.20</span>
-              <span style={{ color: '#00e599', fontWeight: 700 }}>P&L: +$8.80</span>
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <div style={{ background: 'rgba(234, 179, 8, 0.1)', color: '#eab308', padding: '8px', borderRadius: '8px', display: 'flex' }}>
+                <BellRing size={16} />
+              </div>
+              <div>
+                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', margin: '0 0 2px 0' }}>Smart Price Target Alerts</h4>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Setup browser audio and email triggers for instant target notifications.</p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+              <div style={{ background: 'rgba(244, 63, 94, 0.1)', color: '#f43f5e', padding: '8px', borderRadius: '8px', display: 'flex' }}>
+                <ShieldAlert size={16} />
+              </div>
+              <div>
+                <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', margin: '0 0 2px 0' }}>Behavioral Trading Coach</h4>
+                <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>Analyze emotional trading, revenge trades, and improve discipline tracking.</p>
+              </div>
             </div>
           </div>
         </div>
