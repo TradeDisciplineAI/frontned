@@ -209,6 +209,16 @@
   color: #555555;
 }
 
+/* Force browser autofill to match the monochromatic dark theme background */
+.auth-input-field:-webkit-autofill,
+.auth-input-field:-webkit-autofill:hover, 
+.auth-input-field:-webkit-autofill:focus, 
+.auth-input-field:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #000000 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff;
+}
+
 .input-icon-right,
 .input-icon-left {
   position: absolute;

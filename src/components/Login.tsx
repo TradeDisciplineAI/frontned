@@ -313,7 +313,7 @@ export const Login: React.FC<LoginProps> = ({
             <a href="#terms">Terms of Service</a>
             <a href="#help">Help Center</a>
           </div>
-          <span>© 2024 Copilot AI Trading. All rights reserved.</span>
+          <span>© 2026 TradeDisciplineAI. All rights reserved.</span>
         </div>
       </div>
     </AuthLayout>
