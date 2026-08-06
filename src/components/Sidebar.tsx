@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import type { UserResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
+import { useUserStore } from '@/stores/userStore';
 import '@/styles/components/sidebar.css';
 
 interface SidebarProps {

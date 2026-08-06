@@ -33,7 +33,13 @@ export const AIInsights: React.FC<AIInsightsProps> = ({ holdings }) => {
     let diversification = 'Moderate (2 Sectors)';
     let summary =
       'Your portfolio balance is healthy, but adding commodity or consumer goods assets would reduce global sector correlations.';
-    let suggestion = {
+    let suggestion: {
+      symbol: string;
+      name: string;
+      reason: string;
+      price: number;
+      exchange: string;
+    } | null = {
       symbol: isIndianMarket ? 'HINDUNILVR.NS' : 'PG',
       name: isIndianMarket ? 'Hindustan Unilever' : 'Procter & Gamble Co.',
       reason: 'Optimize portfolio sector diversification with high-quality consumer defensives.',

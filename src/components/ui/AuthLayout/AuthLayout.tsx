@@ -1,19 +1,12 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes.constants';
 import {
   TrendingUp,
   CheckCircle2,
-  Bot,
   BellRing,
   ShieldAlert,
   LineChart,
-  PieChart,
-  Activity,
-  Lock,
-  ArrowUpRight,
-  Check,
 } from 'lucide-react';
 import '@/styles/components/auth-layout.css';
 

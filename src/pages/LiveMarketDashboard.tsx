@@ -13,7 +13,6 @@ import {
   TrendingDown,
   Bell,
   Lock,
-  ArrowRight,
   ShieldAlert,
   Bot,
   Zap,
@@ -21,7 +20,6 @@ import {
   PieChart,
   Users,
   Activity,
-  BarChart2,
 } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
 import { usePriceAlertStore } from '@/stores/priceAlertStore';
@@ -195,10 +193,10 @@ export const LiveMarketDashboard: React.FC = () => {
     };
   }, [showToast, fetchAlerts]);
 
-  const handleAddStockToPortfolio = (symbol: string, price: number) => {
+  const handleAddStockToPortfolio = (symbol: string, price?: number) => {
     // If no portfolio object existed yet, we'll auto create it on confirm, trigger modal first
     const exchangeLabel = activeMarketTab === 'losers' ? 'NSE · Losers' : 'NSE · Gainers';
-    triggerAddHolding(symbol, price, exchangeLabel);
+    triggerAddHolding(symbol, price ?? 0, exchangeLabel);
   };
 
   const formatPrice = (price: number) => {

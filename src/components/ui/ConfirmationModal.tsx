@@ -22,9 +22,10 @@ export const ConfirmationModal: React.FC = () => {
     };
 
     const focusable = getFocusableElements();
-    if (focusable.length > 0) {
+    const initialEl = focusable[0];
+    if (initialEl) {
       // Focus the first button on open
-      focusable[0].focus();
+      initialEl.focus();
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -51,12 +52,12 @@ export const ConfirmationModal: React.FC = () => {
 
         if (e.shiftKey) {
           if (document.activeElement === firstEl) {
-            lastEl.focus();
+            lastEl?.focus();
             e.preventDefault();
           }
         } else {
           if (document.activeElement === lastEl) {
-            firstEl.focus();
+            firstEl?.focus();
             e.preventDefault();
           }
         }

@@ -21,8 +21,9 @@ export const AuthCallback: React.FC = () => {
         // Extract token parameter from hash (handles #/auth/callback#token=... and #/auth/callback?token=...)
         if (hash.includes('token=')) {
           const parts = hash.split('token=');
-          if (parts.length > 1) {
-            token = parts[1].split('&')[0];
+          const tokenPart = parts[1];
+          if (tokenPart) {
+            token = tokenPart.split('&')[0] || null;
           }
         }
 

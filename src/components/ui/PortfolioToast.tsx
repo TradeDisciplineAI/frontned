@@ -136,7 +136,7 @@ export const PortfolioToast: React.FC = () => {
             {isSuccess ? '✓' : '⚠️'}
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', pr: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingRight: '16px' }}>
             <span
               style={{
                 fontWeight: 800,
