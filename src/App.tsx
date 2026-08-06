@@ -14,6 +14,8 @@ import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
 import { PriceAlertModal } from '@/components/PriceAlertModal';
 import { ActiveAlertsDrawer } from '@/components/ActiveAlertsDrawer';
+import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
+import { PortfolioToast } from '@/components/ui/PortfolioToast';
 import { ROUTES } from '@/constants/routes.constants';
 
 function AppContent() {
@@ -85,7 +87,10 @@ function AppContent() {
     <>
       <Routes>
         {/* Landing */}
-        <Route path={ROUTES.HOME} element={<GlobeView onEnterApp={() => navigate(ROUTES.LOGIN)} />} />
+        <Route
+          path={ROUTES.HOME}
+          element={<GlobeView onEnterApp={() => navigate(ROUTES.LOGIN)} />}
+        />
 
         {/* Auth Flows */}
         <Route
@@ -142,6 +147,10 @@ function AppContent() {
       {/* Global Price Target Alarm Modal & Drawer */}
       <PriceAlertModal />
       <ActiveAlertsDrawer />
+
+      {/* Global Portfolio UX Modals & Toasts */}
+      <ConfirmationModal />
+      <PortfolioToast />
     </>
   );
 }

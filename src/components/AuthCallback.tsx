@@ -3,21 +3,59 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { AuthLayout } from '@/components/ui/AuthLayout/AuthLayout';
 import { useUserStore } from '@/stores/userStore';
+import { authService } from '@/features/auth/auth.service';
 import { ROUTES } from '@/constants/routes.constants';
 
 export const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
   const isAuthenticated = useUserStore((s) => s.isAuthenticated);
+  const setAccessToken = useUserStore((s) => s.setAccessToken);
+  const setUser = useUserStore((s) => s.setUser);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      // Clean up fragment from url and navigate to dashboard
-      window.history.replaceState(null, '', '/#/dashboard');
-      navigate(ROUTES.DASHBOARD);
-    } else {
-      navigate(ROUTES.LOGIN);
-    }
-  }, [isAuthenticated, navigate]);
+    const handleAuth = async () => {
+      try {
+        const hash = window.location.hash || '';
+        let token: string | null = null;
+
+        // Extract token parameter from hash (handles #/auth/callback#token=... and #/auth/callback?token=...)
+        if (hash.includes('token=')) {
+          const parts = hash.split('token=');
+          if (parts.length > 1) {
+            token = parts[1].split('&')[0];
+          }
+        }
+
+        if (token) {
+          // Set access token in Zustand memory store (enabling authenticated requests)
+          setAccessToken(token);
+
+          // Retrieve user profile profile data to verify authentication
+          const user = await authService.getMe();
+          setUser(user);
+
+          // Clear token from browser URL address bar and route to main screen
+          window.history.replaceState(null, '', '/#/dashboard');
+          navigate(ROUTES.DASHBOARD);
+          return;
+        }
+
+        // If no URL token, check if user session already exists
+        if (isAuthenticated) {
+          window.history.replaceState(null, '', '/#/dashboard');
+          navigate(ROUTES.DASHBOARD);
+        } else {
+          // Not logged in and no token - fall back to login screen
+          navigate(ROUTES.LOGIN);
+        }
+      } catch (err) {
+        console.error('Error processing callback authentication token:', err);
+        navigate(ROUTES.LOGIN);
+      }
+    };
+
+    handleAuth();
+  }, [isAuthenticated, navigate, setAccessToken, setUser]);
 
   return (
     <AuthLayout>
@@ -36,3 +74,4 @@ export const AuthCallback: React.FC = () => {
     </AuthLayout>
   );
 };
+export default AuthCallback;

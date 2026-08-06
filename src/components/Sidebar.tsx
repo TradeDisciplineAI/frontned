@@ -18,9 +18,11 @@ import '@/styles/components/sidebar.css';
 interface SidebarProps {
   user: UserResponse | null;
   onLogout: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout }) => {
   const username = user?.username || 'Anjal Dev VK';
 
   return (
-    <aside className="vercel-sidebar">
+    <aside className={`vercel-sidebar ${isOpen ? 'mobile-open' : ''}`}>
       {/* Scrollable Navigation Area */}
       <div className="sidebar-scrollable-content">
         {/* Top Workspace Header Selector */}
@@ -42,6 +44,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout }) => {
             <span className="sidebar-workspace-name">{username}</span>
           </div>
           <span className="sidebar-workspace-badge">Pro</span>
+          {onClose && (
+            <button
+              onClick={onClose}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: '#64748b',
+                cursor: 'pointer',
+                padding: '4px',
+                fontSize: '1.25rem',
+                lineHeight: 1,
+              }}
+              className="sidebar-close-mobile-btn"
+            >
+              &times;
+            </button>
+          )}
         </div>
 
         {/* Search Input Box */}

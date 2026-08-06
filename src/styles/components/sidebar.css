@@ -1,7 +1,7 @@
 /* ── Fixed Position Sidebar (240px width, 100vh height) ── */
 
 .vercel-sidebar {
-  width: 240px;
+  width: 280px;
   height: 100vh;
   position: fixed;
   top: 0;
@@ -14,9 +14,16 @@
   flex-direction: column;
   justify-content: space-between;
   box-sizing: border-box;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   user-select: none;
   z-index: 1000;
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    width 0.2s ease;
 }
 
 .sidebar-scrollable-content {
@@ -142,7 +149,9 @@
   cursor: pointer;
   width: 100%;
   text-align: left;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
 }
 
 .sidebar-nav-item:hover {
@@ -218,4 +227,28 @@
   background: rgba(255, 68, 68, 0.2);
   border-color: #ff4444;
   color: #ffffff;
+}
+
+.sidebar-close-mobile-btn {
+  display: none !important;
+}
+
+@media (max-width: 1535px) {
+  .vercel-sidebar {
+    width: 240px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .vercel-sidebar {
+    width: 280px;
+    left: -280px;
+    z-index: 2100;
+  }
+  .vercel-sidebar.mobile-open {
+    transform: translateX(280px);
+  }
+  .sidebar-close-mobile-btn {
+    display: block !important;
+  }
 }
