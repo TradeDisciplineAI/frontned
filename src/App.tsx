@@ -89,7 +89,7 @@ function AppContent() {
         {/* Landing */}
         <Route
           path={ROUTES.HOME}
-          element={<GlobeView onEnterApp={() => navigate(ROUTES.LOGIN)} />}
+          element={<GlobeView onEnterApp={() => navigate(ROUTES.EXPLORE)} />}
         />
 
         {/* Auth Flows */}

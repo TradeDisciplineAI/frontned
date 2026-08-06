@@ -22,8 +22,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    // Preserve the original destination — redirect after login
-    return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
+    return <Navigate to={ROUTES.EXPLORE} replace />;
   }
 
   return <>{children}</>;

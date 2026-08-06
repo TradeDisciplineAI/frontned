@@ -280,47 +280,79 @@ export const LiveMarketDashboard: React.FC = () => {
                   <button className="vercel-btn-outline" title="Grid View">
                     <LayoutGrid size={14} strokeWidth={2} />
                   </button>
-                  <button className="vercel-btn-white" onClick={() => navigate(ROUTES.DASHBOARD)}>
-                    <span>Add New</span>
-                    <ChevronDown size={13} strokeWidth={2.5} />
-                  </button>
+                  {isAuthenticated && (
+                    <button className="vercel-btn-white" onClick={() => navigate(ROUTES.DASHBOARD)}>
+                      <span>Add New</span>
+                      <ChevronDown size={13} strokeWidth={2.5} />
+                    </button>
+                  )}
                 </div>
               </header>
 
               {/* Body Content */}
               <div className="vercel-body-content">
-                {/* Top Alerts Card */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
-                  <div className="vercel-alert-card">
-                    <h3 className="vercel-alert-title">Smart Price Target Alerts</h3>
-                    <p className="vercel-alert-desc">
-                      Monitor market thresholds and receive instant Web Audio & Resend email alarms.
-                    </p>
-                    <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
-                      <button
-                        className="vercel-btn-outline"
-                        onClick={() => openModal()}
-                        style={{ color: '#00e599', borderColor: 'rgba(0,229,153,0.3)' }}
-                      >
-                        + Set Price Alarm 🔔
-                      </button>
-                      <button className="vercel-btn-outline" onClick={() => toggleDrawer()}>
-                        View Active ({activeAlertsCount})
-                      </button>
+                {/* Top Alerts Card / Promo Card */}
+                {isAuthenticated ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
+                    <div className="vercel-alert-card">
+                      <h3 className="vercel-alert-title">Smart Price Target Alerts</h3>
+                      <p className="vercel-alert-desc">
+                        Monitor market thresholds and receive instant Web Audio & Resend email alarms.
+                      </p>
+                      <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                        <button
+                          className="vercel-btn-outline"
+                          onClick={() => openModal()}
+                          style={{ color: '#00e599', borderColor: 'rgba(0,229,153,0.3)' }}
+                        >
+                          + Set Price Alarm 🔔
+                        </button>
+                        <button className="vercel-btn-outline" onClick={() => toggleDrawer()}>
+                          View Active ({activeAlertsCount})
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      className="vercel-alert-card"
+                      style={{ justifyContent: 'center', alignItems: 'center' }}
+                    >
+                      <span style={{ fontSize: '13px', color: isConnected ? '#666666' : '#ff4444' }}>
+                        {isConnected
+                          ? 'Live WebSocket Market Stream Active (NSE / NASDAQ)'
+                          : 'Live WebSocket Market Stream Disconnected. Reconnecting...'}
+                      </span>
                     </div>
                   </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '24px' }}>
+                    <div className="vercel-alert-card" style={{ background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.08) 0%, rgba(11, 17, 32, 0.8) 100%)', border: '1px solid rgba(0, 229, 153, 0.25)' }}>
+                      <h3 className="vercel-alert-title" style={{ fontSize: '20px', background: 'linear-gradient(to right, #00e599, #00ffaa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800 }}>Unlock AI-Powered Trading Discipline</h3>
+                      <p className="vercel-alert-desc" style={{ fontSize: '14px', lineHeight: '1.5', color: '#94a3b8' }}>
+                        Supercharge your performance with real-time portfolio tracking, instant Web Audio and email target alarms, and customized behavioral coaching powered by GPT-4o.
+                      </p>
+                      <div style={{ marginTop: '12px' }}>
+                        <button
+                          className="vercel-btn-white"
+                          onClick={() => navigate(ROUTES.LOGIN)}
+                          style={{ background: '#00e599', color: '#0b1120', fontWeight: 600, border: 'none', padding: '10px 24px', fontSize: '14px' }}
+                        >
+                          Start Free Trial ⚡
+                        </button>
+                      </div>
+                    </div>
 
-                  <div
-                    className="vercel-alert-card"
-                    style={{ justifyContent: 'center', alignItems: 'center' }}
-                  >
-                    <span style={{ fontSize: '13px', color: isConnected ? '#666666' : '#ff4444' }}>
-                      {isConnected
-                        ? 'Live WebSocket Market Stream Active (NSE / NASDAQ)'
-                        : 'Live WebSocket Market Stream Disconnected. Reconnecting...'}
-                    </span>
+                    <div className="vercel-alert-card" style={{ justifyContent: 'center' }}>
+                      <h4 style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', marginBottom: '8px' }}>Core Features</h4>
+                      <ul style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px', color: '#94a3b8' }}>
+                        <li>🟢 Live Market WebSocket Data</li>
+                        <li>📈 Interactive Portfolio Sparklines</li>
+                        <li>🔔 Browser Target & Email Alarms</li>
+                        <li>🤖 AI Behavioral Coaching</li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Narrow Line Tab Navigation Bar (Gainers / Losers / All) */}
                 <div className="vercel-tabs-line-bar">
@@ -401,59 +433,61 @@ export const LiveMarketDashboard: React.FC = () => {
                                 <Sparkline symbol={stock.symbol} change={stock.percent_change} />
                               </div>
 
-                              <div style={{ display: 'flex', gap: '8px' }}>
-                                <button
-                                  className="vercel-add-btn"
-                                  disabled={
-                                    isAdded ||
-                                    (isSubmitting &&
+                              {isAuthenticated && (
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <button
+                                    className="vercel-add-btn"
+                                    disabled={
+                                      isAdded ||
+                                      (isSubmitting &&
+                                        modal.isOpen &&
+                                        modal.symbol === stock.symbol &&
+                                        modal.mode === 'add')
+                                    }
+                                    onClick={() =>
+                                      handleAddStockToPortfolio(stock.symbol, stock.price)
+                                    }
+                                    style={{
+                                      flex: 1,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      gap: '6px',
+                                    }}
+                                  >
+                                    {isAdded ? (
+                                      <>
+                                        <Check size={13} strokeWidth={3} /> In Portfolio
+                                      </>
+                                    ) : isSubmitting &&
                                       modal.isOpen &&
                                       modal.symbol === stock.symbol &&
-                                      modal.mode === 'add')
-                                  }
-                                  onClick={() =>
-                                    handleAddStockToPortfolio(stock.symbol, stock.price)
-                                  }
-                                  style={{
-                                    flex: 1,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '6px',
-                                  }}
-                                >
-                                  {isAdded ? (
-                                    <>
-                                      <Check size={13} strokeWidth={3} /> In Portfolio
-                                    </>
-                                  ) : isSubmitting &&
-                                    modal.isOpen &&
-                                    modal.symbol === stock.symbol &&
-                                    modal.mode === 'add' ? (
-                                    <>
-                                      <div className="spinner" style={{ marginRight: '4px' }} />{' '}
-                                      Adding...
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Plus size={13} strokeWidth={3} /> Add Stock
-                                    </>
-                                  )}
-                                </button>
+                                      modal.mode === 'add' ? (
+                                      <>
+                                        <div className="spinner" style={{ marginRight: '4px' }} />{' '}
+                                        Adding...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Plus size={13} strokeWidth={3} /> Add Stock
+                                      </>
+                                    )}
+                                  </button>
 
-                                <button
-                                  className="vercel-btn-outline"
-                                  onClick={() => openModal(stock.symbol, stock.price)}
-                                  style={{
-                                    padding: '0 12px',
-                                    color: '#00e599',
-                                    borderColor: 'rgba(0,229,153,0.3)',
-                                  }}
-                                  title="Set Target Alarm"
-                                >
-                                  <Bell size={13} strokeWidth={2.5} />
-                                </button>
-                              </div>
+                                  <button
+                                    className="vercel-btn-outline"
+                                    onClick={() => openModal(stock.symbol, stock.price)}
+                                    style={{
+                                      padding: '0 12px',
+                                      color: '#00e599',
+                                      borderColor: 'rgba(0,229,153,0.3)',
+                                    }}
+                                    title="Set Target Alarm"
+                                  >
+                                    <Bell size={13} strokeWidth={2.5} />
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           );
                         })
@@ -517,59 +551,61 @@ export const LiveMarketDashboard: React.FC = () => {
                                 <Sparkline symbol={stock.symbol} change={stock.percent_change} />
                               </div>
 
-                              <div style={{ display: 'flex', gap: '8px' }}>
-                                <button
-                                  className="vercel-add-btn"
-                                  disabled={
-                                    isAdded ||
-                                    (isSubmitting &&
+                              {isAuthenticated && (
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <button
+                                    className="vercel-add-btn"
+                                    disabled={
+                                      isAdded ||
+                                      (isSubmitting &&
+                                        modal.isOpen &&
+                                        modal.symbol === stock.symbol &&
+                                        modal.mode === 'add')
+                                    }
+                                    onClick={() =>
+                                      handleAddStockToPortfolio(stock.symbol, stock.price)
+                                    }
+                                    style={{
+                                      flex: 1,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      gap: '6px',
+                                    }}
+                                  >
+                                    {isAdded ? (
+                                      <>
+                                        <Check size={13} strokeWidth={3} /> In Portfolio
+                                      </>
+                                    ) : isSubmitting &&
                                       modal.isOpen &&
                                       modal.symbol === stock.symbol &&
-                                      modal.mode === 'add')
-                                  }
-                                  onClick={() =>
-                                    handleAddStockToPortfolio(stock.symbol, stock.price)
-                                  }
-                                  style={{
-                                    flex: 1,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    gap: '6px',
-                                  }}
-                                >
-                                  {isAdded ? (
-                                    <>
-                                      <Check size={13} strokeWidth={3} /> In Portfolio
-                                    </>
-                                  ) : isSubmitting &&
-                                    modal.isOpen &&
-                                    modal.symbol === stock.symbol &&
-                                    modal.mode === 'add' ? (
-                                    <>
-                                      <div className="spinner" style={{ marginRight: '4px' }} />{' '}
-                                      Adding...
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Plus size={13} strokeWidth={3} /> Add Stock
-                                    </>
-                                  )}
-                                </button>
+                                      modal.mode === 'add' ? (
+                                      <>
+                                        <div className="spinner" style={{ marginRight: '4px' }} />{' '}
+                                        Adding...
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Plus size={13} strokeWidth={3} /> Add Stock
+                                      </>
+                                    )}
+                                  </button>
 
-                                <button
-                                  className="vercel-btn-outline"
-                                  onClick={() => openModal(stock.symbol, stock.price)}
-                                  style={{
-                                    padding: '0 12px',
-                                    color: '#00e599',
-                                    borderColor: 'rgba(0,229,153,0.3)',
-                                  }}
-                                  title="Set Target Alarm"
-                                >
-                                  <Bell size={13} strokeWidth={2.5} />
-                                </button>
-                              </div>
+                                  <button
+                                    className="vercel-btn-outline"
+                                    onClick={() => openModal(stock.symbol, stock.price)}
+                                    style={{
+                                      padding: '0 12px',
+                                      color: '#00e599',
+                                      borderColor: 'rgba(0,229,153,0.3)',
+                                    }}
+                                    title="Set Target Alarm"
+                                  >
+                                    <Bell size={13} strokeWidth={2.5} />
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           );
                         })
