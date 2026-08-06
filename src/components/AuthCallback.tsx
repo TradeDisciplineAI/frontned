@@ -30,14 +30,20 @@ export const AuthCallback: React.FC = () => {
           // Set access token in Zustand memory store (enabling authenticated requests)
           setAccessToken(token);
 
-          // Retrieve user profile profile data to verify authentication
-          const user = await authService.getMe();
-          setUser(user);
+          try {
+            // Retrieve user profile profile data to verify authentication
+            const user = await authService.getMe();
+            setUser(user);
 
-          // Clear token from browser URL address bar and route to main screen
-          window.history.replaceState(null, '', '/#/dashboard');
-          navigate(ROUTES.DASHBOARD);
-          return;
+            // Clear token from browser URL address bar and route to main screen
+            window.history.replaceState(null, '', '/#/dashboard');
+            navigate(ROUTES.DASHBOARD);
+            return;
+          } catch (getMeError) {
+            setAccessToken(null);
+            window.history.replaceState(null, '', '/#/login');
+            throw getMeError;
+          }
         }
 
         // If no URL token, check if user session already exists

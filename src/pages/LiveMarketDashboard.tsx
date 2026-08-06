@@ -21,6 +21,7 @@ import { StockSearchBar } from '@/components/StockSearchBar';
 import { PriceAlertModal } from '@/components/PriceAlertModal';
 import { ActiveAlertsDrawer } from '@/components/ActiveAlertsDrawer';
 import { ExploreSkeleton } from '@/components/ui/ExploreSkeleton';
+import { Sparkline } from '@/components/ui/Sparkline';
 import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/live-market.css';
 
@@ -141,7 +142,7 @@ export const LiveMarketDashboard: React.FC = () => {
               'Price Alert Triggered',
               liveData.symbol,
               `Hit target price $${liveData.target_price}!`,
-              portfolioHoldings.length,
+              usePortfolioStore.getState().portfolio?.holdings?.length || 0,
             );
             fetchAlerts();
           } else if (
@@ -182,7 +183,7 @@ export const LiveMarketDashboard: React.FC = () => {
         ws.close();
       }
     };
-  }, [portfolioHoldings.length, showToast, fetchAlerts]);
+  }, [showToast, fetchAlerts]);
 
   const handleAddStockToPortfolio = (symbol: string, price: number) => {
     // If no portfolio object existed yet, we'll auto create it on confirm, trigger modal first
@@ -390,13 +391,14 @@ export const LiveMarketDashboard: React.FC = () => {
                                 </button>
                               </div>
 
-                              <div className="vercel-card-middle">
+                              <div className="vercel-card-middle" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', minHeight: '40px' }}>
                                 <div className="vercel-card-stats">
                                   <span className="vercel-price">${formatPrice(stock.price)}</span>
                                   <span className="vercel-change-pill positive">
                                     +{formatPercent(stock.percent_change)}%
                                   </span>
                                 </div>
+                                <Sparkline symbol={stock.symbol} change={stock.percent_change} />
                               </div>
 
                               <div style={{ display: 'flex', gap: '8px' }}>
@@ -505,13 +507,14 @@ export const LiveMarketDashboard: React.FC = () => {
                                 </button>
                               </div>
 
-                              <div className="vercel-card-middle">
+                              <div className="vercel-card-middle" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', minHeight: '40px' }}>
                                 <div className="vercel-card-stats">
                                   <span className="vercel-price">${formatPrice(stock.price)}</span>
                                   <span className="vercel-change-pill negative">
                                     {formatPercent(stock.percent_change)}%
                                   </span>
                                 </div>
+                                <Sparkline symbol={stock.symbol} change={stock.percent_change} />
                               </div>
 
                               <div style={{ display: 'flex', gap: '8px' }}>
