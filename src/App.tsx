@@ -10,6 +10,7 @@ import { VerifyEmail } from '@/components/VerifyEmail';
 import { AuthCallback } from '@/components/AuthCallback';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LiveMarketDashboard } from '@/pages/LiveMarketDashboard';
+import { GuestPromoModal } from '@/components/GuestPromoModal';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
 import { PriceAlertModal } from '@/components/PriceAlertModal';
@@ -151,6 +152,7 @@ function AppContent() {
       {/* Global Portfolio UX Modals & Toasts */}
       <ConfirmationModal />
       <PortfolioToast />
+      <GuestPromoModal />
     </>
   );
 }

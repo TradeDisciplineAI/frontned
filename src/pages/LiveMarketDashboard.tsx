@@ -12,6 +12,16 @@ import {
   TrendingUp,
   TrendingDown,
   Bell,
+  Lock,
+  ArrowRight,
+  ShieldAlert,
+  Bot,
+  Zap,
+  LineChart,
+  PieChart,
+  Users,
+  Activity,
+  BarChart2,
 } from 'lucide-react';
 import { useUserStore } from '@/stores/userStore';
 import { usePriceAlertStore } from '@/stores/priceAlertStore';
@@ -256,7 +266,7 @@ export const LiveMarketDashboard: React.FC = () => {
                   </div>
                   <button
                     className="vercel-btn-outline"
-                    onClick={() => toggleDrawer()}
+                    onClick={isAuthenticated ? () => toggleDrawer() : () => useUserStore.getState().openGuestModal()}
                     title="Price Target Alarms"
                     style={{
                       position: 'relative',
@@ -325,31 +335,200 @@ export const LiveMarketDashboard: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '24px' }}>
-                    <div className="vercel-alert-card" style={{ background: 'linear-gradient(135deg, rgba(0, 229, 153, 0.08) 0%, rgba(11, 17, 32, 0.8) 100%)', border: '1px solid rgba(0, 229, 153, 0.25)' }}>
-                      <h3 className="vercel-alert-title" style={{ fontSize: '20px', background: 'linear-gradient(to right, #00e599, #00ffaa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 800 }}>Unlock AI-Powered Trading Discipline</h3>
-                      <p className="vercel-alert-desc" style={{ fontSize: '14px', lineHeight: '1.5', color: '#94a3b8' }}>
-                        Supercharge your performance with real-time portfolio tracking, instant Web Audio and email target alarms, and customized behavioral coaching powered by GPT-4o.
-                      </p>
-                      <div style={{ marginTop: '12px' }}>
-                        <button
-                          className="vercel-btn-white"
-                          onClick={() => navigate(ROUTES.LOGIN)}
-                          style={{ background: '#00e599', color: '#0b1120', fontWeight: 600, border: 'none', padding: '10px 24px', fontSize: '14px' }}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '80px', margin: '40px 0 80px 0' }}>
+                    {/* Hero Section */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1.10fr 0.90fr', gap: '48px', alignItems: 'center' }}>
+                      {/* Left Column: Headline, Subtitle, CTA */}
+                      <div>
+                        <h1 style={{ fontSize: '3.5rem', fontWeight: 900, letterSpacing: '-0.03em', lineHeight: '1.15', margin: '0 0 20px 0', color: '#fff' }}>
+                          Trade Smarter.<br />
+                          <span style={{ background: 'linear-gradient(to right, #00e599, #3b82f6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Invest With Discipline.</span>
+                        </h1>
+                        <p style={{ fontSize: '18px', color: '#94a3b8', lineHeight: '1.6', margin: '0 0 36px 0', maxWidth: '580px' }}>
+                          Real-time market intelligence, AI-powered portfolio analysis, price alerts, behavioral coaching, live charts, and intelligent trading insights in one platform.
+                        </p>
+                        <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                          <button
+                            onClick={() => navigate(ROUTES.LOGIN)}
+                            className="vercel-btn-white"
+                            style={{ background: '#00e599', color: '#0b1120', fontWeight: 700, border: 'none', padding: '14px 32px', borderRadius: '12px', fontSize: '15px', cursor: 'pointer', boxShadow: '0 4px 20px rgba(0, 229, 153, 0.3)' }}
+                          >
+                            Create Free Account
+                          </button>
+                          <button
+                            onClick={() => {
+                              const el = document.getElementById('live-markets-anchor');
+                              if (el) el.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className="vercel-btn-outline"
+                            style={{ padding: '14px 32px', borderRadius: '12px', fontSize: '15px', fontWeight: 600, borderColor: 'rgba(255,255,255,0.1)' }}
+                          >
+                            Explore Live Markets
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Right Column: Premium Dashboard Preview Cards */}
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        {/* Portfolio Preview Card */}
+                        <motion.div
+                          whileHover={{ y: -5 }}
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(22, 32, 50, 0.6) 0%, rgba(11, 17, 32, 0.8) 100%)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                            boxShadow: '0 20px 40px -10px rgba(0,0,0,0.6)',
+                            position: 'relative',
+                          }}
                         >
-                          Start Free Trial ⚡
-                        </button>
+                          <div style={{ position: 'absolute', top: 16, right: 16, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span className="pulse-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#00e599', display: 'inline-block', boxShadow: '0 0 8px #00e599' }} />
+                            <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 700, letterSpacing: '0.05em' }}>PORTFOLIO PREVIEW</span>
+                          </div>
+                          <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', marginBottom: '4px' }}>Portfolio Value</div>
+                          <div style={{ fontSize: '32px', fontWeight: 800, color: '#fff', marginBottom: '12px' }}>₹2,45,230</div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '14px' }}>
+                            <div>
+                              <span style={{ fontSize: '12px', color: '#64748b' }}>Today's Gain</span>
+                              <span style={{ fontSize: '14px', color: '#00e599', fontWeight: 700, marginLeft: '8px' }}>+₹3,421</span>
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px' }}>
+                              <span style={{ background: 'rgba(59, 130, 246, 0.12)', color: '#3b82f6', fontSize: '10px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>LOW RISK</span>
+                              <span style={{ background: 'rgba(0, 229, 153, 0.12)', color: '#00e599', fontSize: '10px', fontWeight: 700, padding: '3px 8px', borderRadius: '20px', border: '1px solid rgba(0, 229, 153, 0.2)' }}>AI SCORE: 92</span>
+                            </div>
+                          </div>
+                        </motion.div>
+
+                        {/* AI Analysis Preview Card */}
+                        <motion.div
+                          whileHover={{ y: -5 }}
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(22, 32, 50, 0.6) 0%, rgba(11, 17, 32, 0.8) 100%)',
+                            border: '1px solid rgba(255, 255, 255, 0.08)',
+                            borderRadius: '16px',
+                            padding: '24px',
+                            boxShadow: '0 20px 40px -10px rgba(0,0,0,0.6)',
+                          }}
+                        >
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ background: 'rgba(0, 229, 153, 0.1)', color: '#00e599', padding: '6px', borderRadius: '8px', display: 'flex' }}><Bot size={16} /></span>
+                              <span style={{ fontSize: '14px', fontWeight: 700, color: '#f1f5f9' }}>RELIANCE.NS AI Signals</span>
+                            </div>
+                            <span style={{ background: 'rgba(0, 229, 153, 0.15)', color: '#00e599', fontSize: '11px', fontWeight: 800, padding: '3px 10px', borderRadius: '6px', border: '1px solid rgba(0, 229, 153, 0.2)' }}>BUY RECOMMENDED</span>
+                          </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.04)', textAlign: 'center' }}>
+                              <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>Confidence</div>
+                              <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff' }}>87%</div>
+                            </div>
+                            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.04)', textAlign: 'center' }}>
+                              <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>Support</div>
+                              <div style={{ fontSize: '18px', fontWeight: 800, color: '#f1f5f9' }}>2045</div>
+                            </div>
+                            <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.04)', textAlign: 'center' }}>
+                              <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>Resistance</div>
+                              <div style={{ fontSize: '18px', fontWeight: 800, color: '#f1f5f9' }}>2130</div>
+                            </div>
+                          </div>
+                        </motion.div>
                       </div>
                     </div>
 
-                    <div className="vercel-alert-card" style={{ justifyContent: 'center' }}>
-                      <h4 style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', marginBottom: '8px' }}>Core Features</h4>
-                      <ul style={{ listStyleType: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px', color: '#94a3b8' }}>
-                        <li>🟢 Live Market WebSocket Data</li>
-                        <li>📈 Interactive Portfolio Sparklines</li>
-                        <li>🔔 Browser Target & Email Alarms</li>
-                        <li>🤖 AI Behavioral Coaching</li>
-                      </ul>
+                    {/* Stats Counter Section */}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px', width: '100%' }}>
+                      {[
+                        { val: '5,000+', label: 'Live Stocks', sub: 'Real-time quotes', icon: <Activity size={16} /> },
+                        { val: 'NSE + NASDAQ', label: 'Markets', sub: 'Global coverage', icon: <Zap size={16} /> },
+                        { val: '125K+', label: 'AI Insights Generated', sub: 'Daily analysis', icon: <Bot size={16} /> },
+                        { val: '2.4M+', label: 'Alerts Delivered', sub: 'SMS & Email alerts', icon: <Bell size={16} /> },
+                        { val: 'Growing Daily', label: 'Active Users', sub: 'Global community', icon: <Users size={16} /> },
+                      ].map((stat, i) => (
+                        <div key={i} style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '12px', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+                          <div style={{ background: 'rgba(255,255,255,0.03)', color: '#00e599', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', marginBottom: '10px', justifyContent: 'center' }}>
+                            {stat.icon}
+                          </div>
+                          <div style={{ fontSize: '20px', fontWeight: 900, color: '#00e599', marginBottom: '4px' }}>{stat.val}</div>
+                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', marginBottom: '2px' }}>{stat.label}</div>
+                          <div style={{ fontSize: '11px', color: '#64748b' }}>{stat.sub}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Features Grid Section */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                      <div style={{ textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#fff', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>Platform Capabilities</h2>
+                        <p style={{ fontSize: '16px', color: '#94a3b8', margin: 0 }}>Discover the tools built to optimize your trading discipline and behavior.</p>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px' }}>
+                        {[
+                          { icon: <LayoutGrid size={20} />, title: 'Live Market Dashboard', desc: 'Real-time prices, gainers, losers, candlestick charts, and WebSocket updates.' },
+                          { icon: <PieChart size={20} />, title: 'Portfolio Management', desc: 'Create your own portfolio, track holdings, weight allocation, performance, and portfolio analytics.' },
+                          { icon: <Bot size={20} />, title: 'AI Portfolio Analysis', desc: 'Receive intelligent recommendations, risk score, support, resistance, market sentiment, and behavior coaching.' },
+                          { icon: <Bell size={20} />, title: 'Smart Price Alerts', desc: 'Configure instant browser notifications, email alerts, target prices, and real-time monitoring.' },
+                          { icon: <ShieldAlert size={20} />, title: 'Behavioral Trading Coach', desc: 'Detect emotional trading, track discipline, prevent revenge trading, and receive AI coaching.' },
+                          { icon: <LineChart size={20} />, title: 'Advanced Analytics', desc: 'Analyze portfolio performance, daily returns, risk metrics, sector allocation, and data history.' }
+                        ].map((f, idx) => (
+                          <motion.div
+                            key={idx}
+                            whileHover={{ y: -6, borderColor: 'rgba(0, 229, 153, 0.25)' }}
+                            style={{
+                              background: 'rgba(255, 255, 255, 0.02)',
+                              border: '1px solid rgba(255, 255, 255, 0.05)',
+                              borderRadius: '16px',
+                              padding: '24px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '12px',
+                              transition: 'border-color 0.2s',
+                              cursor: 'pointer',
+                            }}
+                            onClick={() => useUserStore.getState().openGuestModal()}
+                          >
+                            <div style={{ background: 'rgba(0, 229, 153, 0.1)', color: '#00e599', width: '40px', height: '40px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              {f.icon}
+                            </div>
+                            <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#f1f5f9', margin: 0 }}>{f.title}</h3>
+                            <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: '1.5' }}>{f.desc}</p>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Why Choose Us Section */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                      <div style={{ textAlign: 'center' }}>
+                        <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#fff', margin: '0 0 8px 0', letterSpacing: '-0.02em' }}>Why Choose TradeDisciplineAI?</h2>
+                        <p style={{ fontSize: '16px', color: '#94a3b8', margin: 0 }}>Experience a state-of-the-art SaaS terminal built for the modern investor.</p>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+                        {[
+                          { title: 'AI-Powered Investing', desc: 'Intelligent trade recommendations and automated risk analysis.' },
+                          { title: 'Live WebSocket Markets', desc: 'Zero latency live NSE and NASDAQ gainers/losers streaming.' },
+                          { title: 'Portfolio Analytics', desc: 'In-depth performance breakdown and sector allocations.' },
+                          { title: 'Smart Alerts', desc: 'Highly customizable price alerts via web browser & email.' },
+                          { title: 'Behavioral Coaching', desc: 'Identify emotional trading mistakes before they cost capital.' },
+                          { title: 'Fast & Secure', desc: 'Built on high performance infrastructure with absolute data privacy.' }
+                        ].map((b, idx) => (
+                          <div key={idx} style={{ background: 'rgba(255, 255, 255, 0.01)', border: '1px solid rgba(255, 255, 255, 0.04)', borderRadius: '12px', padding: '20px', display: 'flex', gap: '12px' }}>
+                            <span style={{ color: '#00e599', fontSize: '16px', fontWeight: 'bold' }}>✓</span>
+                            <div>
+                              <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#f1f5f9', margin: '0 0 4px 0' }}>{b.title}</h4>
+                              <p style={{ fontSize: '12px', color: '#64748b', margin: 0, lineHeight: 1.4 }}>{b.desc}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Anchor point to navigate directly to interactive tables */}
+                    <div id="live-markets-anchor" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.06)', paddingTop: '60px' }}>
+                      <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#fff', margin: '0 0 6px 0', letterSpacing: '-0.02em' }}>Live Market Terminal</h2>
+                      <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>Explore real-time gainers and losers. Sign in to add quotes to your watchlist and create price alerts.</p>
                     </div>
                   </div>
                 )}
@@ -433,7 +612,7 @@ export const LiveMarketDashboard: React.FC = () => {
                                 <Sparkline symbol={stock.symbol} change={stock.percent_change} />
                               </div>
 
-                              {isAuthenticated && (
+                              {isAuthenticated ? (
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                   <button
                                     className="vercel-add-btn"
@@ -487,6 +666,30 @@ export const LiveMarketDashboard: React.FC = () => {
                                     <Bell size={13} strokeWidth={2.5} />
                                   </button>
                                 </div>
+                              ) : (
+                                <button
+                                  className="vercel-add-btn"
+                                  onClick={() => useUserStore.getState().openGuestModal()}
+                                  style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '6px',
+                                    borderColor: 'rgba(255, 255, 255, 0.08)',
+                                    background: 'rgba(255, 255, 255, 0.02)',
+                                    color: '#888',
+                                    fontSize: '12px',
+                                    fontWeight: 600,
+                                    height: '36px',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                  }}
+                                >
+                                  <Lock size={12} style={{ color: '#00e599' }} />
+                                  <span>Sign in to unlock</span>
+                                </button>
                               )}
                             </div>
                           );
@@ -551,7 +754,7 @@ export const LiveMarketDashboard: React.FC = () => {
                                 <Sparkline symbol={stock.symbol} change={stock.percent_change} />
                               </div>
 
-                              {isAuthenticated && (
+                              {isAuthenticated ? (
                                 <div style={{ display: 'flex', gap: '8px' }}>
                                   <button
                                     className="vercel-add-btn"
@@ -605,6 +808,30 @@ export const LiveMarketDashboard: React.FC = () => {
                                     <Bell size={13} strokeWidth={2.5} />
                                   </button>
                                 </div>
+                              ) : (
+                                <button
+                                  className="vercel-add-btn"
+                                  onClick={() => useUserStore.getState().openGuestModal()}
+                                  style={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    gap: '6px',
+                                    borderColor: 'rgba(255, 255, 255, 0.08)',
+                                    background: 'rgba(255, 255, 255, 0.02)',
+                                    color: '#888',
+                                    fontSize: '12px',
+                                    fontWeight: 600,
+                                    height: '36px',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s',
+                                  }}
+                                >
+                                  <Lock size={12} style={{ color: '#00e599' }} />
+                                  <span>Sign in to unlock</span>
+                                </button>
                               )}
                             </div>
                           );

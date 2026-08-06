@@ -91,40 +91,42 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false
             </div>
           </button>
 
-          {isLoggedIn && (
-            <>
-              <button
-                className={`sidebar-nav-item ${isDashboardActive ? 'active' : ''}`}
-                onClick={() => navigate(ROUTES.DASHBOARD)}
-              >
-                <div className="sidebar-item-left">
-                  <span className="sidebar-item-icon">
-                    <PieChart size={15} strokeWidth={2} />
-                  </span>
-                  <span>Portfolio</span>
-                </div>
-              </button>
+          <button
+            className={`sidebar-nav-item ${isDashboardActive ? 'active' : ''}`}
+            onClick={() => isLoggedIn ? navigate(ROUTES.DASHBOARD) : useUserStore.getState().openGuestModal()}
+          >
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <PieChart size={15} strokeWidth={2} />
+              </span>
+              <span>Portfolio</span>
+            </div>
+          </button>
 
-              <button className="sidebar-nav-item">
-                <div className="sidebar-item-left">
-                  <span className="sidebar-item-icon">
-                    <LineChart size={15} strokeWidth={2} />
-                  </span>
-                  <span>Analytics</span>
-                </div>
-              </button>
+          <button 
+            className="sidebar-nav-item"
+            onClick={() => isLoggedIn ? null : useUserStore.getState().openGuestModal()}
+          >
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <LineChart size={15} strokeWidth={2} />
+              </span>
+              <span>Analytics</span>
+            </div>
+          </button>
 
-              <button className="sidebar-nav-item">
-                <div className="sidebar-item-left">
-                  <span className="sidebar-item-icon">
-                    <Bot size={15} strokeWidth={2} />
-                  </span>
-                  <span>AI Discipline</span>
-                </div>
-                <span className="sidebar-badge-beta">Beta</span>
-              </button>
-            </>
-          )}
+          <button 
+            className="sidebar-nav-item"
+            onClick={() => isLoggedIn ? null : useUserStore.getState().openGuestModal()}
+          >
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <Bot size={15} strokeWidth={2} />
+              </span>
+              <span>AI Discipline</span>
+            </div>
+            <span className="sidebar-badge-beta">Beta</span>
+          </button>
 
           <div className="sidebar-divider" />
 
@@ -137,16 +139,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false
             </div>
           </button>
 
-          {isLoggedIn && (
-            <button className="sidebar-nav-item">
-              <div className="sidebar-item-left">
-                <span className="sidebar-item-icon">
-                  <Settings size={15} strokeWidth={2} />
-                </span>
-                <span>Settings</span>
-              </div>
-            </button>
-          )}
+          <button 
+            className="sidebar-nav-item"
+            onClick={() => isLoggedIn ? null : useUserStore.getState().openGuestModal()}
+          >
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <Settings size={15} strokeWidth={2} />
+              </span>
+              <span>Settings</span>
+            </div>
+          </button>
         </div>
       </div>
 
