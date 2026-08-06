@@ -4,7 +4,7 @@ import { marketService, type StockSearchResult } from '@/services/market.service
 import '@/styles/components/stock-search-bar.css';
 
 interface StockSearchBarProps {
-  onAddStock: (symbol: string) => Promise<void>;
+  onAddStock: (symbol: string, price?: number) => void | Promise<void>;
   existingHoldings?: string[];
   placeholder?: string;
 }

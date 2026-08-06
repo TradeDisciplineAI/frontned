@@ -7,16 +7,33 @@
   overflow-x: hidden;
   background-color: #000000;
   color: #ededed;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
 }
 
 .vercel-dashboard-main {
   flex: 1;
-  margin-left: 240px;
+  margin-left: 280px;
   background-color: #000000;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (max-width: 1535px) {
+  .vercel-dashboard-main {
+    margin-left: 240px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .vercel-dashboard-main {
+    margin-left: 0;
+  }
 }
 
 /* Vercel Header Bar */
@@ -131,11 +148,13 @@
   box-sizing: border-box;
 }
 
-/* Alerts Banner Card (Vercel Style) */
+/* Alerts Banner Card (Glassmorphism card style matching Portfolio page) */
 .vercel-alert-card {
-  background: #0a0a0a;
-  border: 1px solid #1a1a1a;
-  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -174,22 +193,26 @@
   gap: 16px;
 }
 
-/* Vercel Project Card Style */
+/* Vercel Project Card Style (Glassmorphism style matching Portfolio page) */
 .vercel-stock-card {
-  background: #0a0a0a;
-  border: 1px solid #1a1a1a;
-  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
   padding: 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 16px;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 
 .vercel-stock-card:hover {
-  border-color: #2e2e2e;
-  background: #0d0d0d;
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(15, 23, 42, 0.65);
 }
 
 .vercel-card-top {
@@ -355,7 +378,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
   margin-bottom: -1px;
 }
 

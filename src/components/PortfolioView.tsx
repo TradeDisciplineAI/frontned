@@ -1,87 +1,42 @@
-import React, { useState, useEffect, useTransition } from 'react';
-import { Bell } from 'lucide-react';
-import { portfolioService } from '@/services/portfolio.service';
-import type { Portfolio } from '@/services/portfolio.service';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { Bell, Trash2, ExternalLink, TrendingUp, TrendingDown } from 'lucide-react';
+import { usePortfolioStore } from '@/stores/usePortfolioStore';
 import { usePriceAlertStore } from '@/stores/priceAlertStore';
+import { Sparkline } from '@/components/ui/Sparkline';
 import '@/styles/components/portfolio.css';
 
 interface PortfolioViewProps {
   onSelectStock?: (symbol: string) => void;
 }
 
+const ACCENT_BG_COLORS = [
+  'rgba(16, 185, 129, 0.08)', // Emerald
+  'rgba(6, 182, 212, 0.08)', // Cyan
+  'rgba(59, 130, 246, 0.08)', // Blue
+  'rgba(99, 102, 241, 0.08)', // Indigo
+  'rgba(139, 92, 246, 0.08)', // Violet
+];
+
+const ACCENT_TEXT_COLORS = [
+  '#10b981', // Emerald
+  '#06b6d4', // Cyan
+  '#3b82f6', // Blue
+  '#6366f1', // Indigo
+  '#8b5cf6', // Violet
+];
+
 export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock }) => {
-  const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [portfolioName, setPortfolioName] = useState('');
-  const [newSymbol, setNewSymbol] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [, startTransition] = useTransition();
+  const { portfolio, isLoading, triggerRemoveHolding } = usePortfolioStore();
+
   const openModal = usePriceAlertStore((state) => state.openModal);
 
-  useEffect(() => {
-    fetchPortfolio();
-  }, []);
-
-  const fetchPortfolio = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await portfolioService.getPortfolio();
-      setPortfolio(data);
-    } catch (err: any) {
-      if (err.response?.status !== 404) {
-        setError(err.response?.data?.detail || 'Failed to fetch portfolio details.');
-      }
-    } finally {
-      setIsLoading(false);
+  const formatPrice = (price?: number) => {
+    if (!price) return '0.00';
+    if (price < 0.01) {
+      return price.toExponential(5);
     }
-  };
-
-  const handleCreatePortfolio = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!portfolioName.trim()) return;
-    setError(null);
-    try {
-      const data = await portfolioService.createPortfolio(portfolioName.trim());
-      setPortfolio(data);
-      setPortfolioName('');
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to create portfolio.');
-    }
-  };
-
-  const handleAddHolding = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const cleanSymbol = newSymbol.trim().toUpperCase();
-    if (!cleanSymbol) return;
-    setError(null);
-    try {
-      const addedHolding = await portfolioService.addHolding(cleanSymbol);
-      if (portfolio) {
-        setPortfolio({
-          ...portfolio,
-          holdings: [...portfolio.holdings, addedHolding],
-        });
-      }
-      setNewSymbol('');
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to add holding.');
-    }
-  };
-
-  const handleRemoveHolding = async (symbol: string) => {
-    setError(null);
-    try {
-      await portfolioService.removeHolding(symbol);
-      if (portfolio) {
-        setPortfolio({
-          ...portfolio,
-          holdings: portfolio.holdings.filter((h) => h.symbol !== symbol),
-        });
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to remove holding.');
-    }
+    return price.toFixed(2);
   };
 
   if (isLoading) {
@@ -92,226 +47,238 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock }) =
     );
   }
 
-  const holdingsCount = portfolio?.holdings?.length || 0;
-  const isFull = holdingsCount >= 5;
-
-  const formatPrice = (price?: number) => {
-    if (!price) return '0.00';
-    if (price < 0.01) {
-      return price.toExponential(5);
-    }
-    return price.toFixed(2);
-  };
+  // If no portfolio or no holdings, return null (handled by DashboardEmptyState)
+  if (!portfolio || portfolio.holdings.length === 0) {
+    return null;
+  }
 
   return (
-    <div className="portfolio-card">
-      {error && (
-        <div className="alert-banner">
-          <span className="alert-icon">⚠️</span>
-          <span>{error}</span>
-        </div>
-      )}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span
+          style={{
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            color: '#94a3b8',
+            letterSpacing: '0.5px',
+            textTransform: 'uppercase',
+          }}
+        >
+          Active Holdings ({portfolio.holdings.length})
+        </span>
+      </div>
 
-      {/* CASE A: No Portfolio Configured */}
-      {!portfolio ? (
-        <div>
-          <div className="portfolio-header">
-            <h2 className="portfolio-title">Configure Portfolio</h2>
-          </div>
-          <p style={{ color: '#9ca3af', marginBottom: '20px', fontSize: '0.95rem' }}>
-            You don't have an active portfolio. Create one below to start tracking your stock
-            holdings.
-          </p>
-          <form onSubmit={handleCreatePortfolio} className="portfolio-form">
-            <input
-              type="text"
-              className="portfolio-input"
-              placeholder="e.g. My Long Term Stocks"
-              value={portfolioName}
-              onChange={(e) => setPortfolioName(e.target.value)}
-              maxLength={100}
-              required
-            />
-            <button type="submit" className="portfolio-btn">
-              Create Portfolio
-            </button>
-          </form>
-        </div>
-      ) : (
-        /* CASE B: Active Portfolio & Holdings Display */
-        <div>
-          <div className="portfolio-header">
-            <div>
-              <h2 className="portfolio-title">{portfolio.name}</h2>
-              <div className="portfolio-date">
-                Created: {new Date(portfolio.created_at).toLocaleDateString()}
-              </div>
-            </div>
-            <div className="portfolio-date">Active Portfolio</div>
-          </div>
+      <div className="holdings-grid">
+        <style>{`
+          .holdings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+          }
+          @media (max-width: 767px) {
+            .holdings-grid {
+              grid-template-columns: 1fr;
+              gap: 16px;
+            }
+          }
+          .asset-card {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+          }
+          .asset-card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            background-color: rgba(30, 41, 59, 0.3);
+          }
+          .asset-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justifyContent: center;
+            font-weight: 800;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+          }
+          .asset-badge-price {
+            font-size: 1.15rem;
+            fontWeight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+          }
+          .asset-btn-action {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s ease;
+          }
+          .asset-btn-action:hover {
+            background: rgba(0, 229, 153, 0.05);
+            border-color: rgba(0, 229, 153, 0.25);
+            color: #ffffff;
+          }
+          .asset-delete-btn {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justifyContent: center;
+            transition: all 0.15s ease;
+          }
+          .asset-delete-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+          }
+        `}</style>
 
-          {/* Capacity Progress Bar */}
-          <div className="capacity-container">
-            <div className="capacity-label">
-              <span>Holding Slots</span>
-              <span>{holdingsCount} / 5</span>
-            </div>
-            <div className="capacity-bar-bg">
+        {portfolio.holdings.map((holding, idx) => {
+          const isPositive = (holding.percent_change || 0) >= 0;
+          const statusColor = isPositive ? '#10b981' : '#ef4444';
+          const avatarBg = ACCENT_BG_COLORS[idx % ACCENT_BG_COLORS.length];
+          const avatarText = ACCENT_TEXT_COLORS[idx % ACCENT_TEXT_COLORS.length];
+
+          return (
+            <motion.div
+              key={holding.id}
+              className="asset-card"
+              onClick={() => onSelectStock && onSelectStock(holding.symbol)}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.35, delay: idx * 0.05, ease: 'easeOut' }}
+              whileHover={{ y: -5 }}
+            >
+              {/* Card Top: Avatar, symbol, delete */}
               <div
-                className={`capacity-bar-fill ${holdingsCount >= 4 ? 'warning' : ''}`}
-                style={{ width: `${(holdingsCount / 5) * 100}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Add Stock Form */}
-          <form
-            onSubmit={handleAddHolding}
-            className="portfolio-form"
-            style={{ marginTop: '24px' }}
-          >
-            <input
-              type="text"
-              className="portfolio-input"
-              placeholder="Enter ticker symbol (e.g. AAPL, TSLA)"
-              value={newSymbol}
-              onChange={(e) => startTransition(() => setNewSymbol(e.target.value))}
-              disabled={isFull}
-              maxLength={10}
-              required
-            />
-            <button type="submit" className="portfolio-btn" disabled={isFull || !newSymbol.trim()}>
-              Add Stock
-            </button>
-          </form>
-          {isFull && (
-            <p style={{ color: '#f59e0b', fontSize: '0.8rem', marginTop: '8px', margin: 0 }}>
-              💡 Your portfolio capacity is full (5/5 symbols limit). Remove an existing stock to
-              add a new one.
-            </p>
-          )}
-
-          {/* Holdings List */}
-          <div className="holdings-list">
-            {holdingsCount === 0 ? (
-              <div className="empty-state">
-                No active holdings. Type a ticker symbol above to add your first stock.
-              </div>
-            ) : (
-              portfolio.holdings.map((holding) => (
-                <div 
-                  key={holding.id} 
-                  className="holding-item"
-                  onClick={() => onSelectStock && onSelectStock(holding.symbol)}
-                  style={{ cursor: onSelectStock ? 'pointer' : 'default' }}
-                >
-                  <div className="holding-info">
-                    <div className="holding-avatar">{holding.symbol.substring(0, 2)}</div>
-                    <div className="holding-details">
-                      <span className="holding-symbol">{holding.symbol}</span>
-                      <span className="holding-date">
-                        Added: {new Date(holding.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <div className="asset-avatar" style={{ background: avatarBg, color: avatarText }}>
+                    {holding.symbol.substring(0, 2)}
                   </div>
-
-                  {/* Live Rate Info matching Explore page design */}
-                  {holding.price !== undefined && holding.price !== null && (
-                    <div
-                      className="holding-rates"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '20px',
-                        marginLeft: 'auto',
-                        marginRight: '24px',
-                      }}
-                    >
-                      <div
-                        className="holding-price-details"
-                        style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}
-                      >
-                        <span style={{ fontWeight: 600, fontSize: '1rem', color: '#ffffff' }}>
-                          {formatPrice(holding.price)}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: '0.7rem',
-                            color: '#9ca3af',
-                            textTransform: 'uppercase',
-                          }}
-                        >
-                          {holding.currency || 'USD'}
-                        </span>
-                      </div>
-
-                      {holding.percent_change !== undefined && holding.percent_change !== null && (
-                        <div
-                          className={`percent-badge ${holding.percent_change >= 0 ? 'gain' : 'loss'}`}
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: '6px',
-                            fontWeight: 700,
-                            fontSize: '0.85rem',
-                            minWidth: '75px',
-                            textAlign: 'center',
-                            background:
-                              holding.percent_change >= 0
-                                ? 'rgba(16, 185, 129, 0.1)'
-                                : 'rgba(239, 68, 68, 0.1)',
-                            border:
-                              holding.percent_change >= 0
-                                ? '1px solid rgba(16, 185, 129, 0.2)'
-                                : '1px solid rgba(239, 68, 68, 0.2)',
-                            color: holding.percent_change >= 0 ? '#10b981' : '#ef4444',
-                          }}
-                        >
-                          {holding.percent_change >= 0 ? '+' : ''}
-                          {holding.percent_change.toFixed(2)}%
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openModal(holding.symbol, holding.price || undefined);
-                      }}
-                      className="portfolio-btn"
-                      style={{
-                        padding: '6px 12px',
-                        fontSize: '0.8rem',
-                        background: 'rgba(0, 229, 153, 0.1)',
-                        border: '1px solid rgba(0, 229, 153, 0.3)',
-                        color: '#00e599',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        fontWeight: 600,
-                      }}
-                      title="Set Price Target Alarm"
-                    >
-                      <Bell size={12} strokeWidth={2.5} /> Alarm
-                    </button>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveHolding(holding.symbol);
-                      }}
-                      className="remove-btn"
-                    >
-                      Remove
-                    </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <span style={{ fontWeight: 800, fontSize: '0.95rem', color: '#ffffff' }}>
+                      {holding.symbol}
+                    </span>
+                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 600 }}>
+                      {holding.symbol.endsWith('.NS') ? 'NSE · Equity' : 'US Market'}
+                    </span>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
+
+                <button
+                  type="button"
+                  className="asset-delete-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    triggerRemoveHolding(holding.symbol);
+                  }}
+                  title="Remove Asset"
+                >
+                  <Trash2 size={13} />
+                </button>
+              </div>
+
+              {/* Card Middle: Price, trend percent, SVG chart */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  margin: '4px 0',
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <span className="asset-badge-price">${formatPrice(holding.price)}</span>
+
+                  {holding.percent_change !== undefined && holding.percent_change !== null && (
+                    <span
+                      style={{
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        color: statusColor,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                      {isPositive ? '+' : ''}
+                      {holding.percent_change.toFixed(2)}%
+                    </span>
+                  )}
+                </div>
+
+                {/* SVG sparkline micro-chart */}
+                <Sparkline symbol={holding.symbol} change={holding.percent_change || 0} />
+              </div>
+
+              {/* Card Bottom: Date & Quick Actions */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderTop: '1px solid rgba(255,255,255,0.05)',
+                  paddingTop: '12px',
+                  marginTop: '4px',
+                }}
+              >
+                <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 500 }}>
+                  Added: {new Date(holding.created_at).toLocaleDateString()}
+                </span>
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    type="button"
+                    className="asset-btn-action"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openModal(holding.symbol, holding.price || undefined);
+                    }}
+                    title="Set price threshold alarm"
+                  >
+                    <Bell size={12} />
+                  </button>
+
+                  <button
+                    type="button"
+                    className="asset-btn-action"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onSelectStock) onSelectStock(holding.symbol);
+                    }}
+                    title="View Trading Chart"
+                  >
+                    <ExternalLink size={12} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 };
+export default PortfolioView;

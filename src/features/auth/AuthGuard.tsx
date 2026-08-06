@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useUserStore } from '@/stores/userStore';
 import { ROUTES } from '@/constants/routes.constants';
 
@@ -19,11 +19,9 @@ interface AuthGuardProps {
  */
 export const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const isAuthenticated = useUserStore((s) => s.isAuthenticated);
-  const location = useLocation();
 
   if (!isAuthenticated) {
-    // Preserve the original destination — redirect after login
-    return <Navigate to={ROUTES.LOGIN} state={{ from: location }} replace />;
+    return <Navigate to={ROUTES.EXPLORE} replace />;
   }
 
   return <>{children}</>;

@@ -1,19 +1,19 @@
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
-const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://127.0.0.1:8001';
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://localhost:8001';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
   withCredentials: true, // Crucial for sending/receiving the HttpOnly refresh token cookie
-  timeout: 5000,
+  timeout: 15000,
 });
 
 export const marketApiClient = axios.create({
   baseURL: MARKET_API_URL,
   withCredentials: true,
-  timeout: 5000,
+  timeout: 15000,
 });
 
 // Request Interceptor for marketApiClient: Attach access token
@@ -50,7 +50,7 @@ const handleResponseError = (client: any) => async (error: any) => {
 
     if (!refreshPromise) {
       refreshPromise = axios
-        .post(`${API_URL}/auth/refresh`, {}, { withCredentials: true, timeout: 5000 })
+        .post(`${API_URL}/auth/refresh`, {}, { withCredentials: true, timeout: 15000 })
         .then((res) => {
           refreshPromise = null;
           return res.data.access_token;

@@ -10,6 +10,8 @@ interface UserState {
   isAuthenticated: boolean;
   /** In-memory access token. Used by Axios interceptor. */
   accessToken: string | null;
+  /** State for the premium guest features unlock modal */
+  isGuestModalOpen: boolean;
 
   /** Set the access token (used during login or silent refresh) */
   setAccessToken: (token: string | null) => void;
@@ -21,6 +23,11 @@ interface UserState {
 
   /** Clear the session and log out locally and remotely */
   logout: () => Promise<void>;
+
+  /** Open the guest unlock modal */
+  openGuestModal: () => void;
+  /** Close the guest unlock modal */
+  closeGuestModal: () => void;
 }
 
 /**
@@ -37,6 +44,10 @@ export const useUserStore = create<UserState>()(
       user: null,
       isAuthenticated: false,
       accessToken: null,
+      isGuestModalOpen: false,
+
+      openGuestModal: () => set({ isGuestModalOpen: true }),
+      closeGuestModal: () => set({ isGuestModalOpen: false }),
 
       setAccessToken: (token: string | null) => {
         set({ accessToken: token, isAuthenticated: !!token });
