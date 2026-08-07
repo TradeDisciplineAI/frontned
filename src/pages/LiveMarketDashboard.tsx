@@ -28,6 +28,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { StockSearchBar } from '@/components/StockSearchBar';
 import { PriceAlertModal } from '@/components/PriceAlertModal';
 import { ActiveAlertsDrawer } from '@/components/ActiveAlertsDrawer';
+import { IndicatorsDrawer } from '@/components/IndicatorsDrawer';
 import { ExploreSkeleton } from '@/components/ui/ExploreSkeleton';
 import { Sparkline } from '@/components/ui/Sparkline';
 import { ROUTES } from '@/constants/routes.constants';
@@ -73,6 +74,11 @@ export const LiveMarketDashboard: React.FC = () => {
   const [hasData, setHasData] = useState(false);
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
 
+  const [isIndicatorDrawerOpen, setIsIndicatorDrawerOpen] = useState(false);
+  const [selectedIndicatorStock, setSelectedIndicatorStock] = useState<string | null>(null);
+  const [indicatorsData, setIndicatorsData] = useState<any>(null);
+  const [isFetchingIndicators, setIsFetchingIndicators] = useState(false);
+
   const { user, logout, isAuthenticated } = useUserStore();
   const { openModal, toggleDrawer, fetchAlerts, alerts } = usePriceAlertStore();
   const { portfolio, fetchPortfolio, triggerAddHolding, isSubmitting, modal, showToast } =
@@ -84,6 +90,27 @@ export const LiveMarketDashboard: React.FC = () => {
   const handleLogout = async () => {
     await logout();
     navigate(ROUTES.HOME);
+  };
+
+  const handleStockClick = async (symbol: string) => {
+    setSelectedIndicatorStock(symbol);
+    setIsIndicatorDrawerOpen(true);
+    setIsFetchingIndicators(true);
+    setIndicatorsData(null);
+    try {
+      const baseUrl = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://127.0.0.1:8001';
+      const response = await fetch(`${baseUrl}/dashboard/indicators/${symbol}`);
+      if (response.ok) {
+        const data = await response.json();
+        setIndicatorsData(data);
+      } else {
+        console.error("Failed to fetch indicators", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching indicators", error);
+    } finally {
+      setIsFetchingIndicators(false);
+    }
   };
 
   // Fetch initial user alerts when authenticated
@@ -592,7 +619,9 @@ export const LiveMarketDashboard: React.FC = () => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '6px',
+                                        cursor: 'pointer'
                                       }}
+                                      onClick={() => handleStockClick(stock.symbol)}
                                     >
                                       <h4 className="vercel-card-name">{stock.symbol}</h4>
                                       <CheckCircle2 size={13} className="vercel-verified-badge" />
@@ -734,7 +763,9 @@ export const LiveMarketDashboard: React.FC = () => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '6px',
+                                        cursor: 'pointer'
                                       }}
+                                      onClick={() => handleStockClick(stock.symbol)}
                                     >
                                       <h4 className="vercel-card-name">{stock.symbol}</h4>
                                       <CheckCircle2 size={13} className="vercel-verified-badge" />
@@ -856,6 +887,13 @@ export const LiveMarketDashboard: React.FC = () => {
       {/* Price Alert Modal & Active Alerts Drawer */}
       <PriceAlertModal />
       <ActiveAlertsDrawer />
+      <IndicatorsDrawer 
+        symbol={selectedIndicatorStock}
+        isOpen={isIndicatorDrawerOpen}
+        onClose={() => setIsIndicatorDrawerOpen(false)}
+        isLoading={isFetchingIndicators}
+        indicators={indicatorsData}
+      />
     </div>
   );
 };

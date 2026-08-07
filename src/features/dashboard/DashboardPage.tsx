@@ -11,6 +11,7 @@ import { PortfolioAllocationChart } from '@/components/ui/PortfolioAllocationCha
 import { DashboardEmptyState } from '@/components/ui/DashboardEmptyState';
 import { StockSearchBar } from '@/components/StockSearchBar';
 import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
+import { IndicatorsDrawer } from '@/components/IndicatorsDrawer';
 import { SubscriptionUsageBadge } from '@/components/SubscriptionUsageBadge';
 import { SettingsModal } from '@/components/SettingsModal';
 import '@/styles/components/dashboard.css';
@@ -25,6 +26,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  const [isIndicatorDrawerOpen, setIsIndicatorDrawerOpen] = useState(false);
+  const [selectedIndicatorStock, setSelectedIndicatorStock] = useState<string | null>(null);
+  const [indicatorsData, setIndicatorsData] = useState<any>(null);
+  const [isFetchingIndicators, setIsFetchingIndicators] = useState(false);
+
   const { toggleDrawer, alerts, fetchAlerts } = usePriceAlertStore();
   const { portfolio, isLoading, error, fetchPortfolio, triggerAddHolding } = usePortfolioStore();
 
@@ -36,6 +42,27 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
     fetchAlerts();
     fetchPortfolio();
   }, [fetchAlerts, fetchPortfolio]);
+
+  const handleViewIndicators = async (symbol: string) => {
+    setSelectedIndicatorStock(symbol);
+    setIsIndicatorDrawerOpen(true);
+    setIsFetchingIndicators(true);
+    setIndicatorsData(null);
+    try {
+      const baseUrl = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://127.0.0.1:8001';
+      const response = await fetch(`${baseUrl}/dashboard/indicators/${symbol}`);
+      if (response.ok) {
+        const data = await response.json();
+        setIndicatorsData(data);
+      } else {
+        console.error("Failed to fetch indicators", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching indicators", error);
+    } finally {
+      setIsFetchingIndicators(false);
+    }
+  };
 
   const handleAddStockToPortfolio = (symbol: string, price?: number) => {
     triggerAddHolding(symbol, price || null, 'NYSE / NASDAQ');
@@ -400,12 +427,18 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
                         }}
                       >
                         <div style={{ minWidth: '320px' }}>
-                          <TradingViewChart symbol={selectedStock} />
+                          <TradingViewChart 
+                            symbol={selectedStock} 
+                            onViewIndicators={handleViewIndicators}
+                          />
                         </div>
                       </div>
 
                       {/* Redesigned Holdings Component */}
-                      <PortfolioView onSelectStock={setSelectedStock} />
+                      <PortfolioView 
+                        onSelectStock={setSelectedStock} 
+                        onViewIndicators={handleViewIndicators}
+                      />
                     </div>
 
                     {/* Sidebar Column (Search, Allocation) - Spans 4 cols */}
@@ -469,6 +502,13 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
         </div>
       </main>
 
+      <IndicatorsDrawer 
+        symbol={selectedIndicatorStock}
+        isOpen={isIndicatorDrawerOpen}
+        onClose={() => setIsIndicatorDrawerOpen(false)}
+        isLoading={isFetchingIndicators}
+        indicators={indicatorsData}
+      />
       {/* Settings & Subscription Modal */}
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
