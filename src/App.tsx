@@ -10,6 +10,7 @@ import { VerifyEmail } from '@/components/VerifyEmail';
 import { AuthCallback } from '@/components/AuthCallback';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LiveMarketDashboard } from '@/pages/LiveMarketDashboard';
+import { SettingsPage } from '@/pages/SettingsPage';
 import { GuestPromoModal } from '@/components/GuestPromoModal';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
@@ -17,6 +18,7 @@ import { PriceAlertModal } from '@/components/PriceAlertModal';
 import { ActiveAlertsDrawer } from '@/components/ActiveAlertsDrawer';
 import { ConfirmationModal } from '@/components/ui/ConfirmationModal';
 import { PortfolioToast } from '@/components/ui/PortfolioToast';
+import { SubscriptionPaywallModal } from '@/components/SubscriptionPaywallModal';
 import { ROUTES } from '@/constants/routes.constants';
 
 function AppContent() {
@@ -143,6 +145,14 @@ function AppContent() {
             </AuthGuard>
           }
         />
+        <Route
+          path={ROUTES.SETTINGS}
+          element={
+            <AuthGuard>
+              <SettingsPage />
+            </AuthGuard>
+          }
+        />
       </Routes>
 
       {/* Global Price Target Alarm Modal & Drawer */}
@@ -153,6 +163,7 @@ function AppContent() {
       <ConfirmationModal />
       <PortfolioToast />
       <GuestPromoModal />
+      <SubscriptionPaywallModal />
     </>
   );
 }

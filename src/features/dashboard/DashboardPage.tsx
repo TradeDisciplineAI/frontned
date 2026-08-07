@@ -12,6 +12,8 @@ import { DashboardEmptyState } from '@/components/ui/DashboardEmptyState';
 import { StockSearchBar } from '@/components/StockSearchBar';
 import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
 import { IndicatorsDrawer } from '@/components/IndicatorsDrawer';
+import { SubscriptionUsageBadge } from '@/components/SubscriptionUsageBadge';
+import { SettingsModal } from '@/components/SettingsModal';
 import '@/styles/components/dashboard.css';
 
 interface DashboardPageProps {
@@ -22,6 +24,7 @@ interface DashboardPageProps {
 export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) => {
   const [selectedStock, setSelectedStock] = useState<string | null>(null);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const [isIndicatorDrawerOpen, setIsIndicatorDrawerOpen] = useState(false);
   const [selectedIndicatorStock, setSelectedIndicatorStock] = useState<string | null>(null);
@@ -376,7 +379,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
                     </p>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '12px' }}>
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                    <SubscriptionUsageBadge />
                     <button
                       onClick={toggleDrawer}
                       style={{
@@ -505,6 +509,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
         isLoading={isFetchingIndicators}
         indicators={indicatorsData}
       />
+      {/* Settings & Subscription Modal */}
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
 };

@@ -58,16 +58,13 @@ export const useUserStore = create<UserState>()(
       },
 
       initAuth: async () => {
+        const token = get().accessToken;
+        if (!token) return;
+
         try {
-          // If we have a user in localStorage, we can optimistically say they might be authenticated.
-          // But to be sure, and to get the access token in memory, we fetch their profile.
-          // Since there is no access token in memory yet, the Axios interceptor will hit a 401
-          // when it tries to get /auth/me, which will trigger the /auth/refresh flow automatically!
           const user = await authService.getMe();
           set({ user, isAuthenticated: true });
         } catch (error: any) {
-          // If refresh fails due to auth (401/403), clear the state.
-          // Preserve state for network errors or 5xx so the app can retry later.
           if (error?.response?.status === 401 || error?.response?.status === 403) {
             set({ user: null, isAuthenticated: false, accessToken: null });
           }
@@ -76,7 +73,6 @@ export const useUserStore = create<UserState>()(
 
       logout: async () => {
         try {
-          // Optionally call backend logout to destroy the HttpOnly cookie
           if (get().accessToken) {
             await authService.logout();
           }
@@ -88,11 +84,11 @@ export const useUserStore = create<UserState>()(
       },
     }),
     {
-      name: 'user-session', // localStorage key
-      // ONLY persist the non-sensitive user profile data, NOT the access token!
+      name: 'user-session',
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
+        accessToken: state.accessToken,
       }),
     },
   ),

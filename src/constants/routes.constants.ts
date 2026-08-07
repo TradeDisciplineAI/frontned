@@ -9,6 +9,7 @@ export const ROUTES = {
   SUCCESS: '/success',
   EXPLORE: '/explore',
   DASHBOARD: '/dashboard',
+  SETTINGS: '/settings',
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];

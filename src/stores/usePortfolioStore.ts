@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { portfolioService, type Portfolio } from '@/services/portfolio.service';
+import { useSubscriptionStore } from '@/stores/useSubscriptionStore';
 
 export interface ModalState {
   isOpen: boolean;
@@ -164,10 +165,25 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
           await get().fetchPortfolio();
         }
       } catch (err: any) {
+        const status = err.response?.status;
         const errorMsg =
           err.response?.data?.detail || `Failed to add ${modal.symbol} to portfolio.`;
         set({ isSubmitting: false, modal: initialModalState });
-        get().showToast('error', 'Add Stock Failed', modal.symbol, errorMsg, currentUsage);
+
+        if (status === 402) {
+          // Free trade limit reached! Trigger subscription paywall & refresh metrics
+          useSubscriptionStore.getState().openPaywall('trade_limit');
+          useSubscriptionStore.getState().fetchSubscriptionStatus();
+          get().showToast(
+            'error',
+            'Free Trade Limit Reached (6/6)',
+            modal.symbol,
+            errorMsg,
+            currentUsage,
+          );
+        } else {
+          get().showToast('error', 'Add Stock Failed', modal.symbol, errorMsg, currentUsage);
+        }
       }
     } else {
       // Remove Mode

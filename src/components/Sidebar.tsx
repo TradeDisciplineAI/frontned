@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Zap,
@@ -14,6 +14,7 @@ import {
 import type { UserResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
 import { useUserStore } from '@/stores/userStore';
+import { useSubscriptionStore } from '@/stores/useSubscriptionStore';
 import '@/styles/components/sidebar.css';
 
 interface SidebarProps {
@@ -23,15 +24,29 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false, onClose }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  user,
+  onLogout,
+  isOpen = false,
+  onClose,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { status, fetchSubscriptionStatus } = useSubscriptionStore();
+
+  useEffect(() => {
+    if (user) {
+      fetchSubscriptionStatus();
+    }
+  }, [user, fetchSubscriptionStatus]);
 
   const isExploreActive = location.pathname === ROUTES.EXPLORE;
   const isDashboardActive = location.pathname === ROUTES.DASHBOARD;
 
   const isLoggedIn = !!user;
-  const username = isLoggedIn ? (user?.username || 'Anjal Dev VK') : 'Guest Terminal';
+  const username = isLoggedIn ? user?.username || 'Anjal Dev VK' : 'Guest Terminal';
+  const isPro = status?.is_pro ?? false;
 
   return (
     <aside className={`vercel-sidebar ${isOpen ? 'mobile-open' : ''}`}>
@@ -46,9 +61,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false
             <span className="sidebar-workspace-name">{username}</span>
           </div>
           {isLoggedIn ? (
-            <span className="sidebar-workspace-badge">Pro</span>
+            isPro ? (
+              <span className="sidebar-workspace-badge" style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#fbbf24', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
+                PRO
+              </span>
+            ) : (
+              <span className="sidebar-workspace-badge" style={{ background: 'rgba(0, 229, 153, 0.1)', color: '#00e599', border: '1px solid rgba(0, 229, 153, 0.2)' }}>
+                FREE
+              </span>
+            )
           ) : (
-            <span className="sidebar-workspace-badge" style={{ background: 'rgba(0, 229, 153, 0.1)', color: '#00e599', border: '1px solid rgba(0, 229, 153, 0.2)' }}>Free</span>
+            <span className="sidebar-workspace-badge" style={{ background: 'rgba(255, 255, 255, 0.1)', color: '#94a3b8' }}>Guest</span>
           )}
           {onClose && (
             <button
@@ -94,7 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false
 
           <button
             className={`sidebar-nav-item ${isDashboardActive ? 'active' : ''}`}
-            onClick={() => isLoggedIn ? navigate(ROUTES.DASHBOARD) : useUserStore.getState().openGuestModal()}
+            onClick={() => (isLoggedIn ? navigate(ROUTES.DASHBOARD) : useUserStore.getState().openGuestModal())}
           >
             <div className="sidebar-item-left">
               <span className="sidebar-item-icon">
@@ -104,9 +127,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false
             </div>
           </button>
 
-          <button 
+          <button
             className="sidebar-nav-item"
-            onClick={() => isLoggedIn ? null : useUserStore.getState().openGuestModal()}
+            onClick={() => (isLoggedIn ? null : useUserStore.getState().openGuestModal())}
           >
             <div className="sidebar-item-left">
               <span className="sidebar-item-icon">
@@ -116,9 +139,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false
             </div>
           </button>
 
-          <button 
+          <button
             className="sidebar-nav-item"
-            onClick={() => isLoggedIn ? null : useUserStore.getState().openGuestModal()}
+            onClick={() => (isLoggedIn ? null : useUserStore.getState().openGuestModal())}
           >
             <div className="sidebar-item-left">
               <span className="sidebar-item-icon">
@@ -140,9 +163,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false
             </div>
           </button>
 
-          <button 
-            className="sidebar-nav-item"
-            onClick={() => isLoggedIn ? null : useUserStore.getState().openGuestModal()}
+          <button
+            className={`sidebar-nav-item ${location.pathname === ROUTES.SETTINGS ? 'active' : ''}`}
+            onClick={() => (isLoggedIn ? navigate(ROUTES.SETTINGS) : useUserStore.getState().openGuestModal())}
           >
             <div className="sidebar-item-left">
               <span className="sidebar-item-icon">
@@ -162,7 +185,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ user, onLogout, isOpen = false
             <span>Log Out</span>
           </button>
         ) : (
-          <button className="sidebar-logout-full-btn" onClick={() => navigate(ROUTES.LOGIN)} style={{ background: '#00e599', color: '#0b1120', fontWeight: 600 }}>
+          <button
+            className="sidebar-logout-full-btn"
+            onClick={() => navigate(ROUTES.LOGIN)}
+            style={{ background: '#00e599', color: '#0b1120', fontWeight: 600 }}
+          >
             <Zap size={14} strokeWidth={2} fill="#0b1120" />
             <span>Sign In</span>
           </button>
