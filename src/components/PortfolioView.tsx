@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Bell, Trash2, ExternalLink, TrendingUp, TrendingDown } from 'lucide-react';
+import { Bell, Trash2, ExternalLink, TrendingUp, TrendingDown, Activity } from 'lucide-react';
 import { usePortfolioStore } from '@/stores/usePortfolioStore';
 import { usePriceAlertStore } from '@/stores/priceAlertStore';
 import { Sparkline } from '@/components/ui/Sparkline';
@@ -8,6 +8,7 @@ import '@/styles/components/portfolio.css';
 
 interface PortfolioViewProps {
   onSelectStock?: (symbol: string) => void;
+  onViewIndicators?: (symbol: string) => void;
 }
 
 const ACCENT_BG_COLORS = [
@@ -26,7 +27,7 @@ const ACCENT_TEXT_COLORS = [
   '#8b5cf6', // Violet
 ];
 
-export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock }) => {
+export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onViewIndicators }) => {
   const { portfolio, isLoading, triggerRemoveHolding } = usePortfolioStore();
 
   const openModal = usePriceAlertStore((state) => state.openModal);
@@ -271,6 +272,18 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock }) =
                     title="View Trading Chart"
                   >
                     <ExternalLink size={12} />
+                  </button>
+                  
+                  <button
+                    type="button"
+                    className="asset-btn-action"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onViewIndicators) onViewIndicators(holding.symbol);
+                    }}
+                    title="View Technical Indicators"
+                  >
+                    <Activity size={12} />
                   </button>
                 </div>
               </div>

@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { createChart, CandlestickSeries } from 'lightweight-charts';
 import type { IChartApi } from 'lightweight-charts';
-import { Bell, Zap, Star } from 'lucide-react';
+import { Bell, Zap, Star, Activity } from 'lucide-react';
 import { marketService } from '@/services/market.service';
 import { usePriceAlertStore } from '@/stores/priceAlertStore';
 
 interface TradingViewChartProps {
   symbol: string | null;
+  onViewIndicators?: (symbol: string) => void;
 }
 
 // Robust helper to format values safely without throwing runtime crashes
@@ -17,10 +18,11 @@ const safeFormatPrice = (val: any, decimals: number = 2): string => {
   return num.toFixed(decimals);
 };
 
-export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol }) => {
+export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, onViewIndicators }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const [analysisData, setAnalysisData] = useState<any>(null);
+  const [indicatorData, setIndicatorData] = useState<any>(null);
   const [chartRawData, setChartRawData] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -156,6 +158,17 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol }) =>
       try {
         const response = await marketService.analyzeStock(symbol);
         setAnalysisData(response.analysis);
+
+        try {
+          const baseUrl = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://127.0.0.1:8001';
+          const indRes = await fetch(`${baseUrl}/dashboard/indicators/${symbol}`);
+          if (indRes.ok) {
+            const indData = await indRes.json();
+            setIndicatorData(indData);
+          }
+        } catch (err) {
+          console.error('Failed to fetch indicators', err);
+        }
 
         // Filter out any candles with null/undefined open, high, low, or close to prevent lightweight-charts library from throwing assertion failures
         const rawData = response.chart_data || [];
@@ -641,6 +654,16 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol }) =>
             />{' '}
             Watch
           </button>
+          <button
+            type="button"
+            className="action-icon-btn"
+            onClick={() => {
+              if (onViewIndicators && symbol) onViewIndicators(symbol);
+            }}
+            title="View Technical Indicators"
+          >
+            <Activity size={13} style={{ color: '#3b82f6' }} /> Indicators
+          </button>
         </div>
       </div>
 
@@ -762,6 +785,63 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol }) =>
             >
               {analysisData.trend || 'UNKNOWN'}
             </span>
+          </div>
+        </div>
+      )}
+
+      {/* 7. Inline Core Indicators Panel */}
+      {indicatorData && (
+        <div style={{ padding: '16px', background: '#0f172a', borderTop: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '0 0 12px 12px' }}>
+          <h4 style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '12px', margin: 0 }}>
+            Core Indicators
+          </h4>
+          
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', marginTop: '12px' }}>
+             {/* RSI */}
+             <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                 <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '0.5px' }}>RSI (14)</span>
+                 <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#f8fafc' }}>{indicatorData.rsi?.toFixed(2) || '—'}</span>
+               </div>
+               <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                 {indicatorData.rsi !== null ? (indicatorData.rsi > 70 ? 'Overbought' : indicatorData.rsi < 30 ? 'Oversold' : 'Neutral') : 'N/A'}
+               </span>
+             </div>
+
+             {/* MACD */}
+             <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                 <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '0.5px' }}>MACD (12, 26, 9)</span>
+                 {indicatorData.macd !== null ? (
+                   <span style={{ fontSize: '0.75rem', fontWeight: 800, color: indicatorData.macd > 0 ? '#10b981' : '#ef4444', background: indicatorData.macd > 0 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', padding: '2px 8px', borderRadius: '12px' }}>
+                     {indicatorData.macd.toFixed(2)}
+                   </span>
+                 ) : (
+                   <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#f8fafc' }}>—</span>
+                 )}
+               </div>
+               <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                 {indicatorData.macd !== null ? (indicatorData.macd > 0 ? 'Bullish Trend' : 'Bearish Trend') : 'N/A'}
+               </span>
+             </div>
+
+             {/* SMA (20) */}
+             <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                 <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '0.5px' }}>SMA (20)</span>
+                 <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#f8fafc' }}>{indicatorData.sma_20?.toFixed(2) || '—'}</span>
+               </div>
+               <span style={{ fontSize: '0.75rem', color: '#64748b' }}>20-day Simple Moving Average</span>
+             </div>
+
+             {/* SMA (50) */}
+             <div style={{ background: 'rgba(255, 255, 255, 0.02)', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                 <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '0.5px' }}>SMA (50)</span>
+                 <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#f8fafc' }}>{indicatorData.sma_50?.toFixed(2) || '—'}</span>
+               </div>
+               <span style={{ fontSize: '0.75rem', color: '#64748b' }}>50-day Simple Moving Average</span>
+             </div>
           </div>
         </div>
       )}
