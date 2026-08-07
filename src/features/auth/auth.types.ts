@@ -17,8 +17,22 @@ export interface UserResponse {
   role: UserRole;
   is_active: boolean;
   is_verified: boolean;
+  trades_count?: number;
+  subscription_tier?: string;
+  max_free_trades?: number;
+  remaining_free_trades?: number;
   created_at: string; // date-time string
   updated_at: string; // date-time string
+}
+
+export interface SubscriptionStatusResponse {
+  user_id: string;
+  username: string;
+  subscription_tier: 'FREE' | 'PRO' | string;
+  trades_count: number;
+  max_free_trades: number;
+  remaining_free_trades: number;
+  is_pro: boolean;
 }
 
 export interface UserSessionResponse {
