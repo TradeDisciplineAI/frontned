@@ -116,12 +116,19 @@ export const authService = {
   /**
    * Upgrade current user to PRO subscription tier.
    */
-  async subscribeToPro(paymentToken?: string): Promise<UserResponse> {
+  async subscribeToPro(
+    paymentToken?: string,
+    plan?: 'annual' | 'monthly',
+  ): Promise<UserResponse> {
     const headers: Record<string, string> = {};
     if (paymentToken) {
       headers['X-Payment-Token'] = paymentToken;
     }
-    const response = await apiClient.post<UserResponse>('/auth/subscribe', {}, { headers });
+    const response = await apiClient.post<UserResponse>(
+      '/auth/subscribe',
+      { plan: plan || 'annual' },
+      { headers },
+    );
     return response.data;
   },
 };

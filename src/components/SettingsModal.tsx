@@ -14,6 +14,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   const { status, openPaywall } = useSubscriptionStore();
   const [activeTab, setActiveTab] = useState<'subscription' | 'profile'>('subscription');
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const isPro = status?.is_pro ?? false;
@@ -23,6 +33,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   return (
     <AnimatePresence>
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
         style={{
           position: 'fixed',
           inset: 0,
@@ -77,7 +90,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                 <Settings className="w-5 h-5" />
               </div>
               <div>
-                <h2 style={{ fontSize: '20px', fontWeight: 800, margin: 0 }}>Account & Settings</h2>
+                <h2
+                  id="settings-modal-title"
+                  style={{ fontSize: '20px', fontWeight: 800, margin: 0 }}
+                >
+                  Account & Settings
+                </h2>
                 <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0, marginTop: '2px' }}>
                   Manage your profile, preferences, and subscription tier.
                 </p>
@@ -86,6 +104,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
             <button
               onClick={onClose}
+              aria-label="Close settings"
               style={{
                 background: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
@@ -202,10 +221,25 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                   }}
                 >
                   <div>
-                    <span style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        fontWeight: 600,
+                      }}
+                    >
                       Active Tier
                     </span>
-                    <h3 style={{ fontSize: '22px', fontWeight: 800, margin: '2px 0 0 0', color: isPro ? '#fbbf24' : '#fff' }}>
+                    <h3
+                      style={{
+                        fontSize: '22px',
+                        fontWeight: 800,
+                        margin: '2px 0 0 0',
+                        color: isPro ? '#fbbf24' : '#fff',
+                      }}
+                    >
                       {isPro ? '👑 PRO Tier Active' : '⚡ Free Standard Tier'}
                     </h3>
                   </div>
@@ -223,24 +257,44 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                         : '1px solid rgba(0, 229, 153, 0.2)',
                     }}
                   >
-                    {isPro ? 'UNLIMITED ACCESS' : '6 TRADES CAP'}
+                    {isPro ? 'UNLIMITED TRADES' : `${maxFree} TRADES CAP`}
                   </span>
                 </div>
 
                 {!isPro && (
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', fontWeight: 600, color: '#cbd5e1', marginBottom: '6px' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: '#cbd5e1',
+                        marginBottom: '6px',
+                      }}
+                    >
                       <span>Trade Executions Used</span>
                       <span style={{ color: tradesCount >= maxFree ? '#ef4444' : '#fbbf24' }}>
                         {tradesCount} / {maxFree} Free Trades
                       </span>
                     </div>
-                    <div style={{ height: '8px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '9999px', overflow: 'hidden', marginBottom: '14px' }}>
+                    <div
+                      style={{
+                        height: '8px',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        borderRadius: '9999px',
+                        overflow: 'hidden',
+                        marginBottom: '14px',
+                      }}
+                    >
                       <div
                         style={{
                           height: '100%',
                           width: `${Math.min(100, (tradesCount / maxFree) * 100)}%`,
-                          background: tradesCount >= maxFree ? 'linear-gradient(90deg, #f59e0b, #ef4444)' : 'linear-gradient(90deg, #10b981, #f59e0b)',
+                          background:
+                            tradesCount >= maxFree
+                              ? 'linear-gradient(90deg, #f59e0b, #ef4444)'
+                              : 'linear-gradient(90deg, #10b981, #f59e0b)',
                           borderRadius: '9999px',
                         }}
                       />
@@ -276,26 +330,62 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
                     <span>Upgrade to Pro Plan ($19/mo)</span>
                   </button>
                 ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#10b981', fontSize: '13px', fontWeight: 600 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      color: '#10b981',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                    }}
+                  >
                     <CheckCircle2 className="w-4 h-4" />
-                    <span>Your Pro membership is active. Enjoy unlimited trading discipline tools!</span>
+                    <span>
+                      Your Pro membership is active. Enjoy unlimited trading discipline tools!
+                    </span>
                   </div>
                 )}
               </div>
 
               {/* Plan Comparison Summary */}
-              <div style={{ background: 'rgba(30, 41, 59, 0.3)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '16px' }}>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9', marginBottom: '12px' }}>
+              <div
+                style={{
+                  background: 'rgba(30, 41, 59, 0.3)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  borderRadius: '16px',
+                  padding: '16px',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    color: '#f1f5f9',
+                    marginBottom: '12px',
+                  }}
+                >
                   Pro Tier Includes:
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+                <div
+                  style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}
+                >
                   {[
                     'Unlimited Stock Holdings',
                     'Real-Time WebSocket Stream',
                     'Smart Price Target Alarms',
                     'AI Discipline Psychology Coach',
                   ].map((feature, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#cbd5e1' }}>
+                    <div
+                      key={idx}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontSize: '12px',
+                        color: '#cbd5e1',
+                      }}
+                    >
                       <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
                       <span>{feature}</span>
                     </div>
@@ -308,21 +398,70 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           {/* Tab Content: Profile Details */}
           {activeTab === 'profile' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ background: 'rgba(30, 41, 59, 0.5)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', padding: '20px' }}>
+              <div
+                style={{
+                  background: 'rgba(30, 41, 59, 0.5)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  borderRadius: '16px',
+                  padding: '20px',
+                }}
+              >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
-                    <label style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Username</label>
-                    <div style={{ fontSize: '15px', fontWeight: 700, color: '#fff', marginTop: '2px' }}>{user?.username || 'Anjal Dev VK'}</div>
+                    <label
+                      style={{
+                        fontSize: '11px',
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Username
+                    </label>
+                    <div
+                      style={{ fontSize: '15px', fontWeight: 700, color: '#fff', marginTop: '2px' }}
+                    >
+                      {user?.username || 'Anjal Dev VK'}
+                    </div>
                   </div>
                   <div>
-                    <label style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Email Address</label>
-                    <div style={{ fontSize: '14px', color: '#cbd5e1', marginTop: '2px' }}>{user?.email || 'user@example.com'}</div>
+                    <label
+                      style={{
+                        fontSize: '11px',
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Email Address
+                    </label>
+                    <div style={{ fontSize: '14px', color: '#cbd5e1', marginTop: '2px' }}>
+                      {user?.email || 'user@example.com'}
+                    </div>
                   </div>
                   <div>
-                    <label style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>Account Status</label>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                    <label
+                      style={{
+                        fontSize: '11px',
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Account Status
+                    </label>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        marginTop: '4px',
+                      }}
+                    >
                       <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                      <span style={{ fontSize: '13px', color: '#34d399', fontWeight: 600 }}>Verified & Active</span>
+                      <span style={{ fontSize: '13px', color: '#34d399', fontWeight: 600 }}>
+                        Verified & Active
+                      </span>
                     </div>
                   </div>
                 </div>

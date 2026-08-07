@@ -76,11 +76,23 @@ describe('useSubscriptionStore', () => {
 
     useSubscriptionStore.setState({ isPaywallOpen: true, paywallReason: 'trade_limit' });
 
-    const success = await useSubscriptionStore.getState().upgradeToPro('tok_test');
+    const success = await useSubscriptionStore.getState().upgradeToPro('tok_test', 'annual');
 
     expect(success).toBe(true);
     const state = useSubscriptionStore.getState();
     expect(state.status?.is_pro).toBe(true);
-    expect(state.isPaywallOpen).toBe(false);
+  });
+
+  it('should upgrade to pro successfully even if status refresh rejects', async () => {
+    vi.mocked(authService.subscribeToPro).mockResolvedValueOnce({} as any);
+    vi.mocked(authService.getSubscriptionStatus).mockRejectedValueOnce(new Error('Network error'));
+
+    useSubscriptionStore.setState({ isPaywallOpen: true, paywallReason: 'trade_limit' });
+
+    const success = await useSubscriptionStore.getState().upgradeToPro('tok_test', 'annual');
+
+    expect(success).toBe(true);
+    const state = useSubscriptionStore.getState();
+    expect(state.isUpgrading).toBe(false);
   });
 });

@@ -15,7 +15,7 @@ interface SubscriptionState {
   fetchSubscriptionStatus: () => Promise<void>;
   openPaywall: (reason?: PaywallReason) => void;
   closePaywall: () => void;
-  upgradeToPro: (paymentToken?: string) => Promise<boolean>;
+  upgradeToPro: (paymentToken?: string, plan?: 'annual' | 'monthly') => Promise<boolean>;
 }
 
 export const useSubscriptionStore = create<SubscriptionState>((set) => ({
@@ -45,18 +45,19 @@ export const useSubscriptionStore = create<SubscriptionState>((set) => ({
     set({ isPaywallOpen: false, paywallReason: null });
   },
 
-  upgradeToPro: async (paymentToken?: string) => {
+  upgradeToPro: async (paymentToken?: string, plan?: 'annual' | 'monthly') => {
     set({ isUpgrading: true, error: null });
     try {
-      await authService.subscribeToPro(paymentToken);
-      // Refresh status after successful subscription
-      const updatedStatus = await authService.getSubscriptionStatus();
-      set({
-        status: updatedStatus,
-        isUpgrading: false,
-        isPaywallOpen: false,
-        paywallReason: null,
-      });
+      await authService.subscribeToPro(paymentToken, plan);
+      set({ isUpgrading: false });
+
+      try {
+        const updatedStatus = await authService.getSubscriptionStatus();
+        set({ status: updatedStatus });
+      } catch (refreshErr) {
+        console.warn('Failed to refresh status after successful upgrade:', refreshErr);
+      }
+
       return true;
     } catch (err: any) {
       const msg = err?.response?.data?.detail || 'Upgrade failed. Please try again.';

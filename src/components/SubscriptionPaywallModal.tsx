@@ -27,8 +27,11 @@ export const SubscriptionPaywallModal: React.FC = () => {
   const maxFree = status?.max_free_trades ?? 6;
 
   const handleUpgrade = async () => {
+    if (status?.is_pro) {
+      return;
+    }
     const dummyPaymentToken = `pay_tok_entitle_${Date.now()}`;
-    const success = await upgradeToPro(dummyPaymentToken);
+    const success = await upgradeToPro(dummyPaymentToken, selectedPlan);
     if (success) {
       setSuccessMessage('🎉 Subscription Upgraded to PRO! Unlimited Trading Unlocked.');
       setTimeout(() => {
@@ -121,7 +124,15 @@ export const SubscriptionPaywallModal: React.FC = () => {
             </div>
 
             <div>
-              <h2 style={{ fontSize: '20px', fontWeight: 800, margin: 0, letterSpacing: '-0.3px', color: '#fff' }}>
+              <h2
+                style={{
+                  fontSize: '20px',
+                  fontWeight: 800,
+                  margin: 0,
+                  letterSpacing: '-0.3px',
+                  color: '#fff',
+                }}
+              >
                 {paywallReason === 'trade_limit'
                   ? 'Free Trade Capacity Limit Reached (6/6)'
                   : 'Upgrade to AI Trading Discipline Pro'}
@@ -133,7 +144,14 @@ export const SubscriptionPaywallModal: React.FC = () => {
           </div>
 
           {/* Side-by-Side 2-Column Content Layout (Benefits Left, Plans Right) */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '20px', marginBottom: '16px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1.1fr 1fr',
+              gap: '20px',
+              marginBottom: '16px',
+            }}
+          >
             {/* Left Column: Usage Meter & Features */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {/* Progress Usage Meter */}
@@ -145,18 +163,36 @@ export const SubscriptionPaywallModal: React.FC = () => {
                   padding: '12px 14px',
                 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', fontWeight: 700, marginBottom: '6px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontSize: '11.5px',
+                    fontWeight: 700,
+                    marginBottom: '6px',
+                  }}
+                >
                   <span style={{ color: '#cbd5e1' }}>Free Trade Usage</span>
                   <span style={{ color: tradesCount >= maxFree ? '#ef4444' : '#00e599' }}>
                     {tradesCount} / {maxFree} Free Trades
                   </span>
                 </div>
-                <div style={{ height: '6px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '9999px', overflow: 'hidden' }}>
+                <div
+                  style={{
+                    height: '6px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '9999px',
+                    overflow: 'hidden',
+                  }}
+                >
                   <div
                     style={{
                       height: '100%',
                       width: `${Math.min(100, (tradesCount / maxFree) * 100)}%`,
-                      background: tradesCount >= maxFree ? 'linear-gradient(90deg, #00e599, #ef4444)' : 'linear-gradient(90deg, #00e599, #10b981)',
+                      background:
+                        tradesCount >= maxFree
+                          ? 'linear-gradient(90deg, #00e599, #ef4444)'
+                          : 'linear-gradient(90deg, #00e599, #10b981)',
                       borderRadius: '9999px',
                     }}
                   />
@@ -187,7 +223,9 @@ export const SubscriptionPaywallModal: React.FC = () => {
                     >
                       <Icon className="w-3.5 h-3.5 text-emerald-400" />
                       <div>
-                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#f1f5f9' }}>{item.title}</div>
+                        <div style={{ fontSize: '11.5px', fontWeight: 700, color: '#f1f5f9' }}>
+                          {item.title}
+                        </div>
                         <div style={{ fontSize: '10px', color: '#94a3b8' }}>{item.desc}</div>
                       </div>
                     </div>
@@ -206,21 +244,37 @@ export const SubscriptionPaywallModal: React.FC = () => {
                   justifyContent: 'space-between',
                   padding: '12px 14px',
                   borderRadius: '12px',
-                  border: selectedPlan === 'annual' ? '2px solid #00e599' : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: selectedPlan === 'annual' ? 'rgba(0, 229, 153, 0.08)' : 'rgba(15, 23, 42, 0.5)',
+                  border:
+                    selectedPlan === 'annual'
+                      ? '2px solid #00e599'
+                      : '1px solid rgba(255, 255, 255, 0.08)',
+                  background:
+                    selectedPlan === 'annual' ? 'rgba(0, 229, 153, 0.08)' : 'rgba(15, 23, 42, 0.5)',
                   cursor: 'pointer',
                   textAlign: 'left',
                   position: 'relative',
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>Annual Billing</div>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>
+                    Annual Billing
+                  </div>
                   <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff' }}>
-                    $19 <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b' }}>/mo</span>
+                    $19{' '}
+                    <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b' }}>/mo</span>
                   </div>
                 </div>
 
-                <span style={{ background: '#00e599', color: '#000', fontSize: '9.5px', fontWeight: 800, padding: '2px 8px', borderRadius: '9999px' }}>
+                <span
+                  style={{
+                    background: '#00e599',
+                    color: '#000',
+                    fontSize: '9.5px',
+                    fontWeight: 800,
+                    padding: '2px 8px',
+                    borderRadius: '9999px',
+                  }}
+                >
                   SAVE 35%
                 </span>
               </button>
@@ -233,34 +287,71 @@ export const SubscriptionPaywallModal: React.FC = () => {
                   justifyContent: 'space-between',
                   padding: '12px 14px',
                   borderRadius: '12px',
-                  border: selectedPlan === 'monthly' ? '2px solid #00e599' : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: selectedPlan === 'monthly' ? 'rgba(0, 229, 153, 0.08)' : 'rgba(15, 23, 42, 0.5)',
+                  border:
+                    selectedPlan === 'monthly'
+                      ? '2px solid #00e599'
+                      : '1px solid rgba(255, 255, 255, 0.08)',
+                  background:
+                    selectedPlan === 'monthly'
+                      ? 'rgba(0, 229, 153, 0.08)'
+                      : 'rgba(15, 23, 42, 0.5)',
                   cursor: 'pointer',
                   textAlign: 'left',
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>Monthly Billing</div>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>
+                    Monthly Billing
+                  </div>
                   <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff' }}>
-                    $29 <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b' }}>/mo</span>
+                    $29{' '}
+                    <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b' }}>/mo</span>
                   </div>
                 </div>
 
-                <span style={{ color: '#94a3b8', fontSize: '10px', fontWeight: 600 }}>Flexible</span>
+                <span style={{ color: '#94a3b8', fontSize: '10px', fontWeight: 600 }}>
+                  Flexible
+                </span>
               </button>
             </div>
           </div>
 
           {/* Feedback Banners */}
           {error && (
-            <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#fca5a5', borderRadius: '10px', padding: '10px', fontSize: '12px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div
+              style={{
+                background: 'rgba(239, 68, 68, 0.15)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#fca5a5',
+                borderRadius: '10px',
+                padding: '10px',
+                fontSize: '12px',
+                marginBottom: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
               <ShieldAlert className="w-4 h-4 text-red-400" />
               <span>{error}</span>
             </div>
           )}
 
           {successMessage && (
-            <div style={{ background: 'rgba(0, 229, 153, 0.15)', border: '1px solid rgba(0, 229, 153, 0.3)', color: '#6ee7b7', borderRadius: '10px', padding: '10px', fontSize: '12px', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div
+              style={{
+                background: 'rgba(0, 229, 153, 0.15)',
+                border: '1px solid rgba(0, 229, 153, 0.3)',
+                color: '#6ee7b7',
+                borderRadius: '10px',
+                padding: '10px',
+                fontSize: '12px',
+                marginBottom: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
               <span>{successMessage}</span>
             </div>

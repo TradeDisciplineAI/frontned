@@ -1,23 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  User,
-  Crown,
-  Bell,
-  Shield,
-  Palette,
-  Sparkles,
-  CheckCircle2,
-  Menu,
-} from 'lucide-react';
+import { User, Crown, Bell, CheckCircle2, Menu } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { useUserStore } from '@/stores/userStore';
 import { useSubscriptionStore } from '@/stores/useSubscriptionStore';
 import { ROUTES } from '@/constants/routes.constants';
 
 interface MenuItem {
-  id: 'profile' | 'subscription' | 'notifications' | 'security' | 'preferences';
+  id: 'profile' | 'subscription' | 'notifications';
   label: string;
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   desc: string;
@@ -32,10 +23,6 @@ export const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<MenuItem['id']>('profile');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  // Preference Toggles State
-  const [emailAlerts, setEmailAlerts] = useState(true);
-  const [audioChimes, setAudioChimes] = useState(true);
-  const [currency, setCurrency] = useState<'USD' | 'INR'>('USD');
   const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
 
   useEffect(() => {
@@ -55,19 +42,39 @@ export const SettingsPage: React.FC = () => {
   };
 
   const isPro = status?.is_pro ?? false;
-  const tradesCount = status?.trades_count ?? 0;
-  const maxFree = status?.max_free_trades ?? 6;
 
   const menuItems: MenuItem[] = [
-    { id: 'profile', label: 'Profile & Account', icon: User, desc: 'Personal details & credentials' },
-    { id: 'subscription', label: 'Subscription & Plans', icon: Crown, desc: 'Current tier & trade limits', badge: isPro ? 'PRO' : 'FREE' },
-    { id: 'notifications', label: 'Notifications & Alerts', icon: Bell, desc: 'Email digests & Web Audio chimes' },
-    { id: 'security', label: 'Security & Sessions', icon: Shield, desc: 'Password & active login sessions' },
-    { id: 'preferences', label: 'App Preferences', icon: Palette, desc: 'Currency & theme formatting' },
+    {
+      id: 'profile',
+      label: 'Profile & Account',
+      icon: User,
+      desc: 'Personal details & credentials',
+    },
+    {
+      id: 'subscription',
+      label: 'Subscription & Plans',
+      icon: Crown,
+      desc: 'Current tier & trade limits',
+      badge: isPro ? 'PRO' : 'FREE',
+    },
+    {
+      id: 'notifications',
+      label: 'Notifications & Alerts',
+      icon: Bell,
+      desc: 'Email digests & Web Audio chimes',
+    },
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#000000', color: '#f8fafc', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div
+      style={{
+        display: 'flex',
+        minHeight: '100vh',
+        background: '#000000',
+        color: '#f8fafc',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      }}
+    >
       <style>{`
         .settings-main-container {
           margin-left: 240px;
@@ -155,7 +162,15 @@ export const SettingsPage: React.FC = () => {
           }}
         >
           <div>
-            <h1 style={{ fontSize: '24px', fontWeight: 800, margin: 0, letterSpacing: '-0.5px', color: '#f8fafc' }}>
+            <h1
+              style={{
+                fontSize: '24px',
+                fontWeight: 800,
+                margin: 0,
+                letterSpacing: '-0.5px',
+                color: '#f8fafc',
+              }}
+            >
               Account Settings
             </h1>
             <p style={{ color: '#94a3b8', fontSize: '13px', margin: '4px 0 0 0' }}>
@@ -218,7 +233,9 @@ export const SettingsPage: React.FC = () => {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <Icon className="w-4 h-4" style={{ color: isActive ? '#00e599' : '#64748b' }} />
-                    <span style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500 }}>{item.label}</span>
+                    <span style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500 }}>
+                      {item.label}
+                    </span>
                   </div>
 
                   {item.badge && (
@@ -228,9 +245,15 @@ export const SettingsPage: React.FC = () => {
                         fontWeight: 800,
                         padding: '2px 8px',
                         borderRadius: '9999px',
-                        background: item.badge === 'PRO' ? 'rgba(245, 158, 11, 0.2)' : 'rgba(0, 229, 153, 0.1)',
+                        background:
+                          item.badge === 'PRO'
+                            ? 'rgba(245, 158, 11, 0.2)'
+                            : 'rgba(0, 229, 153, 0.1)',
                         color: item.badge === 'PRO' ? '#fbbf24' : '#00e599',
-                        border: item.badge === 'PRO' ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(0, 229, 153, 0.2)',
+                        border:
+                          item.badge === 'PRO'
+                            ? '1px solid rgba(245, 158, 11, 0.4)'
+                            : '1px solid rgba(0, 229, 153, 0.2)',
                       }}
                     >
                       {item.badge}
@@ -255,35 +278,131 @@ export const SettingsPage: React.FC = () => {
             {activeTab === 'profile' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#f8fafc' }}>User Profile Details</h3>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#f8fafc' }}>
+                    User Profile Details
+                  </h3>
                   <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '4px' }}>
                     Your primary account identity details on AI Trading Discipline Copilot.
                   </p>
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
-                  <div style={{ background: 'rgba(30, 41, 59, 0.4)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '14px', padding: '16px' }}>
-                    <label style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Username</label>
-                    <div style={{ fontSize: '16px', fontWeight: 800, color: '#fff', marginTop: '4px' }}>{user?.username || 'Anjal Dev VK'}</div>
-                  </div>
-
-                  <div style={{ background: 'rgba(30, 41, 59, 0.4)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '14px', padding: '16px' }}>
-                    <label style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Email Address</label>
-                    <div style={{ fontSize: '14px', color: '#e2e8f0', marginTop: '4px' }}>{user?.email || 'user@example.com'}</div>
-                  </div>
-
-                  <div style={{ background: 'rgba(30, 41, 59, 0.4)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '14px', padding: '16px' }}>
-                    <label style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Role & Permissions</label>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#00e599', marginTop: '4px', textTransform: 'capitalize' }}>{user?.role || 'user'}</div>
-                  </div>
-
-                  <div style={{ background: 'rgba(30, 41, 59, 0.4)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '14px', padding: '16px' }}>
-                    <label style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Verification Status</label>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', color: '#34d399', fontSize: '14px', fontWeight: 700 }}>
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                      <span>Email Verified</span>
+                <div
+                  style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}
+                >
+                  <div
+                    style={{
+                      background: 'rgba(30, 41, 59, 0.4)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      borderRadius: '14px',
+                      padding: '16px',
+                    }}
+                  >
+                    <label
+                      style={{
+                        fontSize: '11px',
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        fontWeight: 700,
+                      }}
+                    >
+                      Username
+                    </label>
+                    <div
+                      style={{ fontSize: '16px', fontWeight: 800, color: '#fff', marginTop: '4px' }}
+                    >
+                      {user?.username || 'Anjal Dev VK'}
                     </div>
                   </div>
+
+                  <div
+                    style={{
+                      background: 'rgba(30, 41, 59, 0.4)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      borderRadius: '14px',
+                      padding: '16px',
+                    }}
+                  >
+                    <label
+                      style={{
+                        fontSize: '11px',
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        fontWeight: 700,
+                      }}
+                    >
+                      Email Address
+                    </label>
+                    <div style={{ fontSize: '14px', color: '#e2e8f0', marginTop: '4px' }}>
+                      {user?.email || 'user@example.com'}
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      background: 'rgba(30, 41, 59, 0.4)',
+                      border: '1px solid rgba(255, 255, 255, 0.06)',
+                      borderRadius: '14px',
+                      padding: '16px',
+                    }}
+                  >
+                    <label
+                      style={{
+                        fontSize: '11px',
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        fontWeight: 700,
+                      }}
+                    >
+                      Role & Permissions
+                    </label>
+                    <div
+                      style={{
+                        fontSize: '14px',
+                        fontWeight: 700,
+                        color: '#00e599',
+                        marginTop: '4px',
+                        textTransform: 'capitalize',
+                      }}
+                    >
+                      {user?.role || 'user'}
+                    </div>
+                  </div>
+
+                  {user?.is_verified !== undefined && (
+                    <div
+                      style={{
+                        background: 'rgba(30, 41, 59, 0.4)',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        borderRadius: '14px',
+                        padding: '16px',
+                      }}
+                    >
+                      <label
+                        style={{
+                          fontSize: '11px',
+                          color: '#94a3b8',
+                          textTransform: 'uppercase',
+                          fontWeight: 700,
+                        }}
+                      >
+                        Verification Status
+                      </label>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          marginTop: '4px',
+                          color: user?.is_verified ? '#34d399' : '#f87171',
+                          fontSize: '14px',
+                          fontWeight: 700,
+                        }}
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <span>{user?.is_verified ? 'Email Verified' : 'Email Unverified'}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -292,7 +411,9 @@ export const SettingsPage: React.FC = () => {
             {activeTab === 'subscription' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#f8fafc' }}>Subscription & Usage Plans</h3>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#f8fafc' }}>
+                    Subscription & Usage Plans
+                  </h3>
                   <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '4px' }}>
                     Manage your trade execution capacity, subscription plan, and billing options.
                   </p>
@@ -311,12 +432,34 @@ export const SettingsPage: React.FC = () => {
                     padding: '24px',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      marginBottom: '16px',
+                    }}
+                  >
                     <div>
-                      <span style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 700 }}>
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          color: '#94a3b8',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                          fontWeight: 700,
+                        }}
+                      >
                         Current Active Subscription
                       </span>
-                      <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '4px 0 0 0', color: isPro ? '#00e599' : '#fff' }}>
+                      <h2
+                        style={{
+                          fontSize: '24px',
+                          fontWeight: 800,
+                          margin: '4px 0 0 0',
+                          color: isPro ? '#00e599' : '#fff',
+                        }}
+                      >
                         {isPro ? '👑 PRO Tier Active' : '⚡ Free Standard Tier'}
                       </h2>
                     </div>
@@ -338,18 +481,37 @@ export const SettingsPage: React.FC = () => {
 
                   {!isPro && (
                     <div style={{ marginBottom: '20px' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 700, color: '#cbd5e1', marginBottom: '8px' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          fontSize: '13px',
+                          fontWeight: 700,
+                          color: '#cbd5e1',
+                          marginBottom: '8px',
+                        }}
+                      >
                         <span>Trade Execution Capacity</span>
                         <span style={{ color: tradesCount >= maxFree ? '#ef4444' : '#00e599' }}>
                           {tradesCount} / {maxFree} Free Trades Used
                         </span>
                       </div>
-                      <div style={{ height: '8px', background: 'rgba(255, 255, 255, 0.1)', borderRadius: '9999px', overflow: 'hidden' }}>
+                      <div
+                        style={{
+                          height: '8px',
+                          background: 'rgba(255, 255, 255, 0.1)',
+                          borderRadius: '9999px',
+                          overflow: 'hidden',
+                        }}
+                      >
                         <div
                           style={{
                             height: '100%',
                             width: `${Math.min(100, (tradesCount / maxFree) * 100)}%`,
-                            background: tradesCount >= maxFree ? 'linear-gradient(90deg, #00e599, #ef4444)' : 'linear-gradient(90deg, #00e599, #10b981)',
+                            background:
+                              tradesCount >= maxFree
+                                ? 'linear-gradient(90deg, #00e599, #ef4444)'
+                                : 'linear-gradient(90deg, #00e599, #10b981)',
                             borderRadius: '9999px',
                           }}
                         />
@@ -381,9 +543,21 @@ export const SettingsPage: React.FC = () => {
                       <span>Upgrade to Pro Plan ($19/mo)</span>
                     </button>
                   ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#00e599', fontSize: '14px', fontWeight: 700 }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        color: '#00e599',
+                        fontSize: '14px',
+                        fontWeight: 700,
+                      }}
+                    >
                       <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                      <span>Your account is upgraded to PRO. All trade limits & risk guards are unlocked!</span>
+                      <span>
+                        Your account is upgraded to PRO. All trade limits & risk guards are
+                        unlocked!
+                      </span>
                     </div>
                   )}
                 </div>
@@ -394,101 +568,97 @@ export const SettingsPage: React.FC = () => {
             {activeTab === 'notifications' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#f8fafc' }}>Notification Preferences</h3>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#f8fafc' }}>
+                    Notification Preferences
+                  </h3>
                   <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '4px' }}>
-                    Control how and when you receive price target alerts and trading discipline digests.
+                    Control how and when you receive price target alerts and trading discipline
+                    digests.
                   </p>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'rgba(30, 41, 59, 0.4)', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '16px',
+                      background: 'rgba(30, 41, 59, 0.4)',
+                      borderRadius: '14px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                    }}
+                  >
                     <div>
-                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc' }}>Resend Email Price Target Alerts</div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>Receive instant email when your stock target price triggers.</div>
+                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc' }}>
+                        Resend Email Price Target Alerts
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                        Receive instant email when your stock target price triggers.
+                      </div>
                     </div>
                     <input
                       type="checkbox"
                       checked={emailAlerts}
                       onChange={(e) => {
-                        setEmailAlerts(e.target.checked);
-                        showSavedNotification('Notification preference updated.');
+                        const checked = e.target.checked;
+                        setEmailAlerts(checked);
+                        try {
+                          localStorage.setItem('pref_email_alerts', JSON.stringify(checked));
+                          showSavedNotification('Notification preference updated.');
+                        } catch (err) {
+                          console.error('Failed to save email alert preference:', err);
+                        }
                       }}
-                      style={{ width: '18px', height: '18px', accentColor: '#00e599', cursor: 'pointer' }}
+                      style={{
+                        width: '18px',
+                        height: '18px',
+                        accentColor: '#00e599',
+                        cursor: 'pointer',
+                      }}
                     />
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'rgba(30, 41, 59, 0.4)', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '16px',
+                      background: 'rgba(30, 41, 59, 0.4)',
+                      borderRadius: '14px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                    }}
+                  >
                     <div>
-                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc' }}>Web Audio Chime Sound</div>
-                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>Play audio chime when WebSocket receives live target trigger.</div>
+                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc' }}>
+                        Web Audio Chime Sound
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#94a3b8' }}>
+                        Play audio chime when WebSocket receives live target trigger.
+                      </div>
                     </div>
                     <input
                       type="checkbox"
                       checked={audioChimes}
                       onChange={(e) => {
-                        setAudioChimes(e.target.checked);
-                        showSavedNotification('Web audio preference updated.');
+                        const checked = e.target.checked;
+                        setAudioChimes(checked);
+                        try {
+                          localStorage.setItem('pref_audio_chimes', JSON.stringify(checked));
+                          showSavedNotification('Web audio preference updated.');
+                        } catch (err) {
+                          console.error('Failed to save audio chime preference:', err);
+                        }
                       }}
-                      style={{ width: '18px', height: '18px', accentColor: '#00e599', cursor: 'pointer' }}
+                      style={{
+                        width: '18px',
+                        height: '18px',
+                        accentColor: '#00e599',
+                        cursor: 'pointer',
+                      }}
                     />
                   </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 4: SECURITY */}
-            {activeTab === 'security' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#f8fafc' }}>Security & Authentication</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '4px' }}>
-                    Manage account security, active tokens, and device sessions.
-                  </p>
-                </div>
-
-                <div style={{ background: 'rgba(30, 41, 59, 0.4)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', marginBottom: '8px' }}>Active JWT Token Session</div>
-                  <div style={{ fontSize: '12px', color: '#94a3b8', fontFamily: 'monospace' }}>
-                    Algorithm: HS256 • Refresh Token Cookies: Active
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 5: PREFERENCES */}
-            {activeTab === 'preferences' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#f8fafc' }}>App Display Preferences</h3>
-                  <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '4px' }}>
-                    Customize currency formatting and market data default displays.
-                  </p>
-                </div>
-
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'rgba(30, 41, 59, 0.4)', borderRadius: '14px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                  <div>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc' }}>Base Portfolio Currency</div>
-                    <div style={{ fontSize: '12px', color: '#94a3b8' }}>Display stock holdings in USD ($) or INR (₹).</div>
-                  </div>
-                  <select
-                    value={currency}
-                    onChange={(e) => {
-                      setCurrency(e.target.value as any);
-                      showSavedNotification(`Currency set to ${e.target.value}.`);
-                    }}
-                    style={{
-                      background: '#0b1120',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      color: '#fff',
-                      padding: '8px 12px',
-                      borderRadius: '8px',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                    }}
-                  >
-                    <option value="USD">USD ($)</option>
-                    <option value="INR">INR (₹)</option>
-                  </select>
                 </div>
               </div>
             )}
