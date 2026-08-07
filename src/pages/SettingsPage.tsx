@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Crown, Bell, CheckCircle2, Menu } from 'lucide-react';
+import { User, Crown, Bell, Sparkles, CheckCircle2, Menu } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { useUserStore } from '@/stores/userStore';
 import { useSubscriptionStore } from '@/stores/useSubscriptionStore';
@@ -23,6 +23,25 @@ export const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<MenuItem['id']>('profile');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+  // Preference Toggles State
+  const [emailAlerts, setEmailAlerts] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('pref_email_alerts');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+
+  const [audioChimes, setAudioChimes] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem('pref_audio_chimes');
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  });
+
   const [savedFeedback, setSavedFeedback] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,6 +61,8 @@ export const SettingsPage: React.FC = () => {
   };
 
   const isPro = status?.is_pro ?? false;
+  const tradesCount = status?.trades_count ?? 0;
+  const maxFree = status?.max_free_trades ?? 6;
 
   const menuItems: MenuItem[] = [
     {
