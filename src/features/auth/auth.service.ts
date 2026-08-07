@@ -102,4 +102,26 @@ export const authService = {
     const response = await apiClient.post('/auth/cleanup');
     return response.data;
   },
+
+  /**
+   * Fetch current subscription status & trade usage metrics.
+   */
+  async getSubscriptionStatus(): Promise<import('./auth.types').SubscriptionStatusResponse> {
+    const response = await apiClient.get<import('./auth.types').SubscriptionStatusResponse>(
+      '/auth/subscription-status',
+    );
+    return response.data;
+  },
+
+  /**
+   * Upgrade current user to PRO subscription tier.
+   */
+  async subscribeToPro(paymentToken?: string): Promise<UserResponse> {
+    const headers: Record<string, string> = {};
+    if (paymentToken) {
+      headers['X-Payment-Token'] = paymentToken;
+    }
+    const response = await apiClient.post<UserResponse>('/auth/subscribe', {}, { headers });
+    return response.data;
+  },
 };

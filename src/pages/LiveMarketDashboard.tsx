@@ -131,7 +131,12 @@ export const LiveMarketDashboard: React.FC = () => {
     let isComponentMounted = true;
 
     const connect = () => {
-      ws = new WebSocket(`${MARKET_WS_URL}/dashboard/ws/market`);
+      const token = useUserStore.getState().accessToken;
+      const wsEndpoint = token
+        ? `${MARKET_WS_URL}/dashboard/ws/market?token=${token}`
+        : `${MARKET_WS_URL}/dashboard/ws/market`;
+
+      ws = new WebSocket(wsEndpoint);
 
       ws.onopen = () => {
         if (isComponentMounted) {
