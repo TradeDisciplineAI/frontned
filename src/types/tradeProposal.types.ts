@@ -5,7 +5,10 @@ export type TradeProposalStatus =
   | 'PROPOSED'
   | 'APPROVED'
   | 'REJECTED'
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | 'RISK_APPROVED'
+  | 'RISK_REJECTED'
+  | 'NEEDS_REVIEW';
 
 export interface TradeProposal {
   id: string;
@@ -47,4 +50,27 @@ export interface PreRiskMetrics {
   takeProfitPercent: number;
   estimatedPositionValue: number;
   maxTotalRiskDollars: number;
+}
+
+export interface RiskCheck {
+  check_name: string;
+  passed: boolean;
+  severity: 'CRITICAL' | 'HIGH' | 'MEDIUM' | 'LOW';
+  actual_value: string;
+  limit_value: string;
+  message: string;
+}
+
+export interface RiskEvaluation {
+  id: string;
+  proposal_id: string;
+  decision: 'RISK_APPROVED' | 'RISK_REJECTED' | 'NEEDS_REVIEW';
+  risk_score: number;
+  max_risk: number;
+  estimated_reward: number;
+  risk_reward_ratio: number;
+  portfolio_exposure: number;
+  checks: RiskCheck[];
+  reasons: string[];
+  evaluated_at: string;
 }
