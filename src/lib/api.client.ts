@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/userStore';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://localhost:8001';
+const AI_SERVICE_API_URL = import.meta.env.VITE_AI_SERVICE_API_URL || 'http://localhost:8002';
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -16,8 +17,23 @@ export const marketApiClient = axios.create({
   timeout: 15000,
 });
 
+export const aiServiceClient = axios.create({
+  baseURL: AI_SERVICE_API_URL,
+  withCredentials: true,
+  timeout: 30000,
+});
+
 // Request Interceptor for marketApiClient: Attach access token
 marketApiClient.interceptors.request.use((config) => {
+  const token = useUserStore.getState().accessToken;
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Request Interceptor for aiServiceClient: Attach access token
+aiServiceClient.interceptors.request.use((config) => {
   const token = useUserStore.getState().accessToken;
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -81,4 +97,9 @@ apiClient.interceptors.response.use((response) => response, handleResponseError(
 marketApiClient.interceptors.response.use(
   (response) => response,
   handleResponseError(marketApiClient),
+);
+
+aiServiceClient.interceptors.response.use(
+  (response) => response,
+  handleResponseError(aiServiceClient),
 );

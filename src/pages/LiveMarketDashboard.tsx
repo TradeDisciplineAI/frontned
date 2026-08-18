@@ -24,6 +24,7 @@ import {
 import { useUserStore } from '@/stores/userStore';
 import { usePriceAlertStore } from '@/stores/priceAlertStore';
 import { usePortfolioStore } from '@/stores/usePortfolioStore';
+import { useTradeProposalStore } from '@/stores/useTradeProposalStore';
 import { Sidebar } from '@/components/Sidebar';
 import { StockSearchBar } from '@/components/StockSearchBar';
 import { PriceAlertModal } from '@/components/PriceAlertModal';
@@ -462,6 +463,40 @@ export const LiveMarketDashboard: React.FC = () => {
                               <div style={{ fontSize: '18px', fontWeight: 800, color: '#f1f5f9' }}>2130</div>
                             </div>
                           </div>
+                          <button
+                            onClick={() => {
+                              useTradeProposalStore.getState().openCreateModal({
+                                symbol: 'RELIANCE.NS',
+                                action: 'BUY',
+                                entry_price: 2045,
+                                stop_loss: 2000,
+                                take_profit: 2130,
+                                confidence_score: 0.87,
+                                primary_strategy: 'AI Technical Breakout',
+                              });
+                              navigate('/proposals');
+                            }}
+                            style={{
+                              marginTop: '12px',
+                              width: '100%',
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                              color: '#fff',
+                              border: 'none',
+                              fontWeight: 700,
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '6px',
+                            }}
+                            data-testid="propose-trade-signal-btn"
+                          >
+                            <ShieldAlert size={14} />
+                            Propose Trade & Pre-Risk Review
+                          </button>
                         </motion.div>
                       </div>
                     </div>

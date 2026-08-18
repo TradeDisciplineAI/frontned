@@ -9,6 +9,7 @@ export const ROUTES = {
   SUCCESS: '/success',
   EXPLORE: '/explore',
   DASHBOARD: '/dashboard',
+  PROPOSALS: '/proposals',
   SETTINGS: '/settings',
 } as const;
 

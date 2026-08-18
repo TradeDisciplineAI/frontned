@@ -9,12 +9,25 @@ export interface Holding {
   currency?: string;
 }
 
+export interface PaperPosition {
+  id: string;
+  portfolio_id: string;
+  symbol: string;
+  quantity: number;
+  average_entry_price: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Portfolio {
   id: string;
+  user_id?: string;
   name: string;
+  type?: string;
   created_at: string;
   updated_at: string;
   holdings: Holding[];
+  positions?: PaperPosition[];
 }
 
 export const portfolioService = {
@@ -24,13 +37,29 @@ export const portfolioService = {
     return data;
   },
 
-  // Create a new portfolio
-  async createPortfolio(name: string): Promise<Portfolio> {
-    const { data } = await marketApiClient.post('/portfolio', { name });
+  // Create a new paper portfolio
+  async createPortfolio(name: string = 'My Paper Portfolio'): Promise<Portfolio> {
+    const { data } = await marketApiClient.post('/portfolio', { name, type: 'PAPER' });
     return data;
   },
 
-  // Add a new stock holding
+  // Get paper positions for a specific portfolio ID
+  async getPositions(portfolioId: string): Promise<PaperPosition[]> {
+    const { data } = await marketApiClient.get(`/portfolio/${portfolioId}/positions`);
+    return data;
+  },
+
+  // Add or update a paper position
+  async addPosition(portfolioId: string, symbol: string, quantity: number, averageEntryPrice: number): Promise<PaperPosition> {
+    const { data } = await marketApiClient.post(`/portfolio/${portfolioId}/positions`, {
+      symbol,
+      quantity,
+      average_entry_price: averageEntryPrice,
+    });
+    return data;
+  },
+
+  // Add a new stock holding (watchlist)
   async addHolding(symbol: string): Promise<Holding> {
     const { data } = await marketApiClient.post('/portfolio/holdings', { symbol });
     return data;

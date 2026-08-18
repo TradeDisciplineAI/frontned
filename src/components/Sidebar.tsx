@@ -10,6 +10,7 @@ import {
   Globe,
   Settings,
   LogOut,
+  ShieldAlert,
 } from 'lucide-react';
 import type { UserResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
@@ -43,6 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isExploreActive = location.pathname === ROUTES.EXPLORE;
   const isDashboardActive = location.pathname === ROUTES.DASHBOARD;
+  const isProposalsActive = location.pathname === ROUTES.PROPOSALS;
 
   const isLoggedIn = !!user;
   const username = isLoggedIn ? user?.username || 'Anjal Dev VK' : 'Guest Terminal';
@@ -124,6 +126,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <PieChart size={15} strokeWidth={2} />
               </span>
               <span>Portfolio</span>
+            </div>
+          </button>
+
+          <button
+            className={`sidebar-nav-item ${isProposalsActive ? 'active' : ''}`}
+            onClick={() => (isLoggedIn ? navigate(ROUTES.PROPOSALS) : useUserStore.getState().openGuestModal())}
+            data-testid="sidebar-nav-proposals"
+          >
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <ShieldAlert size={15} strokeWidth={2} />
+              </span>
+              <span>Trade Proposals</span>
             </div>
           </button>
 
