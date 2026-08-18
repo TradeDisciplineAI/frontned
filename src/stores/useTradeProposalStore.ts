@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { tradeProposalService } from '@/services/tradeProposal.service';
-import type { TradeProposal, CreateTradeProposalDTO } from '@/types/tradeProposal.types';
+import type { TradeProposal, CreateTradeProposalDTO, RiskEvaluation } from '@/types/tradeProposal.types';
 
 interface TradeProposalState {
   proposals: TradeProposal[];
@@ -14,6 +14,11 @@ interface TradeProposalState {
   isCreateModalOpen: boolean;
   isReviewModalOpen: boolean;
 
+  // Agent 4 Risk States
+  riskEvaluation: RiskEvaluation | null;
+  riskLoading: boolean;
+  riskError: string | null;
+
   // Actions
   createProposal: (payload: CreateTradeProposalDTO) => Promise<TradeProposal | null>;
   fetchProposalById: (id: string) => Promise<TradeProposal | null>;
@@ -24,6 +29,8 @@ interface TradeProposalState {
   openReviewModal: (proposal?: TradeProposal) => void;
   closeReviewModal: () => void;
   clearError: () => void;
+  evaluateProposalRisk: (proposalId: string, userId?: string) => Promise<RiskEvaluation | null>;
+  fetchProposalRisk: (proposalId: string, userId?: string) => Promise<RiskEvaluation | null>;
 }
 
 export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
@@ -37,6 +44,11 @@ export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
 
   isCreateModalOpen: false,
   isReviewModalOpen: false,
+
+  // Agent 4 Risk States Default
+  riskEvaluation: null,
+  riskLoading: false,
+  riskError: null,
 
   createProposal: async (payload: CreateTradeProposalDTO) => {
     set({ isSubmitting: true, error: null });
@@ -69,6 +81,9 @@ export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
       set((state) => ({
         proposals: [fetchedProposal, ...state.proposals.filter((p) => p.id !== fetchedProposal.id)],
         activeProposal: fetchedProposal,
+        riskEvaluation: null,
+        riskLoading: false,
+        riskError: null,
         isSubmitting: false,
         isCreateModalOpen: false,
         isReviewModalOpen: true, // Show Pre-Risk Review UI after proposal creation
@@ -139,7 +154,7 @@ export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
   },
 
   setActiveProposal: (proposal) => {
-    set({ activeProposal: proposal });
+    set({ activeProposal: proposal, riskEvaluation: null, riskLoading: false, riskError: null });
   },
 
   openCreateModal: (initialData) => {
@@ -158,15 +173,74 @@ export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
     set({
       isReviewModalOpen: true,
       activeProposal: proposal !== undefined ? proposal : get().activeProposal,
+      riskEvaluation: null,
+      riskLoading: false,
+      riskError: null,
       error: null,
     });
   },
 
   closeReviewModal: () => {
-    set({ isReviewModalOpen: false });
+    set({ isReviewModalOpen: false, riskEvaluation: null, riskLoading: false, riskError: null });
   },
 
   clearError: () => {
     set({ error: null });
+  },
+
+  evaluateProposalRisk: async (proposalId: string, userId?: string) => {
+    set({ riskLoading: true, riskError: null });
+    try {
+      const evaluation = await tradeProposalService.evaluateProposalRisk(proposalId, userId);
+      set((state) => {
+        const updatedProposals = state.proposals.map((p) =>
+          p.id === proposalId ? { ...p, status: evaluation.decision } : p
+        );
+        const updatedActive = state.activeProposal && state.activeProposal.id === proposalId
+          ? { ...state.activeProposal, status: evaluation.decision }
+          : state.activeProposal;
+
+        return {
+          riskEvaluation: evaluation,
+          proposals: updatedProposals,
+          activeProposal: updatedActive,
+          riskLoading: false,
+        };
+      });
+      return evaluation;
+    } catch (err: any) {
+      let errorMsg = 'Failed to evaluate trade risk';
+      if (err.response?.status === 404) {
+        errorMsg = 'Risk evaluation API endpoint not found. Please verify AI-Service is running.';
+      } else if (err.code === 'ERR_NETWORK') {
+        errorMsg = 'Unable to connect to AI-Service API (http://localhost:8002).';
+      } else if (err.response?.data?.detail) {
+        errorMsg = typeof err.response.data.detail === 'string' ? err.response.data.detail : JSON.stringify(err.response.data.detail);
+      }
+      set({ riskError: errorMsg, riskLoading: false });
+      return null;
+    }
+  },
+
+  fetchProposalRisk: async (proposalId: string, userId?: string) => {
+    set({ riskLoading: true, riskError: null });
+    try {
+      const evaluation = await tradeProposalService.getProposalRisk(proposalId, userId);
+      set({ riskEvaluation: evaluation, riskLoading: false });
+      return evaluation;
+    } catch (err: any) {
+      let errorMsg = 'Failed to fetch persisted risk evaluation';
+      if (err.response?.status === 404) {
+        set({ riskEvaluation: null, riskLoading: false });
+        return null;
+      }
+      if (err.code === 'ERR_NETWORK') {
+        errorMsg = 'Unable to connect to AI-Service API (http://localhost:8002).';
+      } else if (err.response?.data?.detail) {
+        errorMsg = typeof err.response.data.detail === 'string' ? err.response.data.detail : JSON.stringify(err.response.data.detail);
+      }
+      set({ riskError: errorMsg, riskLoading: false });
+      return null;
+    }
   },
 }));

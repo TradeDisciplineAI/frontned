@@ -1,18 +1,35 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { tradeProposalService } from '@/services/tradeProposal.service';
 import { aiServiceClient } from '@/lib/api.client';
-import type { TradeProposal, CreateTradeProposalDTO } from '@/types/tradeProposal.types';
+import type { TradeProposal, CreateTradeProposalDTO, RiskEvaluation } from '@/types/tradeProposal.types';
 
 vi.mock('@/lib/api.client', () => ({
-  apiClient: {
-    post: vi.fn(),
-    get: vi.fn(),
-  },
-  aiServiceClient: {
-    post: vi.fn(),
-    get: vi.fn(),
-  },
+  apiClient: { post: vi.fn(), get: vi.fn() },
+  aiServiceClient: { post: vi.fn(), get: vi.fn() },
 }));
+
+const mockRiskEvaluation: RiskEvaluation = {
+  id: 'risk-001',
+  proposal_id: 'prop-123',
+  decision: 'RISK_APPROVED',
+  risk_score: 100,
+  max_risk: 26.4,
+  estimated_reward: 52.8,
+  risk_reward_ratio: 2.0,
+  portfolio_exposure: 13160.0,
+  checks: [
+    {
+      check_name: 'price_validity',
+      passed: true,
+      severity: 'CRITICAL',
+      actual_value: 'qty=10, entry=150.0',
+      limit_value: 'positive numbers with valid order',
+      message: 'Price ordering and quantities are valid.',
+    },
+  ],
+  reasons: [],
+  evaluated_at: '2026-08-18T07:05:26.334795',
+};
 
 describe('tradeProposalService', () => {
   beforeEach(() => {
@@ -77,4 +94,54 @@ describe('tradeProposalService', () => {
     expect(aiServiceClient.get).toHaveBeenCalledWith('/trade-proposals/prop-456');
     expect(result).toEqual(mockProposal);
   });
+
+  it('evaluateProposalRisk POSTs to /trade-proposals/{id}/risk-evaluation with user_id param', async () => {
+    vi.mocked(aiServiceClient.post).mockResolvedValueOnce({ data: mockRiskEvaluation });
+
+    const result = await tradeProposalService.evaluateProposalRisk('prop-123', 'user-001');
+
+    expect(aiServiceClient.post).toHaveBeenCalledWith(
+      '/trade-proposals/prop-123/risk-evaluation',
+      {},
+      { params: { user_id: 'user-001' } }
+    );
+    expect(result).toEqual(mockRiskEvaluation);
+  });
+
+  it('evaluateProposalRisk omits user_id param when userId is not provided', async () => {
+    vi.mocked(aiServiceClient.post).mockResolvedValueOnce({ data: mockRiskEvaluation });
+
+    await tradeProposalService.evaluateProposalRisk('prop-123');
+
+    expect(aiServiceClient.post).toHaveBeenCalledWith(
+      '/trade-proposals/prop-123/risk-evaluation',
+      {},
+      { params: undefined }
+    );
+  });
+
+  it('getProposalRisk GETs /trade-proposals/{id}/risk with user_id param', async () => {
+    vi.mocked(aiServiceClient.get).mockResolvedValueOnce({ data: mockRiskEvaluation });
+
+    const result = await tradeProposalService.getProposalRisk('prop-123', 'user-001');
+
+    expect(aiServiceClient.get).toHaveBeenCalledWith(
+      '/trade-proposals/prop-123/risk',
+      { params: { user_id: 'user-001' } }
+    );
+    expect(result).toEqual(mockRiskEvaluation);
+  });
+
+  it('getProposalRisk omits user_id param when userId is not provided', async () => {
+    vi.mocked(aiServiceClient.get).mockResolvedValueOnce({ data: mockRiskEvaluation });
+
+    await tradeProposalService.getProposalRisk('prop-123');
+
+    expect(aiServiceClient.get).toHaveBeenCalledWith(
+      '/trade-proposals/prop-123/risk',
+      { params: undefined }
+    );
+  });
 });
+
+

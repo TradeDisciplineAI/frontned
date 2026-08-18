@@ -1,5 +1,5 @@
 import { aiServiceClient } from '@/lib/api.client';
-import type { TradeProposal, CreateTradeProposalDTO } from '@/types/tradeProposal.types';
+import type { TradeProposal, CreateTradeProposalDTO, RiskEvaluation } from '@/types/tradeProposal.types';
 
 export const tradeProposalService = {
   /**
@@ -28,6 +28,35 @@ export const tradeProposalService = {
     const response = await aiServiceClient.get<TradeProposal[]>('/trade-proposals', {
       params: userId ? { user_id: userId } : undefined,
     });
+    return response.data;
+  },
+
+  /**
+   * Trigger Agent 4 Risk Evaluation for a Trade Proposal
+   * POST /trade-proposals/{proposal_id}/risk-evaluation
+   */
+  async evaluateProposalRisk(proposalId: string, userId?: string): Promise<RiskEvaluation> {
+    const response = await aiServiceClient.post<RiskEvaluation>(
+      `/trade-proposals/${proposalId}/risk-evaluation`,
+      {},
+      {
+        params: userId ? { user_id: userId } : undefined,
+      }
+    );
+    return response.data;
+  },
+
+  /**
+   * Retrieve the persisted risk evaluation for a Trade Proposal
+   * GET /trade-proposals/{proposal_id}/risk
+   */
+  async getProposalRisk(proposalId: string, userId?: string): Promise<RiskEvaluation> {
+    const response = await aiServiceClient.get<RiskEvaluation>(
+      `/trade-proposals/${proposalId}/risk`,
+      {
+        params: userId ? { user_id: userId } : undefined,
+      }
+    );
     return response.data;
   },
 };
