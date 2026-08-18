@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Activity, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
+import { X, Activity, RefreshCw } from 'lucide-react';
 import '@/styles/components/price-alerts.css';
 
 interface IndicatorsDrawerProps {
