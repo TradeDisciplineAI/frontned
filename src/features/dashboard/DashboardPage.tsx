@@ -14,6 +14,7 @@ import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
 import { IndicatorsDrawer } from '@/components/IndicatorsDrawer';
 import { SubscriptionUsageBadge } from '@/components/SubscriptionUsageBadge';
 import { SettingsModal } from '@/components/SettingsModal';
+import { StockNews } from '@/components/StockNews';
 import '@/styles/components/dashboard.css';
 
 interface DashboardPageProps {
@@ -433,6 +434,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ user, onLogout }) 
                           />
                         </div>
                       </div>
+
+                      {/* Stock News Feature */}
+                      <StockNews symbol={selectedStock} />
 
                       {/* Redesigned Holdings Component */}
                       <PortfolioView 
