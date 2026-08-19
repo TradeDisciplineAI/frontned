@@ -28,10 +28,8 @@ export const PaperPositionsPage: React.FC = () => {
   const { portfolio, fetchPortfolio, isLoading } = usePortfolioStore();
 
   useEffect(() => {
-    if (!portfolio) {
-      fetchPortfolio();
-    }
-  }, [portfolio, fetchPortfolio]);
+    fetchPortfolio();
+  }, [fetchPortfolio]);
 
   if (isLoading) {
     return <PageSkeleton withSidebar />;

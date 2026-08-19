@@ -61,9 +61,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
       return;
     }
     if (path === ROUTES.DASHBOARD || path === ROUTES.POSITIONS) {
-      usePortfolioStore.setState({ isLoading: true });
+      usePortfolioStore.getState().fetchPortfolio();
     } else if (path === ROUTES.PROPOSALS) {
-      useTradeProposalStore.setState({ isLoading: true });
+      useTradeProposalStore.getState().fetchProposals(user?.id);
     }
     navigate(path);
   };
