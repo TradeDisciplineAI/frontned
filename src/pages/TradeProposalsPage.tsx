@@ -1,5 +1,6 @@
 import React from 'react';
-import { Menu, Sparkles, Info } from 'lucide-react';
+import { Menu, Sparkles, Info, ShieldCheck, Activity } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { Sidebar } from '@/components/Sidebar';
 import { useUserStore } from '@/stores/userStore';
 import { useTradeProposalStore } from '@/stores/useTradeProposalStore';
@@ -30,27 +31,30 @@ export const TradeProposalsPage: React.FC = () => {
     fetchProposals(user?.id);
   }, [fetchProposals, user?.id]);
 
+  const proposalCount = proposals.length;
+
   return (
     <div
       style={{
         display: 'flex',
         minHeight: '100vh',
-        background: 'var(--color-bg-primary, #0b1120)',
-        color: '#f3f4f6',
+        background: '#040810',
+        color: '#f8fafc',
         position: 'relative',
         overflowX: 'hidden',
+        fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       }}
     >
       <style>{`
         .proposals-main-container {
           margin-left: 280px;
           flex: 1;
-          padding: 40px;
+          padding: 36px 40px;
           box-sizing: border-box;
           transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           display: flex;
           flex-direction: column;
-          gap: 24px;
+          gap: 20px;
           width: 100%;
           min-width: 0;
         }
@@ -72,89 +76,65 @@ export const TradeProposalsPage: React.FC = () => {
       />
 
       <main className="proposals-main-container">
-        {/* Top Header */}
-        <header
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '1rem',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-            paddingBottom: '1.25rem',
-            flexWrap: 'wrap',
-          }}
+        {/* Terminal Page Header */}
+        <motion.header
+          className="tpl-page-header"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div className="tpl-header-title-group">
             <button
               onClick={() => setIsMobileSidebarOpen(true)}
-              style={{
-                display: 'none',
-                background: 'transparent',
-                border: 'none',
-                color: '#fff',
-                cursor: 'pointer',
-              }}
-              className="mobile-sidebar-toggle"
+              className="mobile-sidebar-toggle tpl-mobile-toggle"
+              aria-label="Toggle mobile menu"
             >
               <Menu size={24} />
             </button>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-                <h1 style={{ fontSize: '1.6rem', fontWeight: 800, margin: 0, color: '#f8fafc', letterSpacing: '-0.02em' }}>
-                  Trade Proposals & Pre-Risk Review
-                </h1>
-                <span
-                  style={{
-                    background: 'rgba(245, 158, 11, 0.15)',
-                    color: '#fbbf24',
-                    border: '1px solid rgba(245, 158, 11, 0.3)',
-                    padding: '0.2rem 0.65rem',
-                    borderRadius: 9999,
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                  }}
-                >
-                  Pre-Risk Stage
-                </span>
-                <span className="tp-paper-badge">PAPER TRADING</span>
+              <div className="tpl-header-heading-row">
+                <h1 className="tpl-header-title">TRADE PROPOSALS</h1>
+                <span className="tpl-sub-badge">Pre-Risk Decision Queue</span>
               </div>
-              <p style={{ margin: '0.35rem 0 0 0', fontSize: '0.875rem', color: '#94a3b8' }}>
-                Persistent decision-support trade proposals logged in AI-Service & staged for Agent 4 Risk analysis
-              </p>
+              <div className="tpl-header-meta-row">
+                <span className="tpl-meta-pill">
+                  <ShieldCheck size={11} /> PAPER TRADING
+                </span>
+                <span className="tpl-meta-dot">•</span>
+                <span className="tpl-meta-text">
+                  <Activity size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                  Agent 4 Risk Engine
+                </span>
+                <span className="tpl-meta-dot">•</span>
+                <span className="tpl-meta-count">{proposalCount} {proposalCount === 1 ? 'proposal' : 'proposals'}</span>
+              </div>
             </div>
           </div>
 
           <button
-            className="tp-btn-primary"
+            className="tpl-btn-primary-header"
             onClick={() => openCreateModal()}
             data-testid="header-new-proposal-btn"
           >
-            <Sparkles size={16} />
+            <Sparkles size={15} />
             New Proposal
           </button>
-        </header>
+        </motion.header>
 
-        {/* Paper Trading Information Notice Banner */}
-        <div
-          style={{
-            background: 'rgba(245, 158, 11, 0.06)',
-            border: '1px solid rgba(245, 158, 11, 0.18)',
-            borderRadius: 10,
-            padding: '0.75rem 1rem',
-            fontSize: '0.825rem',
-            color: '#cbd5e1',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.6rem',
-          }}
+        {/* Paper Trading Status Bar Banner */}
+        <motion.div
+          className="tpl-paper-notice-bar"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.05 }}
         >
-          <Info size={16} color="#fbbf24" />
+          <Info size={14} className="tpl-notice-icon" />
           <span>
-            <strong style={{ color: '#fbbf24' }}>Paper Trading Environment:</strong> Simulated trade proposals for decision support. No real money or real exchange execution is involved.
+            <strong>PAPER TRADING:</strong> Simulated execution only — no real money or exchange execution is involved.
           </span>
-        </div>
+        </motion.div>
 
-        {/* Content Area */}
+        {/* Trade Proposals List Component */}
         <TradeProposalsList
           proposals={proposals}
           isLoading={isLoading}
