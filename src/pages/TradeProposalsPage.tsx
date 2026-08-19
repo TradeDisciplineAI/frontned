@@ -39,7 +39,7 @@ export const TradeProposalsPage: React.FC = () => {
       style={{
         display: 'flex',
         minHeight: '100vh',
-        background: '#040810',
+        background: '#000000',
         color: '#f8fafc',
         position: 'relative',
         overflowX: 'hidden',

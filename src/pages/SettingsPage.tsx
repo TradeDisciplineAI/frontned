@@ -91,7 +91,7 @@ export const SettingsPage: React.FC = () => {
       style={{
         display: 'flex',
         minHeight: '100vh',
-        background: '#040810',
+        background: '#000000',
         color: '#f8fafc',
         fontFamily: 'Inter, system-ui, sans-serif',
       }}
@@ -104,7 +104,7 @@ export const SettingsPage: React.FC = () => {
           flex-direction: column;
           min-width: 0;
           min-height: 100vh;
-          background: #040810;
+          background: #000000;
         }
         .settings-grid-layout {
           display: grid;
