@@ -12,6 +12,7 @@ import {
   LogOut,
   ShieldAlert,
   Briefcase,
+  Shield,
 } from 'lucide-react';
 import type { UserResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
@@ -218,6 +219,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <Settings size={15} strokeWidth={2} />
               </span>
               <span>Settings</span>
+            </div>
+          </button>
+
+          <button
+            className={`sidebar-nav-item ${location.pathname === ROUTES.SECURITY ? 'active' : ''}`}
+            onClick={() => (isLoggedIn ? navigate(ROUTES.SECURITY) : useUserStore.getState().openGuestModal())}
+            data-testid="sidebar-nav-security"
+          >
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <Shield size={15} strokeWidth={2} />
+              </span>
+              <span>Security & Sessions</span>
             </div>
           </button>
         </div>

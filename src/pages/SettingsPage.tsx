@@ -317,7 +317,13 @@ export const SettingsPage: React.FC = () => {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => {
+                    if (item.id === 'security') {
+                      navigate(ROUTES.SECURITY);
+                    } else {
+                      setActiveTab(item.id);
+                    }
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',

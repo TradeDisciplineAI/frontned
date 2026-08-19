@@ -11,6 +11,7 @@ import { AuthCallback } from '@/components/AuthCallback';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LiveMarketDashboard } from '@/pages/LiveMarketDashboard';
 import { SettingsPage } from '@/pages/SettingsPage';
+import { SecuritySessionsPage } from '@/pages/SecuritySessionsPage';
 import { TradeProposalsPage } from '@/pages/TradeProposalsPage';
 import { PositionDetailsPage } from '@/pages/PositionDetailsPage';
 import { PaperPositionsPage } from '@/pages/PaperPositionsPage';
@@ -162,6 +163,14 @@ function AppContent() {
           element={
             <AuthGuard>
               <SettingsPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path={ROUTES.SECURITY}
+          element={
+            <AuthGuard>
+              <SecuritySessionsPage />
             </AuthGuard>
           }
         />

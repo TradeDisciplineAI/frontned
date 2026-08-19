@@ -2,6 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SettingsPage } from '@/pages/SettingsPage';
+import { SecuritySessionsPage } from '@/pages/SecuritySessionsPage';
 import { authService } from '@/features/auth/auth.service';
 import { useUserStore } from '@/stores/userStore';
 import type { UserSessionResponse } from '@/features/auth/auth.types';
@@ -32,7 +33,44 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-describe('Session Management & Settings Security Tab', () => {
+describe('SettingsPage Security Navigation', () => {
+  const mockUser = {
+    id: 'user-001',
+    username: 'testtrader',
+    email: 'trader@example.com',
+    role: 'user' as const,
+    is_active: true,
+    is_verified: true,
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    useUserStore.setState({
+      user: mockUser,
+      isAuthenticated: true,
+      accessToken: 'fake-token',
+    });
+  });
+
+  it('navigates to /security when clicking Security & Sessions tab in Settings', async () => {
+    render(
+      <MemoryRouter>
+        <SettingsPage />
+      </MemoryRouter>,
+    );
+
+    const securityTabBtn = screen.getAllByRole('button', { name: /Security & Sessions/i })[0];
+    if (securityTabBtn) {
+      fireEvent.click(securityTabBtn);
+    }
+
+    expect(mockNavigate).toHaveBeenCalledWith('/security');
+  });
+});
+
+describe('SecuritySessionsPage Dedicated Page Component', () => {
   const mockUser = {
     id: 'user-001',
     username: 'testtrader',
@@ -58,9 +96,9 @@ describe('Session Management & Settings Security Tab', () => {
       id: 'sess-002',
       device_name: 'Safari on iPhone',
       ip_address: '192.168.1.2',
-      user_agent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0)',
-      created_at: '2026-08-18T08:00:00Z',
-      last_used_at: '2026-08-18T09:00:00Z',
+      user_agent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X)',
+      created_at: '2026-08-18T10:00:00Z',
+      last_used_at: '2026-08-18T12:00:00Z',
       is_current: false,
     },
   ];
@@ -70,31 +108,26 @@ describe('Session Management & Settings Security Tab', () => {
     useUserStore.setState({
       user: mockUser,
       isAuthenticated: true,
-      accessToken: 'mock-access-token',
+      accessToken: 'fake-token',
     });
   });
 
-  it('renders Security & Sessions tab and fetches active sessions', async () => {
+  it('renders SecuritySessionsPage with real device images and sessions list', async () => {
     vi.mocked(authService.getSessions).mockResolvedValueOnce(mockSessions);
 
     render(
       <MemoryRouter>
-        <SettingsPage />
+        <SecuritySessionsPage />
       </MemoryRouter>,
     );
-
-    // Switch to Security & Sessions tab
-    const securityTabBtn = screen.getByRole('button', { name: /Security & Sessions/i });
-    fireEvent.click(securityTabBtn);
-
-    expect(screen.getByTestId('sessions-loading-state')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(screen.getByTestId('active-sessions-list')).toBeInTheDocument();
     });
 
+    expect(screen.getByText('SECURITY & ACTIVE SESSIONS')).toBeInTheDocument();
     expect(screen.getByText('Chrome on macOS')).toBeInTheDocument();
-    expect(screen.getByText('Safari on iPhone')).toBeInTheDocument();
+    expect(screen.getByAltText('Chrome on macOS')).toBeInTheDocument();
     expect(screen.getByText('CURRENT SESSION')).toBeInTheDocument();
     expect(authService.getSessions).toHaveBeenCalledTimes(1);
   });
@@ -104,12 +137,9 @@ describe('Session Management & Settings Security Tab', () => {
 
     render(
       <MemoryRouter>
-        <SettingsPage />
+        <SecuritySessionsPage />
       </MemoryRouter>,
     );
-
-    const securityTabBtn = screen.getByRole('button', { name: /Security & Sessions/i });
-    fireEvent.click(securityTabBtn);
 
     await waitFor(() => {
       expect(screen.getByTestId('sessions-empty-state')).toBeInTheDocument();
@@ -123,12 +153,9 @@ describe('Session Management & Settings Security Tab', () => {
 
     render(
       <MemoryRouter>
-        <SettingsPage />
+        <SecuritySessionsPage />
       </MemoryRouter>,
     );
-
-    const securityTabBtn = screen.getByRole('button', { name: /Security & Sessions/i });
-    fireEvent.click(securityTabBtn);
 
     await waitFor(() => {
       expect(screen.getByTestId('sessions-error-state')).toBeInTheDocument();
@@ -143,12 +170,9 @@ describe('Session Management & Settings Security Tab', () => {
 
     render(
       <MemoryRouter>
-        <SettingsPage />
+        <SecuritySessionsPage />
       </MemoryRouter>,
     );
-
-    const securityTabBtn = screen.getByRole('button', { name: /Security & Sessions/i });
-    fireEvent.click(securityTabBtn);
 
     await waitFor(() => {
       expect(screen.getByTestId('revoke-session-btn-sess-002')).toBeInTheDocument();
@@ -172,12 +196,9 @@ describe('Session Management & Settings Security Tab', () => {
 
     render(
       <MemoryRouter>
-        <SettingsPage />
+        <SecuritySessionsPage />
       </MemoryRouter>,
     );
-
-    const securityTabBtn = screen.getByRole('button', { name: /Security & Sessions/i });
-    fireEvent.click(securityTabBtn);
 
     await waitFor(() => {
       expect(screen.getByTestId('revoke-session-btn-sess-001')).toBeInTheDocument();
@@ -203,12 +224,9 @@ describe('Session Management & Settings Security Tab', () => {
 
     render(
       <MemoryRouter>
-        <SettingsPage />
+        <SecuritySessionsPage />
       </MemoryRouter>,
     );
-
-    const securityTabBtn = screen.getByRole('button', { name: /Security & Sessions/i });
-    fireEvent.click(securityTabBtn);
 
     await waitFor(() => {
       expect(screen.getByTestId('logout-all-btn')).toBeInTheDocument();

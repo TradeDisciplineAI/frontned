@@ -11,6 +11,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   PROPOSALS: '/proposals',
   SETTINGS: '/settings',
+  SECURITY: '/security',
   POSITIONS: '/portfolio/positions',
   POSITION_DETAILS: '/portfolio/positions/:symbol',
 } as const;
