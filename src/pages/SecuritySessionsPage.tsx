@@ -230,31 +230,6 @@ export const SecuritySessionsPage: React.FC = () => {
                 <h1 style={{ fontSize: '24px', fontWeight: 900, margin: 0, color: '#f8fafc', letterSpacing: '-0.02em' }}>
                   SECURITY & ACTIVE SESSIONS
                 </h1>
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    fontSize: '11px',
-                    fontWeight: 800,
-                    color: '#10b981',
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    border: '1px solid rgba(16, 185, 129, 0.25)',
-                    padding: '3px 10px',
-                    borderRadius: '9999px',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: '50%',
-                      background: '#10b981',
-                      boxShadow: '0 0 8px #10b981',
-                    }}
-                  />
-                  SESSION MONITORING ACTIVE
-                </span>
               </div>
               <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '6px', margin: '6px 0 0 0' }}>
                 Real-time security console to review and manage authorized login sessions across all your devices.
@@ -504,46 +479,18 @@ export const SecuritySessionsPage: React.FC = () => {
                           <span style={{ fontSize: '16px', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.01em' }}>
                             {sess.device_name || sess.user_agent || 'Terminal Session'}
                           </span>
-                          {sess.is_current ? (
+                          {sess.is_current && (
                             <span
+                              title="Current Session"
                               style={{
-                                fontSize: '10px',
-                                fontWeight: 800,
-                                padding: '3px 10px',
-                                borderRadius: '9999px',
-                                background: 'rgba(16, 185, 129, 0.15)',
-                                color: '#10b981',
-                                border: '1px solid rgba(16, 185, 129, 0.35)',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
+                                width: 8,
+                                height: 8,
+                                borderRadius: '50%',
+                                background: '#10b981',
+                                boxShadow: '0 0 10px #10b981',
+                                display: 'inline-block',
                               }}
-                            >
-                              <span
-                                style={{
-                                  width: 6,
-                                  height: 6,
-                                  borderRadius: '50%',
-                                  background: '#10b981',
-                                  boxShadow: '0 0 8px #10b981',
-                                }}
-                              />
-                              CURRENT SESSION
-                            </span>
-                          ) : (
-                            <span
-                              style={{
-                                fontSize: '10px',
-                                fontWeight: 700,
-                                padding: '3px 10px',
-                                borderRadius: '9999px',
-                                background: 'rgba(255, 255, 255, 0.04)',
-                                color: '#94a3b8',
-                                border: '1px solid rgba(255, 255, 255, 0.08)',
-                              }}
-                            >
-                              Active
-                            </span>
+                            />
                           )}
                         </div>
 

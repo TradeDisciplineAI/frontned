@@ -128,7 +128,7 @@ describe('SecuritySessionsPage Dedicated Page Component', () => {
     expect(screen.getByText('SECURITY & ACTIVE SESSIONS')).toBeInTheDocument();
     expect(screen.getByText('Chrome on macOS')).toBeInTheDocument();
     expect(screen.getByAltText('Chrome on macOS')).toBeInTheDocument();
-    expect(screen.getByText('CURRENT SESSION')).toBeInTheDocument();
+    expect(screen.getByTitle('Current Session')).toBeInTheDocument();
     expect(authService.getSessions).toHaveBeenCalledTimes(1);
   });
 
