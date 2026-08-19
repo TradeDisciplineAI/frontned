@@ -50,6 +50,13 @@ export const authService = {
   },
 
   /**
+   * Revoke a specific session by ID.
+   */
+  async revokeSession(sessionId: string): Promise<void> {
+    await apiClient.delete(`/auth/sessions/${sessionId}`);
+  },
+
+  /**
    * Request a password reset link.
    */
   async forgotPassword(email: string): Promise<{ message: string }> {

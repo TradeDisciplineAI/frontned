@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Crown, Bell, Sparkles, CheckCircle2, Menu } from 'lucide-react';
+import { User, Crown, Bell, Shield, Sparkles, CheckCircle2, Menu } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { useUserStore } from '@/stores/userStore';
 import { useSubscriptionStore } from '@/stores/useSubscriptionStore';
+import { authService } from '@/features/auth/auth.service';
+import type { UserSessionResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
 
 interface MenuItem {
-  id: 'profile' | 'subscription' | 'notifications';
+  id: 'profile' | 'subscription' | 'notifications' | 'security';
   label: string;
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   desc: string;
@@ -17,11 +19,18 @@ interface MenuItem {
 
 export const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, logout } = useUserStore();
+  const { user, logout, logoutAll } = useUserStore();
   const { status, fetchSubscriptionStatus, openPaywall } = useSubscriptionStore();
 
   const [activeTab, setActiveTab] = useState<MenuItem['id']>('profile');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Active Sessions state
+  const [sessions, setSessions] = useState<UserSessionResponse[]>([]);
+  const [isSessionsLoading, setIsSessionsLoading] = useState(false);
+  const [sessionsError, setSessionsError] = useState<string | null>(null);
+  const [revokingSessionId, setRevokingSessionId] = useState<string | null>(null);
+  const [isLoggingOutAll, setIsLoggingOutAll] = useState(false);
 
   // Preference Toggles State
   const [emailAlerts, setEmailAlerts] = useState<boolean>(() => {
@@ -49,6 +58,51 @@ export const SettingsPage: React.FC = () => {
       fetchSubscriptionStatus();
     }
   }, [user, fetchSubscriptionStatus]);
+
+  const fetchSessions = async () => {
+    setIsSessionsLoading(true);
+    setSessionsError(null);
+    try {
+      const data = await authService.getSessions();
+      setSessions(data || []);
+    } catch (err: any) {
+      console.error('Failed to fetch sessions', err);
+      setSessionsError('Unable to load sessions.');
+    } finally {
+      setIsSessionsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && activeTab === 'security') {
+      fetchSessions();
+    }
+  }, [user, activeTab]);
+
+  const handleRevokeSession = async (sessionId: string) => {
+    setRevokingSessionId(sessionId);
+    try {
+      await authService.revokeSession(sessionId);
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+      showSavedNotification('Session revoked successfully.');
+    } catch (err) {
+      console.error('Failed to revoke session', err);
+      showSavedNotification('Failed to revoke session.');
+    } finally {
+      setRevokingSessionId(null);
+    }
+  };
+
+  const handleLogoutAll = async () => {
+    setIsLoggingOutAll(true);
+    try {
+      await logoutAll();
+      navigate(ROUTES.LOGIN);
+    } catch (err) {
+      console.error('Logout all failed', err);
+      setIsLoggingOutAll(false);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -83,6 +137,12 @@ export const SettingsPage: React.FC = () => {
       label: 'Notifications & Alerts',
       icon: Bell,
       desc: 'Email digests & Web Audio chimes',
+    },
+    {
+      id: 'security',
+      label: 'Security & Sessions',
+      icon: Shield,
+      desc: 'Active sessions & device security',
     },
   ];
 
@@ -680,6 +740,161 @@ export const SettingsPage: React.FC = () => {
                       }}
                     />
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 4: SECURITY & ACTIVE SESSIONS */}
+            {activeTab === 'security' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#f8fafc' }}>
+                    Security & Active Sessions
+                  </h3>
+                  <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '4px' }}>
+                    Manage your active login sessions and device access.
+                  </p>
+                </div>
+
+                {/* Revoke All Sessions Card */}
+                <div
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.08)',
+                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                    borderRadius: '14px',
+                    padding: '20px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '12px',
+                  }}
+                >
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#f8fafc' }}>
+                      Revoke All Active Sessions
+                    </h4>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>
+                      Sign out across all devices and browsers immediately.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleLogoutAll}
+                    disabled={isLoggingOutAll}
+                    data-testid="logout-all-btn"
+                    style={{
+                      background: '#ef4444',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '8px 16px',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: isLoggingOutAll ? 'not-allowed' : 'pointer',
+                      opacity: isLoggingOutAll ? 0.6 : 1,
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {isLoggingOutAll ? 'Logging out...' : 'Log Out All Sessions'}
+                  </button>
+                </div>
+
+                {/* Active Sessions List */}
+                <div>
+                  <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#e2e8f0', marginBottom: '12px' }}>
+                    Active Sessions List
+                  </h4>
+
+                  {isSessionsLoading ? (
+                    <div style={{ color: '#94a3b8', fontSize: '13px', padding: '16px 0' }} data-testid="sessions-loading-state">
+                      Loading sessions...
+                    </div>
+                  ) : sessionsError ? (
+                    <div style={{ color: '#ef4444', fontSize: '13px', padding: '16px 0' }} data-testid="sessions-error-state">
+                      {sessionsError}
+                    </div>
+                  ) : sessions.length === 0 ? (
+                    <div style={{ color: '#94a3b8', fontSize: '13px', padding: '16px 0' }} data-testid="sessions-empty-state">
+                      No active sessions
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }} data-testid="active-sessions-list">
+                      {sessions.map((sess) => (
+                        <div
+                          key={sess.id}
+                          data-testid={`session-card-${sess.id}`}
+                          style={{
+                            background: 'rgba(30, 41, 59, 0.4)',
+                            border: sess.is_current
+                              ? '1px solid rgba(59, 130, 246, 0.4)'
+                              : '1px solid rgba(255, 255, 255, 0.06)',
+                            borderRadius: '12px',
+                            padding: '16px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: '16px',
+                            flexWrap: 'wrap',
+                          }}
+                        >
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc' }}>
+                                {sess.device_name || sess.user_agent || 'Unknown Device'}
+                              </span>
+                              {sess.is_current && (
+                                <span
+                                  style={{
+                                    fontSize: '10px',
+                                    fontWeight: 800,
+                                    padding: '2px 8px',
+                                    borderRadius: '9999px',
+                                    background: 'rgba(59, 130, 246, 0.2)',
+                                    color: '#60a5fa',
+                                    border: '1px solid rgba(59, 130, 246, 0.3)',
+                                  }}
+                                >
+                                  Current Session
+                                </span>
+                              )}
+                            </div>
+                            {sess.ip_address && (
+                              <span style={{ fontSize: '12px', color: '#64748b', fontFamily: 'monospace' }}>
+                                IP: {sess.ip_address}
+                              </span>
+                            )}
+                            <div style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                              <span>Created: {new Date(sess.created_at).toLocaleString()}</span>
+                              {sess.last_used_at && (
+                                <span>Last Active: {new Date(sess.last_used_at).toLocaleString()}</span>
+                              )}
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRevokeSession(sess.id)}
+                            disabled={revokingSessionId === sess.id}
+                            data-testid={`revoke-session-btn-${sess.id}`}
+                            style={{
+                              background: 'rgba(239, 68, 68, 0.1)',
+                              border: '1px solid rgba(239, 68, 68, 0.3)',
+                              color: '#ef4444',
+                              borderRadius: '6px',
+                              padding: '6px 12px',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              cursor: revokingSessionId === sess.id ? 'not-allowed' : 'pointer',
+                              opacity: revokingSessionId === sess.id ? 0.6 : 1,
+                            }}
+                          >
+                            {revokingSessionId === sess.id ? 'Revoking...' : 'Revoke'}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
