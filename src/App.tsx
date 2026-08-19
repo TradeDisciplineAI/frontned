@@ -12,6 +12,7 @@ import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LiveMarketDashboard } from '@/pages/LiveMarketDashboard';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { TradeProposalsPage } from '@/pages/TradeProposalsPage';
+import { PositionDetailsPage } from '@/pages/PositionDetailsPage';
 import { GuestPromoModal } from '@/components/GuestPromoModal';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
@@ -152,6 +153,14 @@ function AppContent() {
           element={
             <AuthGuard>
               <SettingsPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path={ROUTES.POSITION_DETAILS}
+          element={
+            <AuthGuard>
+              <PositionDetailsPage />
             </AuthGuard>
           }
         />

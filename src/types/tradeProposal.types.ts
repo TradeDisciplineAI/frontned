@@ -8,7 +8,10 @@ export type TradeProposalStatus =
   | 'CANCELLED'
   | 'RISK_APPROVED'
   | 'RISK_REJECTED'
-  | 'NEEDS_REVIEW';
+  | 'NEEDS_REVIEW'
+  | 'EXECUTION_PENDING'
+  | 'EXECUTED'
+  | 'EXECUTION_FAILED';
 
 export interface TradeProposal {
   id: string;
@@ -26,6 +29,16 @@ export interface TradeProposal {
   status: TradeProposalStatus;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface PaperExecutionResult {
+  execution_id: string;
+  proposal_id: string;
+  symbol: string;
+  action: TradeAction;
+  filled_quantity: number;
+  execution_price: number;
+  executed_at: string;
 }
 
 export interface CreateTradeProposalDTO {

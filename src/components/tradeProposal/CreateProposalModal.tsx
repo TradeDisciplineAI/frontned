@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { X, Send, AlertTriangle, Sparkles, User, Brain, Info, FolderPlus } from 'lucide-react';
+import {
+  X,
+  Send,
+  AlertTriangle,
+  Sparkles,
+  User,
+  Brain,
+  Info,
+  FolderPlus,
+  TrendingUp,
+  TrendingDown,
+  ShieldCheck,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTradeProposalStore } from '@/stores/useTradeProposalStore';
 import { useUserStore } from '@/stores/userStore';
 import { portfolioService, type Portfolio } from '@/services/portfolio.service';
@@ -36,11 +49,14 @@ export const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
   const [signalId, setSignalId] = useState<string | undefined>(undefined);
 
   const isFromSignal = !!initialData?.signal_id || !!initialData?.symbol;
+  const isBuy = action === 'BUY';
+  const estimatedValue = requestedQuantity * entryPrice;
+  const riskPerShare = isBuy ? entryPrice - stopLoss : stopLoss - entryPrice;
+  const rewardPerShare = isBuy ? takeProfit - entryPrice : entryPrice - takeProfit;
+  const rrRatio = riskPerShare > 0 ? (rewardPerShare / riskPerShare).toFixed(2) : '—';
 
-  // Load portfolios on modal open
   useEffect(() => {
     if (!isOpen) return;
-
     const fetchUserPortfolios = async () => {
       setIsLoadingPortfolios(true);
       try {
@@ -61,7 +77,6 @@ export const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
         setIsLoadingPortfolios(false);
       }
     };
-
     fetchUserPortfolios();
   }, [isOpen]);
 
@@ -109,10 +124,7 @@ export const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!selectedPortfolioId) {
-      return;
-    }
+    if (!selectedPortfolioId) return;
 
     const payload: CreateTradeProposalDTO = {
       user_id: user?.id || '00000000-0000-0000-0000-000000000001',
@@ -129,110 +141,106 @@ export const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
     };
 
     const res = await createProposal(payload);
-    if (res) {
-      onClose();
-    }
+    if (res) onClose();
   };
 
   return (
     <div className="tp-modal-overlay" onClick={onClose} data-testid="create-modal-overlay">
-      <div
-        className="tp-modal-card"
+      <motion.div
+        className="cpm-card"
         onClick={(e) => e.stopPropagation()}
         data-testid="create-modal-card"
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.97 }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Header */}
-        <div className="tp-modal-header">
-          <div className="tp-header-title-group">
-            <div className="tp-modal-title">
-              <Sparkles size={20} color="#3b82f6" />
-              <span>Create Trade Proposal</span>
-              <span className="tp-paper-badge">PAPER TRADING</span>
+        {/* ── Header ── */}
+        <div className="cpm-header">
+          <div className="cpm-header-grid" aria-hidden="true" />
+          <div className="cpm-header-left">
+            <div className="cpm-header-icon">
+              <Sparkles size={18} color="#3b82f6" />
             </div>
-            <div className="tp-subtitle">
-              Log persistent proposal into AI-Service to stage for Pre-Risk Review
+            <div>
+              <div className="cpm-header-title-row">
+                <h2 className="cpm-header-title">Create Trade Proposal</h2>
+                <span className="cpm-paper-badge">
+                  <ShieldCheck size={11} />
+                  PAPER
+                </span>
+                {isFromSignal && (
+                  <span className="cpm-ai-badge">
+                    <Brain size={11} />
+                    AI SIGNAL
+                  </span>
+                )}
+              </div>
+              <p className="cpm-header-sub">Stage a paper trade for Pre-Risk Review</p>
             </div>
           </div>
-          <button className="tp-close-btn" onClick={onClose} aria-label="Close modal">
-            <X size={18} />
+          <button className="cpm-close-btn" onClick={onClose} aria-label="Close modal">
+            <X size={16} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="tp-modal-body">
-            {/* Paper Trading Notice */}
-            <div
-              style={{
-                background: 'rgba(245, 158, 11, 0.08)',
-                border: '1px solid rgba(245, 158, 11, 0.2)',
-                borderRadius: 8,
-                padding: '0.65rem 0.9rem',
-                fontSize: '0.8rem',
-                color: '#fbbf24',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-              }}
-            >
-              <Info size={15} />
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+          <div className="cpm-body">
+
+            {/* Simulated trade notice */}
+            <div className="cpm-notice">
+              <Info size={13} />
               <span>Simulated trade — no real money is involved. Paper trading environment only.</span>
             </div>
 
-            {error && (
-              <div className="tp-error-banner" data-testid="proposal-error-banner">
-                <AlertTriangle size={16} />
-                <span>{error}</span>
-              </div>
-            )}
+            {/* Error banner */}
+            <AnimatePresence>
+              {error && (
+                <motion.div
+                  className="cpm-error-banner"
+                  data-testid="proposal-error-banner"
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                >
+                  <AlertTriangle size={14} />
+                  <span>{error}</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-            {/* SECTION 1: USER CONFIGURATION */}
-            <div className="tp-section-divider">
-              <User size={14} color="#3b82f6" />
+            {/* ── SECTION 1: User Config ── */}
+            <div className="cpm-section-header">
+              <User size={13} color="#3b82f6" />
               <span>User Configuration</span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div className="cpm-section-body">
               {/* Portfolio Selector */}
-              <div className="tp-form-group">
-                <label className="tp-form-label">Paper Portfolio</label>
+              <div className="cpm-form-group">
+                <label className="cpm-label">Paper Portfolio</label>
                 {isLoadingPortfolios ? (
-                  <div style={{ fontSize: '0.85rem', color: '#94a3b8', padding: '0.5rem 0' }}>
-                    Loading Paper Portfolios...
-                  </div>
+                  <div className="cpm-loading-text">Loading portfolios…</div>
                 ) : portfolios.length === 0 ? (
-                  <div
-                    style={{
-                      background: 'rgba(239, 68, 68, 0.08)',
-                      border: '1px border-dashed rgba(239, 68, 68, 0.2)',
-                      borderRadius: 8,
-                      padding: '0.9rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.6rem',
-                    }}
-                    data-testid="no-portfolio-alert"
-                  >
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f87171' }}>
-                      No Paper Portfolio
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: '#cbd5e1' }}>
+                  <div className="cpm-no-portfolio-box" data-testid="no-portfolio-alert">
+                    <div className="cpm-no-portfolio-title">No Paper Portfolio Found</div>
+                    <div className="cpm-no-portfolio-desc">
                       Create a Paper Portfolio first to submit a Trade Proposal.
                     </div>
                     <button
                       type="button"
-                      className="tp-btn-secondary"
+                      className="cpm-btn-create-portfolio"
                       onClick={handleCreatePaperPortfolio}
                       disabled={isCreatingPortfolio}
-                      style={{ alignSelf: 'flex-start', marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
                       data-testid="create-paper-portfolio-btn"
                     >
-                      <FolderPlus size={14} />
-                      {isCreatingPortfolio ? 'Creating Portfolio...' : 'Create Paper Portfolio'}
+                      <FolderPlus size={13} />
+                      {isCreatingPortfolio ? 'Creating...' : 'Create Paper Portfolio'}
                     </button>
                   </div>
                 ) : (
                   <select
-                    className="tp-form-select"
+                    className="cpm-select"
                     value={selectedPortfolioId}
                     onChange={(e) => setSelectedPortfolioId(e.target.value)}
                     required
@@ -247,139 +255,158 @@ export const CreateProposalModal: React.FC<CreateProposalModalProps> = ({
                 )}
               </div>
 
-              {/* Requested Quantity Input */}
-              <div
-                className="tp-form-group"
-                style={{
-                  background: 'rgba(59, 130, 246, 0.05)',
-                  padding: '0.85rem',
-                  borderRadius: 10,
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
-                }}
-              >
-                <label className="tp-form-label" style={{ color: '#60a5fa', fontWeight: 700 }}>
-                  Requested Quantity (Shares)
-                </label>
+              {/* Quantity */}
+              <div className="cpm-qty-box">
+                <div className="cpm-qty-header">
+                  <label className="cpm-qty-label">Requested Quantity (Shares)</label>
+                  <span className="cpm-est-value">
+                    Est. ${estimatedValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
                 <input
                   type="number"
                   min="1"
                   step="1"
-                  className="tp-form-input"
+                  className="cpm-qty-input"
                   value={requestedQuantity}
                   onChange={(e) => setRequestedQuantity(Number(e.target.value))}
                   required
-                  style={{ fontSize: '1.05rem', fontWeight: 700 }}
                   data-testid="quantity-input"
                 />
-                <span style={{ fontSize: '0.725rem', color: '#94a3b8' }}>
-                  Total Est. Value: ${(requestedQuantity * entryPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                </span>
               </div>
             </div>
 
-            {/* SECTION 2: AI STRATEGY OUTPUT */}
-            <div className="tp-section-divider" style={{ marginTop: '0.75rem' }}>
-              <Brain size={14} color="#a855f7" />
-              <span>AI Strategy Parameters {isFromSignal ? '(Pre-filled from AI Signal)' : ''}</span>
+            {/* ── SECTION 2: AI Strategy Parameters ── */}
+            <div className="cpm-section-header" style={{ marginTop: '4px' }}>
+              <Brain size={13} color="#a855f7" />
+              <span style={{ color: '#a855f7' }}>
+                AI Strategy Parameters
+                {isFromSignal && <span className="cpm-prefill-note"> · Pre-filled from AI Signal</span>}
+              </span>
             </div>
 
-            <div className="tp-form-grid">
-              <div className="tp-form-group">
-                <label className="tp-form-label">Ticker Symbol</label>
-                <input
-                  type="text"
-                  className="tp-form-input"
-                  value={symbol}
-                  onChange={(e) => setSymbol(e.target.value.toUpperCase())}
-                  required
-                  placeholder="e.g. NVDA, AAPL"
-                />
+            <div className="cpm-section-body">
+              <div className="cpm-form-grid">
+                <div className="cpm-form-group">
+                  <label className="cpm-label">Ticker Symbol</label>
+                  <input
+                    type="text"
+                    className="cpm-input"
+                    value={symbol}
+                    onChange={(e) => setSymbol(e.target.value.toUpperCase())}
+                    required
+                    placeholder="e.g. NVDA, AAPL"
+                  />
+                </div>
+                <div className="cpm-form-group">
+                  <label className="cpm-label">Action Side</label>
+                  <div style={{ position: 'relative' }}>
+                    <select
+                      className={`cpm-select ${isBuy ? 'cpm-select-buy' : 'cpm-select-sell'}`}
+                      value={action}
+                      onChange={(e) => setAction(e.target.value as TradeAction)}
+                    >
+                      <option value="BUY">BUY (Long)</option>
+                      <option value="SELL">SELL (Short)</option>
+                    </select>
+                    <div className="cpm-action-icon">
+                      {isBuy
+                        ? <TrendingUp size={13} color="#10b981" />
+                        : <TrendingDown size={13} color="#ef4444" />
+                      }
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="tp-form-group">
-                <label className="tp-form-label">Action Side</label>
-                <select
-                  className="tp-form-select"
-                  value={action}
-                  onChange={(e) => setAction(e.target.value as TradeAction)}
-                >
-                  <option value="BUY">BUY (Long)</option>
-                  <option value="SELL">SELL (Short)</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="tp-form-grid">
-              <div className="tp-form-group">
-                <label className="tp-form-label">Entry Price ($)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  className="tp-form-input"
-                  value={entryPrice}
-                  onChange={(e) => setEntryPrice(Number(e.target.value))}
-                  required
-                />
+              <div className="cpm-form-grid">
+                <div className="cpm-form-group">
+                  <label className="cpm-label">Entry Price ($)</label>
+                  <input
+                    type="number" step="0.01" min="0.01"
+                    className="cpm-input"
+                    value={entryPrice}
+                    onChange={(e) => setEntryPrice(Number(e.target.value))}
+                    required
+                  />
+                </div>
+                <div className="cpm-form-group">
+                  <label className="cpm-label cpm-label-danger">Stop Loss ($)</label>
+                  <input
+                    type="number" step="0.01" min="0.01"
+                    className="cpm-input cpm-input-danger"
+                    value={stopLoss}
+                    onChange={(e) => setStopLoss(Number(e.target.value))}
+                    required
+                  />
+                </div>
               </div>
 
-              <div className="tp-form-group">
-                <label className="tp-form-label">Stop Loss Level ($)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  className="tp-form-input"
-                  value={stopLoss}
-                  onChange={(e) => setStopLoss(Number(e.target.value))}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="tp-form-grid">
-              <div className="tp-form-group">
-                <label className="tp-form-label">Take Profit Target ($)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  className="tp-form-input"
-                  value={takeProfit}
-                  onChange={(e) => setTakeProfit(Number(e.target.value))}
-                  required
-                />
+              <div className="cpm-form-grid">
+                <div className="cpm-form-group">
+                  <label className="cpm-label cpm-label-success">Take Profit ($)</label>
+                  <input
+                    type="number" step="0.01" min="0.01"
+                    className="cpm-input cpm-input-success"
+                    value={takeProfit}
+                    onChange={(e) => setTakeProfit(Number(e.target.value))}
+                    required
+                  />
+                </div>
+                <div className="cpm-form-group">
+                  <label className="cpm-label">Primary Strategy</label>
+                  <input
+                    type="text"
+                    className="cpm-input"
+                    value={primaryStrategy}
+                    onChange={(e) => setPrimaryStrategy(e.target.value)}
+                    placeholder="Strategy name"
+                  />
+                </div>
               </div>
 
-              <div className="tp-form-group">
-                <label className="tp-form-label">Primary Strategy</label>
-                <input
-                  type="text"
-                  className="tp-form-input"
-                  value={primaryStrategy}
-                  onChange={(e) => setPrimaryStrategy(e.target.value)}
-                  placeholder="Strategy name"
-                />
+              {/* R/R Summary strip */}
+              <div className="cpm-rr-strip">
+                <div className="cpm-rr-cell">
+                  <span className="cpm-rr-label">Risk/Share</span>
+                  <span className="cpm-rr-val danger">${Math.abs(riskPerShare).toFixed(2)}</span>
+                </div>
+                <div className="cpm-rr-divider" />
+                <div className="cpm-rr-cell">
+                  <span className="cpm-rr-label">Reward/Share</span>
+                  <span className="cpm-rr-val success">${Math.abs(rewardPerShare).toFixed(2)}</span>
+                </div>
+                <div className="cpm-rr-divider" />
+                <div className="cpm-rr-cell">
+                  <span className="cpm-rr-label">R/R Ratio</span>
+                  <span className="cpm-rr-val highlight">1 : {rrRatio}</span>
+                </div>
+                <div className="cpm-rr-divider" />
+                <div className="cpm-rr-cell">
+                  <span className="cpm-rr-label">Confidence</span>
+                  <span className="cpm-rr-val">{(confidenceScore * 100).toFixed(0)}%</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="tp-modal-footer">
-            <button type="button" className="tp-btn-secondary" onClick={onClose}>
+          {/* ── Footer ── */}
+          <div className="cpm-footer">
+            <button type="button" className="cpm-btn-cancel" onClick={onClose}>
               Cancel
             </button>
             <button
               type="submit"
-              className="tp-btn-primary"
+              className="cpm-btn-submit"
               disabled={isSubmitting || !selectedPortfolioId}
               data-testid="submit-proposal-btn"
             >
-              <Send size={15} />
-              {isSubmitting ? 'Creating Proposal...' : 'Submit Trade Proposal'}
+              <Send size={14} />
+              {isSubmitting ? 'Creating…' : 'Submit Trade Proposal'}
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 };

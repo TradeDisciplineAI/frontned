@@ -142,6 +142,31 @@ describe('tradeProposalService', () => {
       { params: undefined }
     );
   });
+
+  describe('executeTradeProposal', () => {
+    it('POSTs to correct endpoint with empty body and user_id param', async () => {
+      const mockResult = {
+        execution_id: 'exec-123',
+        proposal_id: 'prop-123',
+        symbol: 'AAPL',
+        action: 'BUY',
+        filled_quantity: 10,
+        execution_price: 150.50,
+        executed_at: new Date().toISOString(),
+      };
+
+      vi.mocked(aiServiceClient.post).mockResolvedValueOnce({ data: mockResult });
+
+      const result = await tradeProposalService.executeTradeProposal('prop-123', 'user-001');
+
+      expect(aiServiceClient.post).toHaveBeenCalledWith(
+        '/trade-proposals/prop-123/execute',
+        {},
+        { params: { user_id: 'user-001' } }
+      );
+      expect(result).toEqual(mockResult);
+    });
+  });
 });
 
 

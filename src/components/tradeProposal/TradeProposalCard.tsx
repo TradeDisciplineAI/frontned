@@ -21,7 +21,7 @@ export const TradeProposalCard: React.FC<TradeProposalCardProps> = ({ proposal, 
   const confidencePct = Math.round((proposal.confidence_score || 0) * 100);
 
   const rawStatus = proposal.status || 'PENDING_RISK';
-  const displayStatus = rawStatus === 'PENDING_RISK' ? 'PENDING RISK' : rawStatus;
+  const displayStatus = rawStatus.replace(/_/g, ' ');
 
   return (
     <div

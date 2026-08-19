@@ -11,6 +11,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   PROPOSALS: '/proposals',
   SETTINGS: '/settings',
+  POSITION_DETAILS: '/portfolio/positions/:symbol',
 } as const;
 
 export type AppRoute = (typeof ROUTES)[keyof typeof ROUTES];
