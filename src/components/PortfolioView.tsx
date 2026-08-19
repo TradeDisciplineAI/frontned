@@ -49,7 +49,7 @@ const ACCENT_TEXT_COLORS = [
 
 export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onViewIndicators }) => {
   const navigate = useNavigate();
-  const { portfolio, isLoading, triggerRemoveHolding } = usePortfolioStore();
+  const { portfolio, isLoading, triggerRemoveHolding, createPortfolio } = usePortfolioStore();
   const openModal = usePriceAlertStore((state) => state.openModal);
 
   const { user } = useUserStore();
@@ -149,7 +149,34 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onV
   }
 
   if (!portfolio) {
-    return null;
+    return (
+      <motion.div
+        className="pv-portfolio-header"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '40px 24px', gap: '16px' }}
+      >
+        <div className="pv-portfolio-icon-wrap" style={{ width: '48px', height: '48px' }}>
+          <Briefcase size={24} color="#3b82f6" />
+        </div>
+        <div>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 6px 0', color: '#f8fafc' }}>
+            No Paper Portfolio Found
+          </h3>
+          <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0, maxWidth: '420px', lineHeight: 1.5 }}>
+            Create a paper portfolio to start tracking simulated positions and executing trade proposals.
+          </p>
+        </div>
+        <button
+          className="pv-analyze-btn"
+          style={{ width: 'auto', padding: '10px 24px', fontSize: '0.88rem', marginTop: '8px' }}
+          onClick={() => createPortfolio('My Paper Portfolio')}
+        >
+          <Sparkles size={15} />
+          Create Paper Portfolio
+        </button>
+      </motion.div>
+    );
   }
 
   const positions = portfolio.positions || [];
@@ -535,5 +562,3 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onV
     </motion.div>
   );
 };
-
-export default PortfolioView;

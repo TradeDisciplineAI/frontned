@@ -147,6 +147,14 @@ function AppContent() {
             </AuthGuard>
           }
         />
+        <Route
+          path="/portfolio"
+          element={
+            <AuthGuard>
+              <DashboardPage user={user} onLogout={handleLogout} />
+            </AuthGuard>
+          }
+        />
         <Route path={ROUTES.PROPOSALS} element={<TradeProposalsPage />} />
         <Route
           path={ROUTES.SETTINGS}
