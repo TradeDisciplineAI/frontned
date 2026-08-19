@@ -38,8 +38,9 @@ export const PaperPositionsPage: React.FC = () => {
   const positions = portfolio?.positions || [];
   const holdings = portfolio?.holdings || [];
 
-  const getCurrencySymbol = (symbol: string) => {
-    const holding = holdings.find((h) => h.symbol === symbol);
+  const getCurrencySymbol = (symbol?: string) => {
+    if (!symbol) return '$';
+    const holding = Array.isArray(holdings) ? holdings.find((h) => h?.symbol === symbol) : undefined;
     if (
       holding?.currency === 'INR' ||
       holding?.currency === '₹' ||
@@ -59,26 +60,36 @@ export const PaperPositionsPage: React.FC = () => {
 
   // Enriched positions with live pricing, cost basis, P&L, return %
   const enrichedPositions = useMemo(() => {
-    return positions.map((pos) => {
-      const holding = holdings.find((h) => h.symbol === pos.symbol);
-      const currentPrice = holding?.price || pos.average_entry_price;
-      const costBasis = pos.quantity * pos.average_entry_price;
-      const currentVal = pos.quantity * currentPrice;
-      const rawPnl = currentVal - costBasis;
-      const pnl = Math.abs(rawPnl) < 0.0001 ? 0 : rawPnl;
-      const returnPct = ((currentPrice - pos.average_entry_price) / pos.average_entry_price) * 100;
-      const currency = getCurrencySymbol(pos.symbol);
+    if (!Array.isArray(positions)) return [];
+    return positions
+      .filter((pos): pos is typeof pos & { symbol: string } => Boolean(pos && pos.symbol))
+      .map((pos) => {
+        const symbol = String(pos.symbol || '');
+        const holding = Array.isArray(holdings) ? holdings.find((h) => h?.symbol === symbol) : undefined;
+        const qty = Number(pos.quantity) || 0;
+        const avgEntry = Number(pos.average_entry_price) || 0;
+        const currentPrice = Number(holding?.price) || avgEntry;
+        const costBasis = qty * avgEntry;
+        const currentVal = qty * currentPrice;
+        const rawPnl = currentVal - costBasis;
+        const pnl = Math.abs(rawPnl) < 0.0001 ? 0 : rawPnl;
+        const returnPct = avgEntry > 0 ? ((currentPrice - avgEntry) / avgEntry) * 100 : 0;
+        const currency = getCurrencySymbol(symbol);
 
-      return {
-        ...pos,
-        currentPrice,
-        costBasis,
-        currentVal,
-        pnl,
-        returnPct,
-        currency,
-      };
-    });
+        return {
+          ...pos,
+          id: pos.id || symbol,
+          symbol,
+          quantity: qty,
+          average_entry_price: avgEntry,
+          currentPrice,
+          costBasis,
+          currentVal,
+          pnl,
+          returnPct,
+          currency,
+        };
+      });
   }, [positions, holdings]);
 
   // Total Portfolio Metrics

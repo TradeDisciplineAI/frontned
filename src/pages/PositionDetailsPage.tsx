@@ -38,7 +38,8 @@ export const PositionDetailsPage: React.FC = () => {
     return <PageSkeleton withSidebar />;
   }
 
-  const position = portfolio?.positions?.find((p) => p.symbol === symbol);
+  const safeSymbol = symbol || '';
+  const position = portfolio?.positions?.find((p) => p?.symbol === safeSymbol);
 
   if (!position) {
     return (
@@ -56,7 +57,7 @@ export const PositionDetailsPage: React.FC = () => {
         }}
       >
         <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Position Not Found</h2>
-        <p style={{ color: '#64748b', fontSize: '0.9rem' }}>No active paper position found for symbol: {symbol}</p>
+        <p style={{ color: '#64748b', fontSize: '0.9rem' }}>No active paper position found for symbol: {safeSymbol || 'Unknown'}</p>
         <button
           onClick={() => navigate('/dashboard')}
           style={{
@@ -78,13 +79,13 @@ export const PositionDetailsPage: React.FC = () => {
   }
 
   // Look up current price & currency
-  const holding = portfolio?.holdings?.find((h) => h.symbol === symbol);
-  const currentPrice = holding?.price || position.average_entry_price;
+  const holding = portfolio?.holdings?.find((h) => h?.symbol === safeSymbol);
+  const currentPrice = holding?.price || position.average_entry_price || 0;
   const currencySymbol =
     holding?.currency === 'INR' ||
     holding?.currency === '₹' ||
-    symbol?.endsWith('.NS') ||
-    symbol?.endsWith('.BO')
+    safeSymbol.endsWith('.NS') ||
+    safeSymbol.endsWith('.BO')
       ? '₹'
       : '$';
 
@@ -96,8 +97,8 @@ export const PositionDetailsPage: React.FC = () => {
   };
 
   // Find matching executed proposal(s)
-  const matchedProposals = proposals.filter(
-    (p) => p.symbol === symbol && p.status === 'EXECUTED',
+  const matchedProposals = (proposals || []).filter(
+    (p) => p?.symbol === safeSymbol && p?.status === 'EXECUTED',
   );
   const primaryProposal = matchedProposals[0]; // latest execution details
 
