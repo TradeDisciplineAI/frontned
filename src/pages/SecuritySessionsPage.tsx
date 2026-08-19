@@ -149,6 +149,42 @@ export const SecuritySessionsPage: React.FC = () => {
           align-items: center;
           gap: 24px;
           flex-wrap: wrap;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .sec-card-responsive:hover {
+          border-color: rgba(59, 130, 246, 0.45) !important;
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), 0 0 24px rgba(59, 130, 246, 0.15) !important;
+        }
+
+        .sec-card-btn {
+          background: rgba(59, 130, 246, 0.12);
+          border: 1px solid rgba(59, 130, 246, 0.35);
+          color: #60a5fa;
+          border-radius: 10px;
+          padding: 9px 20px;
+          font-size: 13px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        .sec-card-btn:hover {
+          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+          color: #ffffff;
+          border-color: #3b82f6;
+          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45), 0 0 14px rgba(59, 130, 246, 0.3);
+          transform: translateY(-1px);
+        }
+
+        .sec-card-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
         }
 
         @media (max-width: 640px) {
@@ -511,25 +547,10 @@ export const SecuritySessionsPage: React.FC = () => {
 
                     <button
                       type="button"
+                      className="sec-card-btn"
                       onClick={() => handleRevokeSession(sess.id)}
                       disabled={revokingSessionId === sess.id}
                       data-testid={`revoke-session-btn-${sess.id}`}
-                      style={{
-                        background: 'rgba(239, 68, 68, 0.1)',
-                        border: '1px solid rgba(239, 68, 68, 0.35)',
-                        color: '#ef4444',
-                        borderRadius: '8px',
-                        padding: '9px 18px',
-                        fontSize: '12px',
-                        fontWeight: 700,
-                        cursor: revokingSessionId === sess.id ? 'not-allowed' : 'pointer',
-                        opacity: revokingSessionId === sess.id ? 0.6 : 1,
-                        transition: 'all 0.18s ease',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        boxShadow: '0 2px 8px rgba(239, 68, 68, 0.15)',
-                      }}
                     >
                       {revokingSessionId === sess.id ? (
                         <>
