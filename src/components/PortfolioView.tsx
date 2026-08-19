@@ -89,10 +89,8 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onV
   }, [fetchProposals, user?.id]);
 
   const formatPrice = (price?: number) => {
-    if (!price) return '0.00';
-    if (price < 0.01) {
-      return price.toExponential(5);
-    }
+    if (price === undefined || price === null || isNaN(price)) return '0.00';
+    if (Math.abs(price) < 0.0001) return '0.00';
     return price.toFixed(2);
   };
 
@@ -260,7 +258,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onV
               className="pv-section-action"
               role="button"
               tabIndex={0}
-              onClick={() => navigate('/portfolio')}
+              onClick={() => positions[0]?.symbol && navigate(`/portfolio/positions/${positions[0].symbol}`)}
             >
               View all <ChevronRight size={13} style={{ display: 'inline', verticalAlign: 'middle' }} />
             </span>
