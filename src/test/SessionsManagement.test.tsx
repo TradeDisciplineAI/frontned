@@ -95,7 +95,7 @@ describe('Session Management & Settings Security Tab', () => {
 
     expect(screen.getByText('Chrome on macOS')).toBeInTheDocument();
     expect(screen.getByText('Safari on iPhone')).toBeInTheDocument();
-    expect(screen.getByText('Current Session')).toBeInTheDocument();
+    expect(screen.getByText('CURRENT SESSION')).toBeInTheDocument();
     expect(authService.getSessions).toHaveBeenCalledTimes(1);
   });
 
@@ -115,7 +115,7 @@ describe('Session Management & Settings Security Tab', () => {
       expect(screen.getByTestId('sessions-empty-state')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('No active sessions')).toBeInTheDocument();
+    expect(screen.getByText('NO ACTIVE SESSIONS')).toBeInTheDocument();
   });
 
   it('displays error state when GET /auth/sessions fails', async () => {
@@ -134,7 +134,7 @@ describe('Session Management & Settings Security Tab', () => {
       expect(screen.getByTestId('sessions-error-state')).toBeInTheDocument();
     });
 
-    expect(screen.getByText('Unable to load sessions.')).toBeInTheDocument();
+    expect(screen.getByText(/Unable to load active sessions/i)).toBeInTheDocument();
   });
 
   it('handles DELETE /auth/sessions/{session_id} session revocation', async () => {
@@ -216,6 +216,13 @@ describe('Session Management & Settings Security Tab', () => {
 
     const logoutAllBtn = screen.getByTestId('logout-all-btn');
     fireEvent.click(logoutAllBtn);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('confirm-logout-all-btn')).toBeInTheDocument();
+    });
+
+    const confirmBtn = screen.getByTestId('confirm-logout-all-btn');
+    fireEvent.click(confirmBtn);
 
     await waitFor(() => {
       expect(authService.logoutAll).toHaveBeenCalledTimes(1);
