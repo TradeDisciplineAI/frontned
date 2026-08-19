@@ -24,6 +24,7 @@ import { AISignalModal } from '@/components/tradeProposal/AISignalModal';
 import { CreateProposalModal } from '@/components/tradeProposal/CreateProposalModal';
 import { PreRiskReviewModal } from '@/components/tradeProposal/PreRiskReviewModal';
 import { Sparkline } from '@/components/ui/Sparkline';
+import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
 import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/portfolio.css';
 
@@ -140,11 +141,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onV
   };
 
   if (isLoading) {
-    return (
-      <div className="pv-loading-state">
-        <p>Loading portfolio...</p>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (!portfolio) {

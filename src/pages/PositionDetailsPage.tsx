@@ -35,30 +35,23 @@ export const PositionDetailsPage: React.FC = () => {
 
   if (isPortfolioLoading || isProposalsLoading) {
     return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '100vh',
-          background: '#040810',
-          color: '#94a3b8',
-          fontFamily: 'sans-serif',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div
-            style={{
-              width: '24px',
-              height: '24px',
-              border: '3px solid rgba(59,130,246,0.2)',
-              borderTopColor: '#3b82f6',
-              borderRadius: '50%',
-              animation: 'pdpSpin 0.8s linear infinite',
-            }}
-          />
-          <style>{`@keyframes pdpSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-          <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Loading position terminal...</span>
+      <div style={{ display: 'flex', minHeight: '100vh', background: '#040810' }}>
+        <Sidebar user={user} onLogout={logout} isOpen={isMobileSidebarOpen} onClose={() => setIsMobileSidebarOpen(false)} />
+        <div style={{ marginLeft: 280, flex: 1, padding: 36, display: 'flex', flexDirection: 'column', gap: 24, width: '100%' }}>
+          <style>{`
+            @keyframes skeleton-pulse {
+              0%, 100% { background-color: rgba(255, 255, 255, 0.03); }
+              50% { background-color: rgba(255, 255, 255, 0.08); }
+            }
+            .pdp-skeleton-box { animation: skeleton-pulse 1.5s infinite ease-in-out; border-radius: 10px; }
+          `}</style>
+          <div className="pdp-skeleton-box" style={{ height: 40, width: 300 }} />
+          <div className="pdp-skeleton-box" style={{ height: 180, width: '100%' }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="pdp-skeleton-box" style={{ height: 120 }} />
+            ))}
+          </div>
         </div>
       </div>
     );

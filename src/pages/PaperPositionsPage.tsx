@@ -127,6 +127,15 @@ export const PaperPositionsPage: React.FC = () => {
       }}
     >
       <style>{`
+        @keyframes skeleton-pulse {
+          0%, 100% { background-color: rgba(255, 255, 255, 0.03); }
+          50% { background-color: rgba(255, 255, 255, 0.08); }
+        }
+        .pulse-box {
+          animation: skeleton-pulse 1.5s infinite ease-in-out;
+          border-radius: 8px;
+        }
+
         .ppp-container {
           margin-left: 280px;
           flex: 1;
@@ -380,8 +389,19 @@ export const PaperPositionsPage: React.FC = () => {
 
         {/* Position Table */}
         {isLoading ? (
-          <div className="tpl-empty-box">
-            <p style={{ color: '#64748b' }}>Loading positions...</p>
+          <div className="ppp-table-container">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="ppp-table-row" style={{ gap: 12, padding: '16px 18px' }}>
+                <div className="pulse-box" style={{ height: 20, width: 110, borderRadius: 6 }} />
+                <div className="pulse-box" style={{ height: 16, width: 70, borderRadius: 6 }} />
+                <div className="pulse-box" style={{ height: 16, width: 80, borderRadius: 6 }} />
+                <div className="pulse-box" style={{ height: 16, width: 80, borderRadius: 6 }} />
+                <div className="pulse-box" style={{ height: 16, width: 90, borderRadius: 6 }} />
+                <div className="pulse-box" style={{ height: 16, width: 90, borderRadius: 6 }} />
+                <div className="pulse-box" style={{ height: 16, width: 60, borderRadius: 6 }} />
+                <div className="pulse-box" style={{ height: 28, width: 95, borderRadius: 6 }} />
+              </div>
+            ))}
           </div>
         ) : filteredPositions.length === 0 ? (
           <div className="tpl-empty-box" data-testid="positions-empty-state">
