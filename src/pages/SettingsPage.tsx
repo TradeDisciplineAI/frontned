@@ -80,9 +80,16 @@ export const SettingsPage: React.FC = () => {
   }, [user, activeTab]);
 
   const handleRevokeSession = async (sessionId: string) => {
+    const targetSession = sessions.find((s) => s.id === sessionId);
     setRevokingSessionId(sessionId);
     try {
       await authService.revokeSession(sessionId);
+      if (targetSession?.is_current) {
+        showSavedNotification('Current session revoked. Logging out...');
+        await logout();
+        navigate(ROUTES.LOGIN);
+        return;
+      }
       setSessions((prev) => prev.filter((s) => s.id !== sessionId));
       showSavedNotification('Session revoked successfully.');
     } catch (err) {

@@ -166,6 +166,37 @@ describe('Session Management & Settings Security Tab', () => {
     });
   });
 
+  it('logs out and redirects to login when revoking current session', async () => {
+    vi.mocked(authService.getSessions).mockResolvedValueOnce(mockSessions);
+    vi.mocked(authService.revokeSession).mockResolvedValueOnce();
+
+    render(
+      <MemoryRouter>
+        <SettingsPage />
+      </MemoryRouter>,
+    );
+
+    const securityTabBtn = screen.getByRole('button', { name: /Security & Sessions/i });
+    fireEvent.click(securityTabBtn);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('revoke-session-btn-sess-001')).toBeInTheDocument();
+    });
+
+    const revokeCurrentBtn = screen.getByTestId('revoke-session-btn-sess-001');
+    fireEvent.click(revokeCurrentBtn);
+
+    await waitFor(() => {
+      expect(authService.revokeSession).toHaveBeenCalledWith('sess-001');
+    });
+
+    await waitFor(() => {
+      expect(useUserStore.getState().user).toBeNull();
+      expect(useUserStore.getState().isAuthenticated).toBe(false);
+      expect(mockNavigate).toHaveBeenCalledWith('/login');
+    });
+  });
+
   it('handles POST /auth/logout-all session revocation', async () => {
     vi.mocked(authService.getSessions).mockResolvedValueOnce(mockSessions);
     vi.mocked(authService.logoutAll).mockResolvedValueOnce();
