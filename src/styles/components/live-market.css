@@ -1,23 +1,19 @@
-/* ── Vercel Style Market Dashboard ── */
+/* ── Dark Quantitative Terminal Style (Live Market Dashboard) ── */
 
 .vercel-dashboard-wrapper {
   display: flex;
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
-  background-color: #000000;
-  color: #ededed;
-  font-family:
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
+  background-color: #040810;
+  color: #f8fafc;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 .vercel-dashboard-main {
   flex: 1;
   margin-left: 280px;
-  background-color: #000000;
+  background-color: #040810;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -41,9 +37,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
-  border-bottom: 1px solid #1a1a1a;
-  background-color: #000000;
+  padding: 18px 36px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(4, 8, 16, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .vercel-header-left {
@@ -56,12 +57,13 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  color: #f8fafc;
   cursor: pointer;
   background: transparent;
   border: none;
+  letter-spacing: -0.01em;
 }
 
 .vercel-header-right {
@@ -77,84 +79,88 @@
 
 .vercel-search-input {
   width: 100%;
-  background: #0a0a0a;
-  border: 1px solid #222222;
-  border-radius: 6px;
-  padding: 8px 12px 8px 32px;
-  color: #ffffff;
+  background: rgba(10, 16, 32, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 9px 12px 9px 34px;
+  color: #f8fafc;
   font-size: 13px;
   font-family: inherit;
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: all 0.18s ease;
 }
 
 .vercel-search-input:focus {
-  border-color: #444444;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 }
 
 .vercel-search-icon {
   position: absolute;
-  left: 10px;
+  left: 11px;
   top: 50%;
   transform: translateY(-50%);
-  color: #666666;
+  color: #64748b;
   font-size: 13px;
 }
 
 .vercel-btn-white {
-  background: #ffffff;
-  color: #000000;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
   border: none;
-  border-radius: 6px;
-  padding: 8px 14px;
+  border-radius: 8px;
+  padding: 8px 16px;
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: opacity 0.15s ease;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+  transition: all 0.18s ease;
 }
 
 .vercel-btn-white:hover {
-  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45);
 }
 
 .vercel-btn-outline {
-  background: #0a0a0a;
-  color: #ededed;
-  border: 1px solid #222222;
-  border-radius: 6px;
-  padding: 8px 12px;
+  background: rgba(10, 16, 32, 0.65);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px 14px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s ease;
+  transition: all 0.18s ease;
 }
 
 .vercel-btn-outline:hover {
-  border-color: #444444;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 /* Dashboard Body Content */
 .vercel-body-content {
-  padding: 24px 32px;
+  padding: 32px 40px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
-  max-width: 1400px;
+  gap: 28px;
+  max-width: 1500px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
 }
 
-/* Alerts Banner Card (Glassmorphism card style matching Portfolio page) */
+/* Alerts Banner Card (Glassmorphic terminal styling) */
 .vercel-alert-card {
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(10, 16, 32, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -162,57 +168,61 @@
   justify-content: center;
   text-align: center;
   gap: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
 }
 
 .vercel-alert-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  color: #f8fafc;
   margin: 0;
 }
 
 .vercel-alert-desc {
   font-size: 13px;
-  color: #888888;
+  color: #94a3b8;
   margin: 0;
-  max-width: 320px;
+  max-width: 340px;
   line-height: 1.5;
 }
 
-/* Projects / Markets Grid Header */
+/* Markets Grid Header */
 .vercel-grid-section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  color: #f8fafc;
   margin-bottom: 16px;
+  letter-spacing: -0.01em;
 }
 
 .vercel-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 16px;
+  gap: 18px;
 }
 
-/* Vercel Project Card Style (Glassmorphism style matching Portfolio page) */
+/* Glassmorphic Stock Card (Matching Portfolio page) */
 .vercel-stock-card {
-  background: rgba(15, 23, 42, 0.45);
+  background: rgba(10, 16, 32, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 16px;
-  transition:
-    border-color 0.15s ease,
-    background 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
 }
 
 .vercel-stock-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  background: rgba(15, 23, 42, 0.65);
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(14, 22, 44, 0.75);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(59, 130, 246, 0.08);
 }
 
 .vercel-card-top {
@@ -228,17 +238,17 @@
 }
 
 .vercel-card-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  background: #161616;
-  border: 1px solid #262626;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
-  font-weight: 700;
-  color: #ffffff;
+  font-weight: 800;
+  color: #60a5fa;
 }
 
 .vercel-card-title-group {
@@ -247,34 +257,36 @@
 }
 
 .vercel-card-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #ffffff;
+  font-size: 15px;
+  font-weight: 800;
+  color: #f8fafc;
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .vercel-card-sub {
   font-size: 12px;
-  color: #666666;
+  color: #64748b;
   margin-top: 2px;
 }
 
 .vercel-verified-badge {
-  color: #0070f3;
+  color: #3b82f6;
   font-size: 12px;
 }
 
 .vercel-card-more-btn {
   background: transparent;
   border: none;
-  color: #666666;
+  color: #64748b;
   cursor: pointer;
   font-size: 14px;
   padding: 4px;
+  transition: color 0.15s ease;
 }
 
 .vercel-card-more-btn:hover {
-  color: #ffffff;
+  color: #f8fafc;
 }
 
 .vercel-card-middle {
@@ -287,13 +299,13 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #141414;
-  border: 1px solid #222222;
-  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 3px 10px;
   border-radius: 12px;
   font-size: 11px;
-  color: #888888;
-  font-family: var(--font-family-mono);
+  color: #94a3b8;
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
   width: fit-content;
 }
 
@@ -305,62 +317,65 @@
 }
 
 .vercel-price {
-  font-family: var(--font-family-mono);
-  font-size: 14px;
-  font-weight: 700;
-  color: #ffffff;
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #f8fafc;
 }
 
 .vercel-change-pill {
-  font-family: var(--font-family-mono);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
 }
 
 .vercel-change-pill.positive {
-  color: #00e599;
-  background: rgba(0, 229, 153, 0.1);
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .vercel-change-pill.negative {
-  color: #ff4444;
-  background: rgba(255, 68, 68, 0.1);
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .vercel-add-btn {
   width: 100%;
-  background: #141414;
-  border: 1px solid #262626;
-  color: #ededed;
-  padding: 6px 12px;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  padding: 8px 14px;
+  border-radius: 8px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
 }
 
 .vercel-add-btn:hover:not(:disabled) {
-  background: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
 }
 
 .vercel-add-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: #111111;
-  color: #666666;
+  background: rgba(255, 255, 255, 0.02);
+  color: #64748b;
 }
 
-/* Narrow Line Tab Navigation (Gainers / Losers / All) */
+/* Tabs Line Bar */
 .vercel-tabs-line-bar {
   display: flex;
   align-items: center;
   gap: 24px;
-  border-bottom: 1px solid #1a1a1a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   margin-top: 12px;
   margin-bottom: 24px;
 }
@@ -369,43 +384,42 @@
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #888888;
+  color: #64748b;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   font-family: inherit;
   padding: 10px 4px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 8px;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
+  transition: all 0.15s ease;
   margin-bottom: -1px;
 }
 
 .vercel-tab-line-btn:hover {
-  color: #ededed;
+  color: #f8fafc;
 }
 
 .vercel-tab-line-btn.active {
-  color: #ffffff;
-  font-weight: 600;
-  border-bottom-color: #ffffff;
+  color: #3b82f6;
+  font-weight: 700;
+  border-bottom-color: #3b82f6;
 }
 
 .vercel-tab-badge {
   font-size: 11px;
-  font-weight: 600;
-  padding: 1px 7px;
+  font-weight: 700;
+  padding: 2px 8px;
   border-radius: 12px;
-  background: #141414;
-  border: 1px solid #222222;
-  color: #888888;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
 }
 
 .vercel-tab-line-btn.active .vercel-tab-badge {
-  background: #222222;
-  color: #ffffff;
-  border-color: #333333;
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border-color: rgba(59, 130, 246, 0.3);
 }

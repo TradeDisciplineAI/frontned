@@ -9,6 +9,7 @@ import {
   SlidersHorizontal,
   ArrowUpDown,
   Info,
+  ChevronRight,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Sidebar } from '@/components/Sidebar';
@@ -16,6 +17,8 @@ import { useUserStore } from '@/stores/userStore';
 import { usePortfolioStore } from '@/stores/usePortfolioStore';
 import { ROUTES } from '@/constants/routes.constants';
 import { PageSkeleton } from '@/components/ui/PageSkeleton';
+import '@/styles/components/portfolio.css';
+import '@/styles/components/tradeProposal.css';
 
 export const PaperPositionsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -69,7 +72,8 @@ export const PaperPositionsPage: React.FC = () => {
         const currentVal = qty * currentPrice;
         const rawPnl = currentVal - costBasis;
         const pnl = Math.abs(rawPnl) < 0.0001 ? 0 : rawPnl;
-        const returnPct = avgEntry > 0 ? ((currentPrice - avgEntry) / avgEntry) * 100 : 0;
+        const rawReturnPct = avgEntry > 0 ? ((currentPrice - avgEntry) / avgEntry) * 100 : 0;
+        const returnPct = Math.abs(rawReturnPct) < 0.0001 ? 0 : rawReturnPct;
         const currency = getCurrencySymbol(symbol);
 
         return {
@@ -137,15 +141,6 @@ export const PaperPositionsPage: React.FC = () => {
       }}
     >
       <style>{`
-        @keyframes skeleton-pulse {
-          0%, 100% { background-color: rgba(255, 255, 255, 0.03); }
-          50% { background-color: rgba(255, 255, 255, 0.08); }
-        }
-        .pulse-box {
-          animation: skeleton-pulse 1.5s infinite ease-in-out;
-          border-radius: 8px;
-        }
-
         .ppp-container {
           margin-left: 280px;
           flex: 1;
@@ -154,7 +149,7 @@ export const PaperPositionsPage: React.FC = () => {
           transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 24px;
           width: 100%;
           min-width: 0;
         }
@@ -183,6 +178,7 @@ export const PaperPositionsPage: React.FC = () => {
           gap: 16px;
           background: rgba(10, 16, 32, 0.65);
           backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
           border: 1px solid rgba(255, 255, 255, 0.06);
           border-radius: 14px;
           padding: 18px 22px;
@@ -209,60 +205,18 @@ export const PaperPositionsPage: React.FC = () => {
           font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
         }
 
-        .ppp-table-container {
-          background: rgba(10, 16, 32, 0.65);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255, 255, 255, 0.06);
-          border-radius: 14px;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .ppp-table-header {
-          display: grid;
-          grid-template-columns: 2fr 1fr 1.2fr 1.2fr 1.4fr 1.4fr 1.1fr 1fr;
-          padding: 12px 18px;
-          background: rgba(255, 255, 255, 0.02);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-          font-size: 0.66rem;
-          font-weight: 700;
-          color: #475569;
-          text-transform: uppercase;
-          letter-spacing: 0.6px;
-          align-items: center;
-        }
-
-        .ppp-table-row {
-          display: grid;
-          grid-template-columns: 2fr 1fr 1.2fr 1.2fr 1.4fr 1.4fr 1.1fr 1fr;
-          padding: 14px 18px;
-          align-items: center;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-          transition: background 0.18s ease;
-        }
-        .ppp-table-row:last-child { border-bottom: none; }
-        .ppp-table-row:hover { background: rgba(255, 255, 255, 0.025); }
-
-        .ppp-mono {
-          font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
-          font-weight: 800;
-        }
-
         @media (max-width: 900px) {
           .ppp-container {
             margin-left: 0;
             padding: 20px;
           }
-          .ppp-table-header { display: none; }
-          .ppp-table-row { grid-template-columns: 1fr; gap: 8px; }
         }
       `}</style>
 
       {/* Sidebar Navigation */}
       <Sidebar
         user={user}
-        onLogout={logout}
+        onLogout={() => { logout(); }}
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
       />
@@ -272,227 +226,236 @@ export const PaperPositionsPage: React.FC = () => {
           <PageSkeleton />
         ) : (
           <>
-        {/* Terminal Header */}
-        <motion.header
-          className="ppp-header"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <button
-              onClick={() => setIsMobileSidebarOpen(true)}
-              className="mobile-sidebar-toggle tpl-mobile-toggle"
-              aria-label="Toggle mobile menu"
+            {/* Terminal Page Header */}
+            <motion.header
+              className="ppp-header"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
             >
-              <Menu size={24} />
-            </button>
-            <button
-              onClick={() => navigate(ROUTES.DASHBOARD)}
-              style={{
-                background: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                color: '#94a3b8',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                padding: '6px 12px',
-                borderRadius: '8px',
-              }}
-              data-testid="back-to-dashboard-btn"
-            >
-              <ArrowLeft size={14} /> Back to Portfolio
-            </button>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                <h1 className="ppp-title">PAPER POSITIONS</h1>
-                <span className="tpl-sub-badge">Active Holdings Queue</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', fontSize: '0.78rem', color: '#64748b' }}>
-                <span style={{ color: '#60a5fa', fontWeight: 700, fontSize: '0.68rem', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                  <ShieldCheck size={11} /> PAPER TRADING
-                </span>
-                <span>•</span>
-                <span>Agent 5 Execution Engine</span>
-                <span>•</span>
-                <span style={{ fontWeight: 800, color: '#f1f5f9' }}>{positions.length} positions</span>
-              </div>
-            </div>
-          </div>
-        </motion.header>
-
-        {/* Paper Notice Bar */}
-        <div className="tpl-paper-notice-bar">
-          <Info size={14} className="tpl-notice-icon" />
-          <span>
-            <strong>PAPER TRADING:</strong> Simulated paper positions list. Execution and pricing are simulated without real money.
-          </span>
-        </div>
-
-        {/* Summary Metrics Strip */}
-        <motion.div
-          className="ppp-summary-strip"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.28, delay: 0.05 }}
-        >
-          <div className="ppp-summary-item">
-            <span className="ppp-summary-label">Total Portfolio Value</span>
-            <span className="ppp-summary-value">${formatPrice(totalValue)}</span>
-          </div>
-          <div className="ppp-summary-item">
-            <span className="ppp-summary-label">Total Cost Basis</span>
-            <span className="ppp-summary-value">${formatPrice(totalCost)}</span>
-          </div>
-          <div className="ppp-summary-item">
-            <span className="ppp-summary-label">Total Unrealized P&L</span>
-            <span className="ppp-summary-value" style={{ color: isTotalPnlPositive ? '#10b981' : '#ef4444' }}>
-              {isTotalPnlPositive ? '+' : ''}${formatPrice(Math.abs(totalPnl))}
-            </span>
-          </div>
-        </motion.div>
-
-        {/* Command / Filter Bar */}
-        <div className="tpl-command-bar">
-          <div className="tpl-command-bar-row">
-            <div className="tpl-search-box">
-              <Search size={14} className="tpl-search-icon" />
-              <input
-                type="text"
-                placeholder="Search position symbol..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="tpl-search-input"
-                data-testid="positions-search-input"
-              />
-            </div>
-
-            <div className="tpl-filter-group">
-              <span className="tpl-filter-label"><SlidersHorizontal size={12} /> P&L Filter</span>
-              <select
-                value={pnlFilter}
-                onChange={(e) => setPnlFilter(e.target.value as any)}
-                className="tpl-select"
-                data-testid="positions-pnl-filter"
-              >
-                <option value="ALL">All Positions</option>
-                <option value="PROFIT">In Profit (+)</option>
-                <option value="LOSS">In Loss (-)</option>
-              </select>
-            </div>
-
-            <div className="tpl-filter-group">
-              <span className="tpl-filter-label"><ArrowUpDown size={12} /> Sort</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="tpl-select"
-                data-testid="positions-sort-select"
-              >
-                <option value="value_desc">Highest Value</option>
-                <option value="pnl_desc">Highest P&L</option>
-                <option value="pnl_asc">Lowest P&L</option>
-                <option value="symbol_asc">Symbol (A-Z)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Position Table */}
-        {isLoading ? (
-          <div className="ppp-table-container">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="ppp-table-row" style={{ gap: 12, padding: '16px 18px' }}>
-                <div className="pulse-box" style={{ height: 20, width: 110, borderRadius: 6 }} />
-                <div className="pulse-box" style={{ height: 16, width: 70, borderRadius: 6 }} />
-                <div className="pulse-box" style={{ height: 16, width: 80, borderRadius: 6 }} />
-                <div className="pulse-box" style={{ height: 16, width: 80, borderRadius: 6 }} />
-                <div className="pulse-box" style={{ height: 16, width: 90, borderRadius: 6 }} />
-                <div className="pulse-box" style={{ height: 16, width: 90, borderRadius: 6 }} />
-                <div className="pulse-box" style={{ height: 16, width: 60, borderRadius: 6 }} />
-                <div className="pulse-box" style={{ height: 28, width: 95, borderRadius: 6 }} />
-              </div>
-            ))}
-          </div>
-        ) : filteredPositions.length === 0 ? (
-          <div className="tpl-empty-box" data-testid="positions-empty-state">
-            <div className="tpl-empty-icon">
-              <Briefcase size={24} color="#3b82f6" />
-            </div>
-            <h3 className="tpl-empty-title">No Paper Positions Found</h3>
-            <p className="tpl-empty-desc">
-              {positions.length === 0
-                ? 'No active paper positions in portfolio. Execute a trade proposal or paper order to see positions here.'
-                : 'No positions match your search or filter settings.'}
-            </p>
-          </div>
-        ) : (
-          <div className="ppp-table-container" data-testid="positions-list-table">
-            <div className="ppp-table-header">
-              <span>SYMBOL</span>
-              <span>QUANTITY</span>
-              <span>AVG ENTRY</span>
-              <span>CURRENT</span>
-              <span>CURRENT VALUE</span>
-              <span>UNREALIZED P&L</span>
-              <span>RETURN %</span>
-              <span>ACTION</span>
-            </div>
-
-            {filteredPositions.map((pos) => {
-              const isPosProfit = pos.pnl >= 0;
-              const pnlColor = isPosProfit ? '#10b981' : '#ef4444';
-              const pnlSign = isPosProfit ? '+' : '';
-
-              return (
-                <div key={pos.id} className="ppp-table-row" data-testid={`position-row-${pos.symbol}`}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span className="tpl-symbol-name">{pos.symbol}</span>
-                    <span className="tpl-side-badge buy" style={{ fontSize: '0.65rem', padding: '1px 6px' }}>
-                      PAPER
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <button
+                  onClick={() => setIsMobileSidebarOpen(true)}
+                  className="mobile-sidebar-toggle tpl-mobile-toggle"
+                  aria-label="Toggle mobile menu"
+                >
+                  <Menu size={24} />
+                </button>
+                <button
+                  onClick={() => navigate(ROUTES.DASHBOARD)}
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.04)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    color: '#94a3b8',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    padding: '6px 12px',
+                    borderRadius: '8px',
+                  }}
+                  data-testid="back-to-dashboard-btn"
+                >
+                  <ArrowLeft size={14} /> Back to Portfolio
+                </button>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                    <h1 className="ppp-title">PAPER POSITIONS</h1>
+                    <span className="tpl-sub-badge">Active Holdings Queue</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', fontSize: '0.78rem', color: '#64748b' }}>
+                    <span style={{ color: '#60a5fa', fontWeight: 700, fontSize: '0.68rem', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <ShieldCheck size={11} /> PAPER TRADING
+                    </span>
+                    <span>•</span>
+                    <span>Agent 5 Execution Engine</span>
+                    <span>•</span>
+                    <span style={{ fontWeight: 800, color: '#f1f5f9', fontFamily: "'JetBrains Mono', monospace" }}>
+                      {positions.length} positions
                     </span>
                   </div>
-
-                  <span className="ppp-mono" style={{ color: '#f1f5f9' }}>{pos.quantity} shares</span>
-
-                  <span className="ppp-mono" style={{ color: '#94a3b8' }}>
-                    {pos.currency}{formatPrice(pos.average_entry_price)}
-                  </span>
-
-                  <span className="ppp-mono" style={{ color: '#f1f5f9' }}>
-                    {pos.currency}{formatPrice(pos.currentPrice)}
-                  </span>
-
-                  <span className="ppp-mono" style={{ color: '#f8fafc' }}>
-                    {pos.currency}{formatPrice(pos.currentVal)}
-                  </span>
-
-                  <span className="ppp-mono" style={{ color: pnlColor }}>
-                    {pnlSign}{pos.currency}{formatPrice(Math.abs(pos.pnl))}
-                  </span>
-
-                  <span className="ppp-mono" style={{ color: pnlColor }}>
-                    {pnlSign}{pos.returnPct.toFixed(2)}%
-                  </span>
-
-                  <div>
-                    <button
-                      type="button"
-                      className="tpl-action-btn"
-                      onClick={() => navigate(`/portfolio/positions/${pos.symbol}`)}
-                      data-testid={`view-position-btn-${pos.symbol}`}
-                    >
-                      View Details
-                    </button>
-                  </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
+              </div>
+            </motion.header>
+
+            {/* Paper Notice Bar */}
+            <div className="tpl-paper-notice-bar">
+              <Info size={14} className="tpl-notice-icon" />
+              <span>
+                <strong>PAPER TRADING:</strong> Simulated paper positions list. Execution and pricing are simulated without real money.
+              </span>
+            </div>
+
+            {/* Summary Metrics Strip */}
+            <motion.div
+              className="ppp-summary-strip"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.28, delay: 0.05 }}
+            >
+              <div className="ppp-summary-item">
+                <span className="ppp-summary-label">Total Portfolio Value</span>
+                <span className="ppp-summary-value">${formatPrice(totalValue)}</span>
+              </div>
+              <div className="ppp-summary-item">
+                <span className="ppp-summary-label">Total Cost Basis</span>
+                <span className="ppp-summary-value">${formatPrice(totalCost)}</span>
+              </div>
+              <div className="ppp-summary-item">
+                <span className="ppp-summary-label">Total Unrealized P&L</span>
+                <span className="ppp-summary-value" style={{ color: isTotalPnlPositive ? '#10b981' : '#ef4444' }}>
+                  {isTotalPnlPositive ? '+' : ''}${formatPrice(Math.abs(totalPnl))}
+                </span>
+              </div>
+            </motion.div>
+
+            {/* Command / Filter Bar */}
+            <div className="tpl-command-bar">
+              <div className="tpl-command-bar-row">
+                <div className="tpl-search-box">
+                  <Search size={14} className="tpl-search-icon" />
+                  <input
+                    type="text"
+                    placeholder="Search position symbol..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="tpl-search-input"
+                    data-testid="positions-search-input"
+                  />
+                </div>
+
+                <div className="tpl-filter-group">
+                  <span className="tpl-filter-label"><SlidersHorizontal size={12} /> P&L Filter</span>
+                  <select
+                    value={pnlFilter}
+                    onChange={(e) => setPnlFilter(e.target.value as any)}
+                    className="tpl-select"
+                    data-testid="positions-pnl-filter"
+                  >
+                    <option value="ALL">All Positions</option>
+                    <option value="PROFIT">In Profit (+)</option>
+                    <option value="LOSS">In Loss (-)</option>
+                  </select>
+                </div>
+
+                <div className="tpl-filter-group">
+                  <span className="tpl-filter-label"><ArrowUpDown size={12} /> Sort</span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="tpl-select"
+                    data-testid="positions-sort-select"
+                  >
+                    <option value="value_desc">Highest Value</option>
+                    <option value="pnl_desc">Highest P&L</option>
+                    <option value="pnl_asc">Lowest P&L</option>
+                    <option value="symbol_asc">Symbol (A-Z)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Position Cards Grid (Matching Portfolio Dashboard Design 100%) */}
+            {filteredPositions.length === 0 ? (
+              <div className="tpl-empty-box" data-testid="positions-empty-state">
+                <div className="tpl-empty-icon">
+                  <Briefcase size={24} color="#3b82f6" />
+                </div>
+                <h3 className="tpl-empty-title">No Paper Positions Found</h3>
+                <p className="tpl-empty-desc">
+                  {positions.length === 0
+                    ? 'No active paper positions in portfolio. Execute a trade proposal or paper order to see positions here.'
+                    : 'No positions match your search or filter settings.'}
+                </p>
+              </div>
+            ) : (
+              <div className="pv-positions-grid" data-testid="positions-list-table">
+                {filteredPositions.map((pos, idx) => {
+                  const isPosProfit = pos.pnl >= 0;
+                  const pnlClass = isPosProfit ? 'positive' : 'negative';
+                  const cardPnlClass = isPosProfit ? 'pnl-positive' : 'pnl-negative';
+                  const pnlSign = pos.pnl > 0 ? '+' : pos.pnl < 0 ? '-' : '';
+                  const returnPctSign = pos.returnPct > 0 ? '+' : pos.returnPct < 0 ? '-' : '';
+                  const returnPctFormatted = Math.abs(pos.returnPct).toFixed(2);
+
+                  return (
+                    <motion.div
+                      key={pos.id}
+                      className={`pv-position-card ${cardPnlClass}`}
+                      onClick={() => navigate(`/portfolio/positions/${pos.symbol}`)}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.28, delay: idx * 0.05 }}
+                      data-testid={`position-row-${pos.symbol}`}
+                    >
+                      {/* Card Header: Symbol + PAPER Tag + Qty Badge */}
+                      <div className="pv-position-header">
+                        <div className="pv-position-symbol-group">
+                          <span className="pv-position-symbol">{pos.symbol}</span>
+                          <span className="pv-paper-tag">PAPER</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span className="pv-qty-badge">{pos.quantity} shares</span>
+                          <ChevronRight size={14} style={{ color: '#475569' }} />
+                        </div>
+                      </div>
+
+                      {/* 4-Cell Metric Grid */}
+                      <div className="pv-metric-row">
+                        <div className="pv-metric-cell">
+                          <span className="pv-metric-label">AVG ENTRY</span>
+                          <span className="pv-metric-value">
+                            {pos.currency}{formatPrice(pos.average_entry_price)}
+                          </span>
+                        </div>
+
+                        <div className="pv-metric-cell">
+                          <span className="pv-metric-label">CURRENT</span>
+                          <span className="pv-metric-value">
+                            {pos.currency}{formatPrice(pos.currentPrice)}
+                          </span>
+                        </div>
+
+                        <div className="pv-metric-cell">
+                          <span className="pv-metric-label">VALUE</span>
+                          <span className="pv-metric-value">
+                            {pos.currency}{formatPrice(pos.currentVal)}
+                          </span>
+                        </div>
+
+                        <div className="pv-metric-cell">
+                          <span className="pv-metric-label">P&amp;L</span>
+                          <span className={`pv-metric-value ${pnlClass}`}>
+                            {pnlSign}{pos.currency}{formatPrice(Math.abs(pos.pnl))}
+                            <span className="pv-pnl-pct">
+                              {' '}({returnPctSign}{returnPctFormatted}%)
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Action Button Strip */}
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                        <button
+                          type="button"
+                          className="tpl-action-btn"
+                          style={{ fontSize: '0.75rem', padding: '4px 12px' }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/portfolio/positions/${pos.symbol}`);
+                          }}
+                          data-testid={`view-position-btn-${pos.symbol}`}
+                        >
+                          View Terminal Details
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
       </main>

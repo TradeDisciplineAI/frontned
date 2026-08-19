@@ -91,20 +91,20 @@ export const SettingsPage: React.FC = () => {
       style={{
         display: 'flex',
         minHeight: '100vh',
-        background: '#000000',
+        background: '#040810',
         color: '#f8fafc',
         fontFamily: 'Inter, system-ui, sans-serif',
       }}
     >
       <style>{`
         .settings-main-container {
-          margin-left: 240px;
+          margin-left: 280px;
           flex: 1;
           display: flex;
           flex-direction: column;
           min-width: 0;
           min-height: 100vh;
-          background: #000000;
+          background: #040810;
         }
         .settings-grid-layout {
           display: grid;
