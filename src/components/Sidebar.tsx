@@ -11,6 +11,7 @@ import {
   Settings,
   LogOut,
   ShieldAlert,
+  Briefcase,
 } from 'lucide-react';
 import type { UserResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
@@ -44,6 +45,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isExploreActive = location.pathname === ROUTES.EXPLORE;
   const isDashboardActive = location.pathname === ROUTES.DASHBOARD;
+  const isPositionsActive = location.pathname === ROUTES.POSITIONS || location.pathname.startsWith('/portfolio/positions');
   const isProposalsActive = location.pathname === ROUTES.PROPOSALS;
 
   const isLoggedIn = !!user;
@@ -126,6 +128,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <PieChart size={15} strokeWidth={2} />
               </span>
               <span>Portfolio</span>
+            </div>
+          </button>
+
+          <button
+            className={`sidebar-nav-item ${isPositionsActive ? 'active' : ''}`}
+            onClick={() => (isLoggedIn ? navigate(ROUTES.POSITIONS) : useUserStore.getState().openGuestModal())}
+            data-testid="sidebar-nav-positions"
+          >
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <Briefcase size={15} strokeWidth={2} />
+              </span>
+              <span>Paper Positions</span>
             </div>
           </button>
 
