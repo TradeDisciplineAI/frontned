@@ -1,15 +1,7 @@
 import React from 'react';
-import { Sidebar } from '@/components/Sidebar';
-import { useUserStore } from '@/stores/userStore';
 
-interface PageSkeletonProps {
-  withSidebar?: boolean;
-}
-
-export const PageSkeleton: React.FC<PageSkeletonProps> = ({ withSidebar = false }) => {
-  const { user, logout } = useUserStore();
-
-  const content = (
+export const PageSkeleton: React.FC = () => {
+  return (
     <div
       style={{
         display: 'flex',
@@ -103,36 +95,4 @@ export const PageSkeleton: React.FC<PageSkeletonProps> = ({ withSidebar = false 
       </div>
     </div>
   );
-
-  if (withSidebar) {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          minHeight: '100vh',
-          background: '#040810',
-          color: '#f8fafc',
-          position: 'relative',
-          overflowX: 'hidden',
-          fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
-        }}
-      >
-        <Sidebar user={user} onLogout={logout} />
-        <main
-          style={{
-            marginLeft: '280px',
-            flex: 1,
-            padding: '36px 40px',
-            boxSizing: 'border-box',
-            width: '100%',
-            minWidth: 0,
-          }}
-        >
-          {content}
-        </main>
-      </div>
-    );
-  }
-
-  return content;
 };

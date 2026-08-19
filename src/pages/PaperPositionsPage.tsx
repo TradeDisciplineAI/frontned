@@ -31,10 +31,6 @@ export const PaperPositionsPage: React.FC = () => {
     fetchPortfolio();
   }, [fetchPortfolio]);
 
-  if (isLoading) {
-    return <PageSkeleton withSidebar />;
-  }
-
   const positions = portfolio?.positions || [];
   const holdings = portfolio?.holdings || [];
 
@@ -272,6 +268,10 @@ export const PaperPositionsPage: React.FC = () => {
       />
 
       <main className="ppp-container">
+        {isLoading ? (
+          <PageSkeleton />
+        ) : (
+          <>
         {/* Terminal Header */}
         <motion.header
           className="ppp-header"
@@ -492,6 +492,8 @@ export const PaperPositionsPage: React.FC = () => {
               );
             })}
           </div>
+        )}
+          </>
         )}
       </main>
     </div>

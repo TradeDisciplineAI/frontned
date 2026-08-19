@@ -32,10 +32,6 @@ export const TradeProposalsPage: React.FC = () => {
     fetchProposals(user?.id);
   }, [fetchProposals, user?.id]);
 
-  if (isLoading) {
-    return <PageSkeleton withSidebar />;
-  }
-
   const proposalCount = proposals.length;
 
   return (
@@ -81,6 +77,10 @@ export const TradeProposalsPage: React.FC = () => {
       />
 
       <main className="proposals-main-container">
+        {isLoading ? (
+          <PageSkeleton />
+        ) : (
+          <>
         {/* Terminal Page Header */}
         <motion.header
           className="tpl-page-header"
@@ -159,6 +159,8 @@ export const TradeProposalsPage: React.FC = () => {
           isOpen={isReviewModalOpen}
           onClose={closeReviewModal}
         />
+          </>
+        )}
       </main>
     </div>
   );

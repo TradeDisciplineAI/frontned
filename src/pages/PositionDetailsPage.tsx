@@ -34,10 +34,7 @@ export const PositionDetailsPage: React.FC = () => {
     fetchProposals(user?.id);
   }, [portfolio, fetchPortfolio, fetchProposals, user?.id]);
 
-  if (isPortfolioLoading || isProposalsLoading) {
-    return <PageSkeleton withSidebar />;
-  }
-
+  const isLoading = isPortfolioLoading || isProposalsLoading;
   const safeSymbol = symbol || '';
   const position = portfolio?.positions?.find((p) => p?.symbol === safeSymbol);
 
@@ -285,6 +282,10 @@ export const PositionDetailsPage: React.FC = () => {
       />
 
       <main className="pdp-main-container">
+        {isLoading ? (
+          <PageSkeleton />
+        ) : (
+          <>
         {/* Top Navigation Bar */}
         <motion.div
           style={{
@@ -718,6 +719,8 @@ export const PositionDetailsPage: React.FC = () => {
             </div>
           )}
         </motion.div>
+          </>
+        )}
       </main>
     </div>
   );
