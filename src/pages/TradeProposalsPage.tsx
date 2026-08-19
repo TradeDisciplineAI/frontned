@@ -7,6 +7,7 @@ import { useTradeProposalStore } from '@/stores/useTradeProposalStore';
 import { TradeProposalsList } from '@/components/tradeProposal/TradeProposalsList';
 import { CreateProposalModal } from '@/components/tradeProposal/CreateProposalModal';
 import { PreRiskReviewModal } from '@/components/tradeProposal/PreRiskReviewModal';
+import { PageSkeleton } from '@/components/ui/PageSkeleton';
 import '@/styles/components/tradeProposal.css';
 
 export const TradeProposalsPage: React.FC = () => {
@@ -30,6 +31,10 @@ export const TradeProposalsPage: React.FC = () => {
   React.useEffect(() => {
     fetchProposals(user?.id);
   }, [fetchProposals, user?.id]);
+
+  if (isLoading) {
+    return <PageSkeleton withSidebar />;
+  }
 
   const proposalCount = proposals.length;
 

@@ -16,6 +16,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { useUserStore } from '@/stores/userStore';
 import { usePortfolioStore } from '@/stores/usePortfolioStore';
 import { useTradeProposalStore } from '@/stores/useTradeProposalStore';
+import { PageSkeleton } from '@/components/ui/PageSkeleton';
 
 export const PositionDetailsPage: React.FC = () => {
   const { symbol } = useParams<{ symbol: string }>();
@@ -34,27 +35,7 @@ export const PositionDetailsPage: React.FC = () => {
   }, [portfolio, fetchPortfolio, fetchProposals, user?.id]);
 
   if (isPortfolioLoading || isProposalsLoading) {
-    return (
-      <div style={{ display: 'flex', minHeight: '100vh', background: '#040810' }}>
-        <Sidebar user={user} onLogout={logout} isOpen={isMobileSidebarOpen} onClose={() => setIsMobileSidebarOpen(false)} />
-        <div style={{ marginLeft: 280, flex: 1, padding: 36, display: 'flex', flexDirection: 'column', gap: 24, width: '100%' }}>
-          <style>{`
-            @keyframes skeleton-pulse {
-              0%, 100% { background-color: rgba(255, 255, 255, 0.03); }
-              50% { background-color: rgba(255, 255, 255, 0.08); }
-            }
-            .pdp-skeleton-box { animation: skeleton-pulse 1.5s infinite ease-in-out; border-radius: 10px; }
-          `}</style>
-          <div className="pdp-skeleton-box" style={{ height: 40, width: 300 }} />
-          <div className="pdp-skeleton-box" style={{ height: 180, width: '100%' }} />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="pdp-skeleton-box" style={{ height: 120 }} />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <PageSkeleton withSidebar />;
   }
 
   const position = portfolio?.positions?.find((p) => p.symbol === symbol);

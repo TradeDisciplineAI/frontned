@@ -15,6 +15,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { useUserStore } from '@/stores/userStore';
 import { usePortfolioStore } from '@/stores/usePortfolioStore';
 import { ROUTES } from '@/constants/routes.constants';
+import { PageSkeleton } from '@/components/ui/PageSkeleton';
 
 export const PaperPositionsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -31,6 +32,10 @@ export const PaperPositionsPage: React.FC = () => {
       fetchPortfolio();
     }
   }, [portfolio, fetchPortfolio]);
+
+  if (isLoading) {
+    return <PageSkeleton withSidebar />;
+  }
 
   const positions = portfolio?.positions || [];
   const holdings = portfolio?.holdings || [];
