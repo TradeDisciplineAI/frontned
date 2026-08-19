@@ -13,6 +13,7 @@ import { LiveMarketDashboard } from '@/pages/LiveMarketDashboard';
 import { SettingsPage } from '@/pages/SettingsPage';
 import { TradeProposalsPage } from '@/pages/TradeProposalsPage';
 import { PositionDetailsPage } from '@/pages/PositionDetailsPage';
+import { PaperPositionsPage } from '@/pages/PaperPositionsPage';
 import { GuestPromoModal } from '@/components/GuestPromoModal';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
@@ -161,6 +162,14 @@ function AppContent() {
           element={
             <AuthGuard>
               <SettingsPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path={ROUTES.POSITIONS}
+          element={
+            <AuthGuard>
+              <PaperPositionsPage />
             </AuthGuard>
           }
         />

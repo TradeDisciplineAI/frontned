@@ -24,6 +24,7 @@ import { AISignalModal } from '@/components/tradeProposal/AISignalModal';
 import { CreateProposalModal } from '@/components/tradeProposal/CreateProposalModal';
 import { PreRiskReviewModal } from '@/components/tradeProposal/PreRiskReviewModal';
 import { Sparkline } from '@/components/ui/Sparkline';
+import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/portfolio.css';
 
 interface PortfolioViewProps {
@@ -258,7 +259,7 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onV
               className="pv-section-action"
               role="button"
               tabIndex={0}
-              onClick={() => positions[0]?.symbol && navigate(`/portfolio/positions/${positions[0].symbol}`)}
+              onClick={() => navigate(ROUTES.POSITIONS)}
             >
               View all <ChevronRight size={13} style={{ display: 'inline', verticalAlign: 'middle' }} />
             </span>
