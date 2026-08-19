@@ -15,10 +15,10 @@ import { authService } from '@/features/auth/auth.service';
 import type { UserSessionResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
 
-import windowsImg from '@/assets/devices/windows_pc.jpg';
-import macbookImg from '@/assets/devices/macbook.jpg';
-import smartphoneImg from '@/assets/devices/smartphone.jpg';
-import linuxImg from '@/assets/devices/linux_pc.jpg';
+import windowsImg from '@/assets/devices/windows_pc.png';
+import macbookImg from '@/assets/devices/macbook.png';
+import smartphoneImg from '@/assets/devices/smartphone.png';
+import linuxImg from '@/assets/devices/linux_pc.png';
 
 export const SecuritySessionsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -117,8 +117,48 @@ export const SecuritySessionsPage: React.FC = () => {
         background: '#000000',
         color: '#f8fafc',
         fontFamily: 'Inter, system-ui, sans-serif',
+        position: 'relative',
+        overflowX: 'hidden',
       }}
     >
+      <style>{`
+        .sec-page-container {
+          margin-left: 280px;
+          flex: 1;
+          padding: 36px 40px;
+          box-sizing: border-box;
+          transition: margin-left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+          width: calc(100% - 280px);
+          min-width: 0;
+        }
+
+        @media (max-width: 1024px) {
+          .sec-page-container {
+            margin-left: 0;
+            width: 100%;
+            padding: 20px 16px;
+          }
+        }
+
+        .sec-card-responsive {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 24px;
+          flex-wrap: wrap;
+        }
+
+        @media (max-width: 640px) {
+          .sec-card-responsive {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+      `}</style>
+
       <Sidebar
         user={user}
         onLogout={handleLogout}
@@ -126,16 +166,18 @@ export const SecuritySessionsPage: React.FC = () => {
         onClose={() => setIsMobileSidebarOpen(false)}
       />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      {/* Main Responsive Content Container offset from Sidebar */}
+      <main className="sec-page-container">
         {/* Mobile Header Bar */}
         <div
           style={{
-            padding: '12px 16px',
+            padding: '12px 0',
             borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             background: '#000000',
+            marginBottom: '12px',
           }}
           className="mobile-header-only"
         >
@@ -158,418 +200,405 @@ export const SecuritySessionsPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Main Content Area */}
-        <div style={{ flex: 1, padding: '32px 40px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-          {notification && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              style={{
-                position: 'fixed',
-                top: 24,
-                right: 24,
-                zIndex: 9999,
-                background: 'rgba(16, 185, 129, 0.95)',
-                color: '#ffffff',
-                padding: '10px 18px',
-                borderRadius: '8px',
-                fontSize: '13px',
-                fontWeight: 700,
-                boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)',
-              }}
-            >
-              {notification}
-            </motion.div>
-          )}
-
-          {/* Page Title & Status Banner */}
-          <div style={{ marginBottom: '28px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                  <h1 style={{ fontSize: '24px', fontWeight: 900, margin: 0, color: '#f8fafc', letterSpacing: '-0.02em' }}>
-                    SECURITY & ACTIVE SESSIONS
-                  </h1>
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      fontSize: '11px',
-                      fontWeight: 800,
-                      color: '#10b981',
-                      background: 'rgba(16, 185, 129, 0.1)',
-                      border: '1px solid rgba(16, 185, 129, 0.25)',
-                      padding: '3px 10px',
-                      borderRadius: '9999px',
-                    }}
-                  >
-                    <span
-                      style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: '50%',
-                        background: '#10b981',
-                        boxShadow: '0 0 8px #10b981',
-                      }}
-                    />
-                    SESSION MONITORING ACTIVE
-                  </span>
-                </div>
-                <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '6px', margin: '6px 0 0 0' }}>
-                  Real-time security console to review and manage authorized login sessions across all your devices.
-                </p>
-              </div>
-
-              {!isSessionsLoading && !sessionsError && (
-                <span
-                  style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: '13px',
-                    fontWeight: 800,
-                    color: '#60a5fa',
-                    background: 'rgba(59, 130, 246, 0.12)',
-                    border: '1px solid rgba(59, 130, 246, 0.25)',
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                  }}
-                  data-testid="active-sessions-count-badge"
-                >
-                  {sessions.length} ACTIVE {sessions.length === 1 ? 'SESSION' : 'SESSIONS'}
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Revoke All Sessions Banner */}
-          <div
+        {notification && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
             style={{
-              background: 'rgba(239, 68, 68, 0.08)',
-              border: '1px solid rgba(239, 68, 68, 0.25)',
-              borderRadius: '16px',
-              padding: '22px 24px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '16px',
-              marginBottom: '28px',
-              boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+              position: 'fixed',
+              top: 24,
+              right: 24,
+              zIndex: 9999,
+              background: 'rgba(16, 185, 129, 0.95)',
+              color: '#ffffff',
+              padding: '10px 18px',
+              borderRadius: '8px',
+              fontSize: '13px',
+              fontWeight: 700,
+              boxShadow: '0 8px 24px rgba(16, 185, 129, 0.3)',
             }}
           >
+            {notification}
+          </motion.div>
+        )}
+
+        {/* Page Title & Status Banner */}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <ShieldAlert size={18} color="#ef4444" />
-                <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#f8fafc' }}>
-                  Revoke All Active Sessions
-                </h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <h1 style={{ fontSize: '24px', fontWeight: 900, margin: 0, color: '#f8fafc', letterSpacing: '-0.02em' }}>
+                  SECURITY & ACTIVE SESSIONS
+                </h1>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    color: '#10b981',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.25)',
+                    padding: '3px 10px',
+                    borderRadius: '9999px',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 6,
+                      height: 6,
+                      borderRadius: '50%',
+                      background: '#10b981',
+                      boxShadow: '0 0 8px #10b981',
+                    }}
+                  />
+                  SESSION MONITORING ACTIVE
+                </span>
               </div>
-              <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#94a3b8' }}>
-                Sign out across all registered devices and browsers immediately.
+              <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '6px', margin: '6px 0 0 0' }}>
+                Real-time security console to review and manage authorized login sessions across all your devices.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsLogoutAllModalOpen(true)}
-              disabled={isLoggingOutAll}
-              data-testid="logout-all-btn"
-              style={{
-                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '10px 20px',
-                fontSize: '13px',
-                fontWeight: 700,
-                cursor: isLoggingOutAll ? 'not-allowed' : 'pointer',
-                opacity: isLoggingOutAll ? 0.6 : 1,
-                transition: 'all 0.18s ease',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                boxShadow: '0 4px 14px rgba(239, 68, 68, 0.35)',
-              }}
-            >
-              <LogOut size={15} />
-              {isLoggingOutAll ? 'Logging out...' : 'Log Out All Sessions'}
-            </button>
-          </div>
 
-          {/* Active Sessions Grid / List */}
-          <div>
-            <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#f8fafc', marginBottom: '16px', letterSpacing: '-0.01em' }}>
-              Active Sessions Console
-            </h3>
-
-            {isSessionsLoading ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} data-testid="sessions-loading-state">
-                {[1, 2].map((i) => (
-                  <div
-                    key={i}
-                    style={{
-                      background: 'rgba(10, 16, 32, 0.65)',
-                      border: '1px solid rgba(255, 255, 255, 0.06)',
-                      borderRadius: '16px',
-                      padding: '24px',
-                      display: 'flex',
-                      gap: '20px',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <div className="pulse-box" style={{ width: 80, height: 80, borderRadius: 14 }} />
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                      <div className="pulse-box" style={{ width: 200, height: 20 }} />
-                      <div className="pulse-box" style={{ width: 300, height: 16 }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : sessionsError ? (
-              <div
+            {!isSessionsLoading && !sessionsError && (
+              <span
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '40px 20px',
-                  background: 'rgba(239, 68, 68, 0.05)',
-                  border: '1px solid rgba(239, 68, 68, 0.2)',
-                  borderRadius: '16px',
-                  gap: '14px',
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: '13px',
+                  fontWeight: 800,
+                  color: '#60a5fa',
+                  background: 'rgba(59, 130, 246, 0.12)',
+                  border: '1px solid rgba(59, 130, 246, 0.25)',
+                  padding: '6px 14px',
+                  borderRadius: '8px',
                 }}
-                data-testid="sessions-error-state"
+                data-testid="active-sessions-count-badge"
               >
-                <AlertOctagon size={28} color="#ef4444" />
-                <span style={{ color: '#ef4444', fontSize: '14px', fontWeight: 700 }}>
-                  Unable to load active sessions.
-                </span>
-                <button
-                  type="button"
-                  onClick={fetchSessions}
-                  style={{
-                    background: 'rgba(239, 68, 68, 0.15)',
-                    border: '1px solid rgba(239, 68, 68, 0.3)',
-                    color: '#ffffff',
-                    borderRadius: '8px',
-                    padding: '8px 18px',
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Retry
-                </button>
-              </div>
-            ) : sessions.length === 0 ? (
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '48px 20px',
-                  background: 'rgba(10, 16, 32, 0.65)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                  borderRadius: '16px',
-                  textAlign: 'center',
-                  gap: '14px',
-                }}
-                data-testid="sessions-empty-state"
-              >
-                <div
-                  style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: '50%',
-                    background: 'rgba(59, 130, 246, 0.1)',
-                    border: '1px solid rgba(59, 130, 246, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <ShieldCheck size={28} color="#3b82f6" />
-                </div>
-                <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#f8fafc' }}>
-                  NO ACTIVE SESSIONS
-                </h4>
-                <p style={{ margin: 0, fontSize: '13px', color: '#94a3b8', maxWidth: '320px' }}>
-                  Your account has no active sessions.
-                </p>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} data-testid="active-sessions-list">
-                {sessions.map((sess, idx) => {
-                  const deviceImgSrc = getDeviceImage(sess);
-
-                  return (
-                    <motion.div
-                      key={sess.id}
-                      data-testid={`session-card-${sess.id}`}
-                      initial={{ opacity: 0, y: 16, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.28, delay: idx * 0.06 }}
-                      style={{
-                        background: 'rgba(10, 16, 32, 0.75)',
-                        backdropFilter: 'blur(16px)',
-                        border: sess.is_current
-                          ? '1px solid rgba(16, 185, 129, 0.4)'
-                          : '1px solid rgba(255, 255, 255, 0.07)',
-                        borderRadius: '16px',
-                        padding: '22px 24px',
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        gap: '24px',
-                        boxShadow: sess.is_current
-                          ? '0 12px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(16, 185, 129, 0.12)'
-                          : '0 6px 20px rgba(0, 0, 0, 0.35)',
-                        flexWrap: 'wrap',
-                        transition: 'all 0.22s ease',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '20px', minWidth: 0, flex: 1 }}>
-                        {/* Real Photorealistic Device Image Container with Animated Hover & Float */}
-                        <motion.div
-                          whileHover={{ scale: 1.06, rotate: 1 }}
-                          animate={{ y: [0, -3, 0] }}
-                          transition={{
-                            y: { repeat: Infinity, duration: 4, ease: 'easeInOut', delay: idx * 0.3 },
-                            scale: { duration: 0.2 },
-                          }}
-                          style={{
-                            width: 84,
-                            height: 84,
-                            borderRadius: 16,
-                            overflow: 'hidden',
-                            background: sess.is_current ? 'rgba(16, 185, 129, 0.1)' : 'rgba(30, 41, 59, 0.4)',
-                            border: sess.is_current
-                              ? '1.5px solid rgba(16, 185, 129, 0.4)'
-                              : '1.5px solid rgba(59, 130, 246, 0.25)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            flexShrink: 0,
-                            boxShadow: sess.is_current
-                              ? '0 0 16px rgba(16, 185, 129, 0.25)'
-                              : '0 0 12px rgba(59, 130, 246, 0.15)',
-                            position: 'relative',
-                          }}
-                        >
-                          <img
-                            src={deviceImgSrc}
-                            alt={sess.device_name || 'Device'}
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover',
-                              objectPosition: 'center',
-                              filter: 'brightness(1.05) contrast(1.05)',
-                            }}
-                          />
-                        </motion.div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: '16px', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.01em' }}>
-                              {sess.device_name || sess.user_agent || 'Terminal Session'}
-                            </span>
-                            {sess.is_current ? (
-                              <span
-                                style={{
-                                  fontSize: '10px',
-                                  fontWeight: 800,
-                                  padding: '3px 10px',
-                                  borderRadius: '9999px',
-                                  background: 'rgba(16, 185, 129, 0.15)',
-                                  color: '#10b981',
-                                  border: '1px solid rgba(16, 185, 129, 0.35)',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 6,
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    width: 6,
-                                    height: 6,
-                                    borderRadius: '50%',
-                                    background: '#10b981',
-                                    boxShadow: '0 0 8px #10b981',
-                                  }}
-                                />
-                                CURRENT SESSION
-                              </span>
-                            ) : (
-                              <span
-                                style={{
-                                  fontSize: '10px',
-                                  fontWeight: 700,
-                                  padding: '3px 10px',
-                                  borderRadius: '9999px',
-                                  background: 'rgba(255, 255, 255, 0.04)',
-                                  color: '#94a3b8',
-                                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                                }}
-                              >
-                                Active
-                              </span>
-                            )}
-                          </div>
-
-                          {sess.ip_address && (
-                            <span style={{ fontSize: '13px', color: '#64748b', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>
-                              IP: {sess.ip_address}
-                            </span>
-                          )}
-
-                          <div style={{ fontSize: '12px', color: '#94a3b8', display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: 2 }}>
-                            <span>Created: {new Date(sess.created_at).toLocaleString()}</span>
-                            {sess.last_used_at && (
-                              <span>Last Active: {new Date(sess.last_used_at).toLocaleString()}</span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => handleRevokeSession(sess.id)}
-                        disabled={revokingSessionId === sess.id}
-                        data-testid={`revoke-session-btn-${sess.id}`}
-                        style={{
-                          background: 'rgba(239, 68, 68, 0.1)',
-                          border: '1px solid rgba(239, 68, 68, 0.35)',
-                          color: '#ef4444',
-                          borderRadius: '8px',
-                          padding: '9px 18px',
-                          fontSize: '12px',
-                          fontWeight: 700,
-                          cursor: revokingSessionId === sess.id ? 'not-allowed' : 'pointer',
-                          opacity: revokingSessionId === sess.id ? 0.6 : 1,
-                          transition: 'all 0.18s ease',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          boxShadow: '0 2px 8px rgba(239, 68, 68, 0.15)',
-                        }}
-                      >
-                        {revokingSessionId === sess.id ? (
-                          <>
-                            <RotateCw size={14} className="animate-spin" /> Revoking...
-                          </>
-                        ) : (
-                          'Revoke Session'
-                        )}
-                      </button>
-                    </motion.div>
-                  );
-                })}
-              </div>
+                {sessions.length} ACTIVE {sessions.length === 1 ? 'SESSION' : 'SESSIONS'}
+              </span>
             )}
           </div>
         </div>
-      </div>
+
+        {/* Revoke All Sessions Banner */}
+        <div
+          style={{
+            background: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.25)',
+            borderRadius: '16px',
+            padding: '22px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+          }}
+        >
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <ShieldAlert size={18} color="#ef4444" />
+              <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#f8fafc' }}>
+                Revoke All Active Sessions
+              </h3>
+            </div>
+            <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#94a3b8' }}>
+              Sign out across all registered devices and browsers immediately.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsLogoutAllModalOpen(true)}
+            disabled={isLoggingOutAll}
+            data-testid="logout-all-btn"
+            style={{
+              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '8px',
+              padding: '10px 20px',
+              fontSize: '13px',
+              fontWeight: 700,
+              cursor: isLoggingOutAll ? 'not-allowed' : 'pointer',
+              opacity: isLoggingOutAll ? 0.6 : 1,
+              transition: 'all 0.18s ease',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 4px 14px rgba(239, 68, 68, 0.35)',
+            }}
+          >
+            <LogOut size={15} />
+            {isLoggingOutAll ? 'Logging out...' : 'Log Out All Sessions'}
+          </button>
+        </div>
+
+        {/* Active Sessions Grid / List */}
+        <div>
+          <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#f8fafc', marginBottom: '16px', letterSpacing: '-0.01em' }}>
+            Active Sessions Console
+          </h3>
+
+          {isSessionsLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} data-testid="sessions-loading-state">
+              {[1, 2].map((i) => (
+                <div
+                  key={i}
+                  style={{
+                    background: 'rgba(10, 16, 32, 0.65)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderRadius: '16px',
+                    padding: '24px',
+                    display: 'flex',
+                    gap: '20px',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div className="pulse-box" style={{ width: 80, height: 80, borderRadius: 14 }} />
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    <div className="pulse-box" style={{ width: 200, height: 20 }} />
+                    <div className="pulse-box" style={{ width: 300, height: 16 }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : sessionsError ? (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '40px 20px',
+                background: 'rgba(239, 68, 68, 0.05)',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                borderRadius: '16px',
+                gap: '14px',
+              }}
+              data-testid="sessions-error-state"
+            >
+              <AlertOctagon size={28} color="#ef4444" />
+              <span style={{ color: '#ef4444', fontSize: '14px', fontWeight: 700 }}>
+                Unable to load active sessions.
+              </span>
+              <button
+                type="button"
+                onClick={fetchSessions}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.15)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  color: '#ffffff',
+                  borderRadius: '8px',
+                  padding: '8px 18px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          ) : sessions.length === 0 ? (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '48px 20px',
+                background: 'rgba(10, 16, 32, 0.65)',
+                border: '1px solid rgba(255, 255, 255, 0.06)',
+                borderRadius: '16px',
+                textAlign: 'center',
+                gap: '14px',
+              }}
+              data-testid="sessions-empty-state"
+            >
+              <div
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: '50%',
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  border: '1px solid rgba(59, 130, 246, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <ShieldCheck size={28} color="#3b82f6" />
+              </div>
+              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#f8fafc' }}>
+                NO ACTIVE SESSIONS
+              </h4>
+              <p style={{ margin: 0, fontSize: '13px', color: '#94a3b8', maxWidth: '320px' }}>
+                Your account has no active sessions.
+              </p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} data-testid="active-sessions-list">
+              {sessions.map((sess, idx) => {
+                const deviceImgSrc = getDeviceImage(sess);
+
+                return (
+                  <motion.div
+                    key={sess.id}
+                    data-testid={`session-card-${sess.id}`}
+                    initial={{ opacity: 0, y: 16, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.28, delay: idx * 0.06 }}
+                    className="sec-card-responsive"
+                    style={{
+                      background: 'rgba(10, 16, 32, 0.75)',
+                      backdropFilter: 'blur(16px)',
+                      border: sess.is_current
+                        ? '1px solid rgba(16, 185, 129, 0.4)'
+                        : '1px solid rgba(255, 255, 255, 0.07)',
+                      borderRadius: '16px',
+                      padding: '22px 24px',
+                      boxShadow: sess.is_current
+                        ? '0 12px 32px rgba(0, 0, 0, 0.5), 0 0 24px rgba(16, 185, 129, 0.12)'
+                        : '0 6px 20px rgba(0, 0, 0, 0.35)',
+                      transition: 'all 0.22s ease',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '20px', minWidth: 0, flex: 1 }}>
+                      {/* Transparent Animated Device Container */}
+                      <motion.div
+                        whileHover={{ scale: 1.08, rotate: 1.5 }}
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{
+                          y: { repeat: Infinity, duration: 3.5, ease: 'easeInOut', delay: idx * 0.3 },
+                          scale: { duration: 0.2 },
+                        }}
+                        style={{
+                          width: 84,
+                          height: 84,
+                          borderRadius: 16,
+                          background: 'transparent',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                          position: 'relative',
+                          filter: sess.is_current
+                            ? 'drop-shadow(0 0 16px rgba(16, 185, 129, 0.4))'
+                            : 'drop-shadow(0 0 12px rgba(59, 130, 246, 0.3))',
+                        }}
+                      >
+                        <img
+                          src={deviceImgSrc}
+                          alt={sess.device_name || 'Device'}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain',
+                            objectPosition: 'center',
+                          }}
+                        />
+                      </motion.div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', minWidth: 0 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                          <span style={{ fontSize: '16px', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.01em' }}>
+                            {sess.device_name || sess.user_agent || 'Terminal Session'}
+                          </span>
+                          {sess.is_current ? (
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                fontWeight: 800,
+                                padding: '3px 10px',
+                                borderRadius: '9999px',
+                                background: 'rgba(16, 185, 129, 0.15)',
+                                color: '#10b981',
+                                border: '1px solid rgba(16, 185, 129, 0.35)',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: 6,
+                                  height: 6,
+                                  borderRadius: '50%',
+                                  background: '#10b981',
+                                  boxShadow: '0 0 8px #10b981',
+                                }}
+                              />
+                              CURRENT SESSION
+                            </span>
+                          ) : (
+                            <span
+                              style={{
+                                fontSize: '10px',
+                                fontWeight: 700,
+                                padding: '3px 10px',
+                                borderRadius: '9999px',
+                                background: 'rgba(255, 255, 255, 0.04)',
+                                color: '#94a3b8',
+                                border: '1px solid rgba(255, 255, 255, 0.08)',
+                              }}
+                            >
+                              Active
+                            </span>
+                          )}
+                        </div>
+
+                        {sess.ip_address && (
+                          <span style={{ fontSize: '13px', color: '#64748b', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>
+                            IP: {sess.ip_address}
+                          </span>
+                        )}
+
+                        <div style={{ fontSize: '12px', color: '#94a3b8', display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: 2 }}>
+                          <span>Created: {new Date(sess.created_at).toLocaleString()}</span>
+                          {sess.last_used_at && (
+                            <span>Last Active: {new Date(sess.last_used_at).toLocaleString()}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleRevokeSession(sess.id)}
+                      disabled={revokingSessionId === sess.id}
+                      data-testid={`revoke-session-btn-${sess.id}`}
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        border: '1px solid rgba(239, 68, 68, 0.35)',
+                        color: '#ef4444',
+                        borderRadius: '8px',
+                        padding: '9px 18px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: revokingSessionId === sess.id ? 'not-allowed' : 'pointer',
+                        opacity: revokingSessionId === sess.id ? 0.6 : 1,
+                        transition: 'all 0.18s ease',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        boxShadow: '0 2px 8px rgba(239, 68, 68, 0.15)',
+                      }}
+                    >
+                      {revokingSessionId === sess.id ? (
+                        <>
+                          <RotateCw size={14} className="animate-spin" /> Revoking...
+                        </>
+                      ) : (
+                        'Revoke Session'
+                      )}
+                    </button>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </main>
 
       {/* Logout All Confirmation Modal */}
       {isLogoutAllModalOpen && (
