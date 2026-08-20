@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Bell,
@@ -11,15 +12,20 @@ import {
   Briefcase,
   Sparkles,
   AlertTriangle,
+  Copy,
+  ChevronRight,
 } from 'lucide-react';
 import { usePortfolioStore } from '@/stores/usePortfolioStore';
 import { usePriceAlertStore } from '@/stores/priceAlertStore';
 import { useTradeProposalStore } from '@/stores/useTradeProposalStore';
+import { useUserStore } from '@/stores/userStore';
 import { agent3Service, type TradeSignal } from '@/services/agent3.service';
 import { AISignalModal } from '@/components/tradeProposal/AISignalModal';
 import { CreateProposalModal } from '@/components/tradeProposal/CreateProposalModal';
 import { PreRiskReviewModal } from '@/components/tradeProposal/PreRiskReviewModal';
 import { Sparkline } from '@/components/ui/Sparkline';
+import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
+import { ROUTES } from '@/constants/routes.constants';
 import '@/styles/components/portfolio.css';
 
 interface PortfolioViewProps {
@@ -28,11 +34,11 @@ interface PortfolioViewProps {
 }
 
 const ACCENT_BG_COLORS = [
-  'rgba(16, 185, 129, 0.08)', // Emerald
-  'rgba(6, 182, 212, 0.08)', // Cyan
-  'rgba(59, 130, 246, 0.08)', // Blue
-  'rgba(99, 102, 241, 0.08)', // Indigo
-  'rgba(139, 92, 246, 0.08)', // Violet
+  'rgba(16, 185, 129, 0.1)',  // Emerald
+  'rgba(6, 182, 212, 0.1)',   // Cyan
+  'rgba(59, 130, 246, 0.1)',  // Blue
+  'rgba(99, 102, 241, 0.1)',  // Indigo
+  'rgba(139, 92, 246, 0.1)',  // Violet
 ];
 
 const ACCENT_TEXT_COLORS = [
@@ -44,9 +50,11 @@ const ACCENT_TEXT_COLORS = [
 ];
 
 export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onViewIndicators }) => {
-  const { portfolio, isLoading, triggerRemoveHolding } = usePortfolioStore();
+  const navigate = useNavigate();
+  const { portfolio, isLoading, triggerRemoveHolding, createPortfolio } = usePortfolioStore();
   const openModal = usePriceAlertStore((state) => state.openModal);
 
+  const { user } = useUserStore();
   const {
     isCreateModalOpen,
     isReviewModalOpen,
@@ -54,18 +62,37 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onV
     openCreateModal,
     closeCreateModal,
     closeReviewModal,
+    fetchProposals,
   } = useTradeProposalStore();
 
   const [analyzingSymbol, setAnalyzingSymbol] = useState<string | null>(null);
   const [activeSignal, setActiveSignal] = useState<TradeSignal | null>(null);
   const [isSignalModalOpen, setIsSignalModalOpen] = useState(false);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState(false);
+  const [watchlistPage, setWatchlistPage] = useState(0);
+
+  const WATCHLIST_PER_PAGE = 4;
+
+  const getCurrencySymbolForPos = (symbol: string, currency?: string) => {
+    if (
+      currency === 'INR' ||
+      currency === '₹' ||
+      symbol.endsWith('.NS') ||
+      symbol.endsWith('.BO')
+    ) {
+      return '₹';
+    }
+    return '$';
+  };
+
+  React.useEffect(() => {
+    fetchProposals(user?.id);
+  }, [fetchProposals, user?.id]);
 
   const formatPrice = (price?: number) => {
-    if (!price) return '0.00';
-    if (price < 0.01) {
-      return price.toExponential(5);
-    }
+    if (price === undefined || price === null || isNaN(price)) return '0.00';
+    if (Math.abs(price) < 0.0001) return '0.00';
     return price.toFixed(2);
   };
 
@@ -104,403 +131,409 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onV
     });
   };
 
+  const handleCopyId = () => {
+    if (portfolio?.id) {
+      navigator.clipboard.writeText(String(portfolio.id)).then(() => {
+        setCopiedId(true);
+        setTimeout(() => setCopiedId(false), 1500);
+      });
+    }
+  };
+
   if (isLoading) {
-    return (
-      <div className="portfolio-card" style={{ textAlign: 'center', padding: '40px' }}>
-        <p style={{ color: '#9ca3af' }}>Loading portfolio details...</p>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (!portfolio) {
-    return null;
+    return (
+      <motion.div
+        className="pv-portfolio-header"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{ flexDirection: 'column', alignItems: 'center', textAlign: 'center', padding: '40px 24px', gap: '16px' }}
+      >
+        <div className="pv-portfolio-icon-wrap" style={{ width: '48px', height: '48px' }}>
+          <Briefcase size={24} color="#3b82f6" />
+        </div>
+        <div>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 6px 0', color: '#f8fafc' }}>
+            No Paper Portfolio Found
+          </h3>
+          <p style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0, maxWidth: '420px', lineHeight: 1.5 }}>
+            Create a paper portfolio to start tracking simulated positions and executing trade proposals.
+          </p>
+        </div>
+        <button
+          className="pv-analyze-btn"
+          style={{ width: 'auto', padding: '10px 24px', fontSize: '0.88rem', marginTop: '8px' }}
+          onClick={() => createPortfolio('My Paper Portfolio')}
+        >
+          <Sparkles size={15} />
+          Create Paper Portfolio
+        </button>
+      </motion.div>
+    );
   }
 
   const positions = portfolio.positions || [];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <motion.div
+      style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
       {/* Analysis Error Alert */}
       {analysisError && (
-        <div
-          style={{
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            borderRadius: 10,
-            padding: '12px 16px',
-            color: '#f87171',
-            fontSize: '0.85rem',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-          data-testid="ai-analysis-error-banner"
-        >
+        <div className="pv-error-banner" data-testid="ai-analysis-error-banner">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <AlertTriangle size={16} />
+            <AlertTriangle size={15} />
             <span>{analysisError}</span>
           </div>
-          <button
-            onClick={() => setAnalysisError(null)}
-            style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer' }}
-          >
+          <button className="pv-error-dismiss" onClick={() => setAnalysisError(null)}>
             &times;
           </button>
         </div>
       )}
 
-      {/* Portfolio Header with Paper Trading Badge */}
-      <div
-        style={{
-          background: 'rgba(15, 23, 42, 0.6)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: 14,
-          padding: '16px 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '12px',
-        }}
+      {/* ─── PORTFOLIO HEADER ─── */}
+      <motion.div
+        className="pv-portfolio-header"
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <Briefcase size={22} color="#3b82f6" />
+        {/* Left: Icon + Name + Status */}
+        <div className="pv-portfolio-header-left">
+          <div className="pv-portfolio-icon-wrap">
+            <Briefcase size={20} color="#3b82f6" />
+          </div>
           <div>
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 700, margin: 0, color: '#f8fafc' }}>
-              {portfolio.name || 'My Paper Portfolio'}
-            </h3>
-            <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
-              Portfolio ID: {portfolio.id}
-            </span>
+            <div className="pv-portfolio-name-row">
+              <h3 className="pv-portfolio-name">
+                {portfolio.name || 'My Paper Portfolio'}
+              </h3>
+              <div className="pv-active-dot" title="Active paper trading portfolio" />
+              <span className="pv-active-label">Active</span>
+            </div>
+            <div className="pv-portfolio-id-row">
+              <span className="pv-portfolio-id">ID: {portfolio.id}</span>
+              <button
+                className="pv-copy-id-btn"
+                onClick={handleCopyId}
+                title="Copy portfolio ID"
+              >
+                <Copy size={11} />
+              </button>
+              {copiedId && (
+                <span style={{ fontSize: '0.68rem', color: '#10b981' }}>Copied!</span>
+              )}
+            </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: 'rgba(59, 130, 246, 0.12)',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
-              color: '#60a5fa',
-              padding: '4px 10px',
-              borderRadius: 20,
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              letterSpacing: '0.5px',
-            }}
-          >
-            <ShieldCheck size={14} />
+        {/* Right: Paper Trading Badge */}
+        <div>
+          <span className="pv-paper-badge">
+            <ShieldCheck size={13} />
             PAPER TRADING
           </span>
         </div>
-      </div>
+      </motion.div>
 
-      {/* PAPER POSITIONS SECTION */}
+      {/* ─── PAPER POSITIONS ─── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span
-            style={{
-              fontSize: '0.85rem',
-              fontWeight: 700,
-              color: '#3b82f6',
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase',
-            }}
-          >
-            Paper Positions ({positions.length})
-          </span>
+        <div className="pv-section-header">
+          <div>
+            <span className="pv-section-title">
+              Paper Positions
+            </span>
+            <span className="pv-section-count">({positions.length})</span>
+          </div>
+          {positions.length > 0 && (
+            <span
+              className="pv-section-action"
+              role="button"
+              tabIndex={0}
+              onClick={() => navigate(ROUTES.POSITIONS)}
+            >
+              View all <ChevronRight size={13} style={{ display: 'inline', verticalAlign: 'middle' }} />
+            </span>
+          )}
         </div>
 
         {positions.length === 0 ? (
-          <div
-            style={{
-              background: 'rgba(15, 23, 42, 0.3)',
-              border: '1px dashed rgba(255, 255, 255, 0.08)',
-              borderRadius: 12,
-              padding: '20px',
-              textAlign: 'center',
-              color: '#94a3b8',
-              fontSize: '0.875rem',
-            }}
-            data-testid="empty-paper-positions"
-          >
+          <div className="pv-empty-state" data-testid="empty-paper-positions">
             No paper positions yet.
           </div>
         ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            {positions.map((pos) => (
-              <div
-                key={pos.id}
-                style={{
-                  background: 'rgba(15, 23, 42, 0.5)',
-                  border: '1px solid rgba(59, 130, 246, 0.2)',
-                  borderRadius: 12,
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#f8fafc' }}>
-                    {pos.symbol}
-                  </span>
-                  <span
-                    style={{
-                      background: 'rgba(16, 185, 129, 0.15)',
-                      color: '#34d399',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      padding: '2px 8px',
-                      borderRadius: 6,
-                    }}
-                  >
-                    {pos.quantity} shares
-                  </span>
-                </div>
-                <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                  Avg Entry: <strong style={{ color: '#cbd5e1' }}>${pos.average_entry_price.toFixed(2)}</strong>
-                </div>
-                <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                  Position Value: <strong style={{ color: '#60a5fa' }}>${(pos.quantity * pos.average_entry_price).toFixed(2)}</strong>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+          <div className="pv-positions-grid">
+            {positions.map((pos, idx) => {
+              const holding = portfolio.holdings.find((h) => h.symbol === pos.symbol);
+              const currentPrice = holding?.price || pos.average_entry_price;
+              const currencySymbol = getCurrencySymbolForPos(pos.symbol, holding?.currency);
+              const positionValue = pos.quantity * currentPrice;
 
-      {/* WATCHLIST / ACTIVE HOLDINGS SECTION */}
-      {portfolio.holdings.length > 0 && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span
-              style={{
-                fontSize: '0.85rem',
-                fontWeight: 600,
-                color: '#94a3b8',
-                letterSpacing: '0.5px',
-                textTransform: 'uppercase',
-              }}
-            >
-              Watchlist Holdings ({portfolio.holdings.length})
-            </span>
-          </div>
-
-          <div className="holdings-grid">
-            <style>{`
-              .holdings-grid {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 24px;
-              }
-              @media (max-width: 767px) {
-                .holdings-grid {
-                  grid-template-columns: 1fr;
-                  gap: 16px;
-                }
-              }
-              .asset-card {
-                background: rgba(15, 23, 42, 0.45);
-                backdrop-filter: blur(12px);
-                border: 1px solid rgba(255, 255, 255, 0.05);
-                border-radius: 16px;
-                padding: 20px;
-                display: flex;
-                flex-direction: column;
-                gap: 16px;
-                position: relative;
-                cursor: pointer;
-                transition: border-color 0.2s ease, background-color 0.2s ease;
-              }
-              .asset-card:hover {
-                border-color: rgba(255, 255, 255, 0.12);
-                background-color: rgba(30, 41, 59, 0.3);
-              }
-            `}</style>
-
-            {portfolio.holdings.map((holding, idx) => {
-              const bgAccent = ACCENT_BG_COLORS[idx % ACCENT_BG_COLORS.length];
-              const textAccent = ACCENT_TEXT_COLORS[idx % ACCENT_TEXT_COLORS.length];
-              const isPositive = (holding.percent_change || 0) >= 0;
-              const statusColor = isPositive ? '#10b981' : '#ef4444';
-              const isAnalyzingThis = analyzingSymbol === holding.symbol;
+              const pnlValue = (currentPrice - pos.average_entry_price) * pos.quantity;
+              const pnlPercent =
+                ((currentPrice - pos.average_entry_price) / pos.average_entry_price) * 100;
+              const isPnlPositive = pnlValue >= 0;
+              const pnlClass = isPnlPositive ? 'positive' : 'negative';
+              const pnlSign = isPnlPositive ? '+' : '';
+              const cardPnlClass = isPnlPositive ? 'pnl-positive' : 'pnl-negative';
 
               return (
                 <motion.div
-                  key={holding.id || holding.symbol}
-                  className="asset-card"
-                  initial={{ opacity: 0, y: 15 }}
+                  key={pos.id}
+                  className={`pv-position-card ${cardPnlClass}`}
+                  onClick={() => navigate(`/portfolio/positions/${pos.symbol}`)}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.25, delay: idx * 0.04 }}
-                  onClick={() => {
-                    if (onSelectStock) onSelectStock(holding.symbol);
-                  }}
+                  transition={{ duration: 0.28, delay: idx * 0.06 }}
+                  data-testid={`position-card-${pos.symbol}`}
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <div
-                        className="asset-avatar"
-                        style={{ background: bgAccent, color: textAccent }}
-                      >
-                        {holding.symbol.substring(0, 2)}
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <span className="asset-title">{holding.symbol}</span>
-                        <span className="asset-subtitle">
-                          {holding.currency || 'USD'} • US Market
-                        </span>
-                      </div>
+                  {/* Card Header: Symbol + Qty */}
+                  <div className="pv-position-header">
+                    <div className="pv-position-symbol-group">
+                      <span className="pv-position-symbol">{pos.symbol}</span>
+                      <span className="pv-paper-tag">PAPER</span>
                     </div>
-
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {/* Analyze with AI Button */}
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleAnalyzeWithAI(holding.symbol);
-                        }}
-                        disabled={isAnalyzingThis}
-                        style={{
-                          background: 'rgba(168, 85, 247, 0.12)',
-                          border: '1px solid rgba(168, 85, 247, 0.3)',
-                          color: '#c084fc',
-                          fontSize: '0.75rem',
-                          fontWeight: 700,
-                          padding: '4px 10px',
-                          borderRadius: '6px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s ease',
-                        }}
-                        data-testid={`analyze-ai-btn-${holding.symbol}`}
-                        title="Evaluate asset with Agent 3 Strategy Engine"
-                      >
-                        <Sparkles size={13} color="#c084fc" />
-                        <span>{isAnalyzingThis ? 'Analyzing...' : 'Analyze with AI'}</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        className="asset-delete-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          triggerRemoveHolding(holding.symbol);
-                        }}
-                        title="Remove from portfolio"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
+                    <span className="pv-qty-badge">{pos.quantity} shares</span>
                   </div>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      margin: '4px 0',
-                    }}
-                  >
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <span className="asset-badge-price">${formatPrice(holding.price)}</span>
-
-                      {holding.percent_change !== undefined && holding.percent_change !== null && (
-                        <span
-                          style={{
-                            fontSize: '0.75rem',
-                            fontWeight: 700,
-                            color: statusColor,
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                          }}
-                        >
-                          {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                          {isPositive ? '+' : ''}
-                          {holding.percent_change.toFixed(2)}%
-                        </span>
-                      )}
+                  {/* 4-cell metric grid */}
+                  <div className="pv-metric-row">
+                    <div className="pv-metric-cell">
+                      <span className="pv-metric-label">Avg Entry</span>
+                      <span className="pv-metric-value">
+                        {currencySymbol}{formatPrice(pos.average_entry_price)}
+                      </span>
                     </div>
-
-                    <Sparkline symbol={holding.symbol} change={holding.percent_change || 0} />
-                  </div>
-
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      borderTop: '1px solid rgba(255,255,255,0.05)',
-                      paddingTop: '12px',
-                      marginTop: '4px',
-                    }}
-                  >
-                    <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 500 }}>
-                      Added: {new Date(holding.created_at).toLocaleDateString()}
-                    </span>
-
-                    <div style={{ display: 'flex', gap: '8px' }}>
-                      <button
-                        type="button"
-                        className="asset-btn-action"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openModal(holding.symbol, holding.price || undefined);
-                        }}
-                        title="Set price threshold alarm"
-                      >
-                        <Bell size={12} />
-                      </button>
-
-                      <button
-                        type="button"
-                        className="asset-btn-action"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (onSelectStock) onSelectStock(holding.symbol);
-                        }}
-                        title="View Trading Chart"
-                      >
-                        <ExternalLink size={12} />
-                      </button>
-
-                      <button
-                        type="button"
-                        className="asset-btn-action"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (onViewIndicators) onViewIndicators(holding.symbol);
-                        }}
-                        title="View Technical Indicators"
-                      >
-                        <Activity size={12} />
-                      </button>
+                    <div className="pv-metric-cell">
+                      <span className="pv-metric-label">Current</span>
+                      <span className="pv-metric-value">
+                        {currencySymbol}{formatPrice(currentPrice)}
+                      </span>
+                    </div>
+                    <div className="pv-metric-cell">
+                      <span className="pv-metric-label">Value</span>
+                      <span className="pv-metric-value">
+                        {currencySymbol}{formatPrice(positionValue)}
+                      </span>
+                    </div>
+                    <div className="pv-metric-cell">
+                      <span className="pv-metric-label">P&amp;L</span>
+                      <span className={`pv-metric-value ${pnlClass}`}>
+                        {pnlSign}{currencySymbol}{formatPrice(Math.abs(pnlValue))}
+                        <span className="pv-pnl-pct">
+                          {' '}({pnlSign}{pnlPercent.toFixed(2)}%)
+                        </span>
+                      </span>
                     </div>
                   </div>
                 </motion.div>
               );
             })}
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      {/* ─── WATCHLIST HOLDINGS ─── */}
+      {portfolio.holdings.length > 0 && (() => {
+        const totalPages = Math.ceil(portfolio.holdings.length / WATCHLIST_PER_PAGE);
+        const pageHoldings = portfolio.holdings.slice(
+          watchlistPage * WATCHLIST_PER_PAGE,
+          (watchlistPage + 1) * WATCHLIST_PER_PAGE,
+        );
+
+        return (
+          <motion.div
+            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.12 }}
+          >
+            {/* Section header */}
+            <div className="pv-section-header">
+              <div>
+                <span className="pv-section-title" style={{ color: '#94a3b8' }}>
+                  Watchlist
+                </span>
+                <span className="pv-section-count">({portfolio.holdings.length})</span>
+              </div>
+              {totalPages > 1 && (
+                <div className="pv-pagination-controls">
+                  <button
+                    className="pv-page-btn"
+                    onClick={() => setWatchlistPage((p) => Math.max(0, p - 1))}
+                    disabled={watchlistPage === 0}
+                    aria-label="Previous page"
+                  >
+                    ‹
+                  </button>
+                  <span className="pv-page-indicator">
+                    {watchlistPage + 1} / {totalPages}
+                  </span>
+                  <button
+                    className="pv-page-btn"
+                    onClick={() => setWatchlistPage((p) => Math.min(totalPages - 1, p + 1))}
+                    disabled={watchlistPage === totalPages - 1}
+                    aria-label="Next page"
+                  >
+                    ›
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Paginated grid — row by row */}
+            <div className="pv-watchlist-grid">
+              {pageHoldings.map((holding, idx) => {
+                const globalIdx = watchlistPage * WATCHLIST_PER_PAGE + idx;
+                const bgAccent = ACCENT_BG_COLORS[globalIdx % ACCENT_BG_COLORS.length];
+                const textAccent = ACCENT_TEXT_COLORS[globalIdx % ACCENT_TEXT_COLORS.length];
+                const isPositive = (holding.percent_change || 0) >= 0;
+                const changeClass = isPositive ? 'positive' : 'negative';
+                const isAnalyzingThis = analyzingSymbol === holding.symbol;
+
+                return (
+                  <motion.div
+                    key={holding.id || holding.symbol}
+                    className="pv-watchlist-card"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.22, delay: idx * 0.04 }}
+                    onClick={() => {
+                      if (onSelectStock) onSelectStock(holding.symbol);
+                    }}
+                  >
+                    {/* Card Top: Avatar + Symbol + Delete */}
+                    <div className="pv-watchlist-card-header">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div
+                          className="pv-watchlist-avatar"
+                          style={{ background: bgAccent, color: textAccent }}
+                        >
+                          {holding.symbol.substring(0, 2)}
+                        </div>
+                        <div>
+                          <div className="pv-watchlist-symbol">{holding.symbol}</div>
+                          <div className="pv-watchlist-subtitle">
+                            {holding.currency || 'USD'}
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="pv-watchlist-delete-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          triggerRemoveHolding(holding.symbol);
+                        }}
+                        title="Remove from watchlist"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+
+                    {/* Price + Change + Sparkline */}
+                    <div className="pv-watchlist-price-row">
+                      <div>
+                        <div className="pv-watchlist-price">
+                          ${formatPrice(holding.price)}
+                        </div>
+                        {holding.percent_change !== undefined && holding.percent_change !== null && (
+                          <div className={`pv-watchlist-change ${changeClass}`}>
+                            {isPositive ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                            {isPositive ? '+' : ''}{holding.percent_change.toFixed(2)}%
+                          </div>
+                        )}
+                      </div>
+                      <div className="pv-watchlist-chart-area">
+                        <Sparkline symbol={holding.symbol} change={holding.percent_change || 0} width={100} height={42} />
+                      </div>
+                    </div>
+
+                    {/* Analyze with AI */}
+                    <button
+                      type="button"
+                      className="pv-analyze-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAnalyzeWithAI(holding.symbol);
+                      }}
+                      disabled={isAnalyzingThis}
+                      data-testid={`analyze-ai-btn-${holding.symbol}`}
+                      title="Evaluate asset with Agent 3 Strategy Engine"
+                    >
+                      <Sparkles size={13} />
+                      {isAnalyzingThis ? 'Analyzing...' : 'Analyze with AI'}
+                    </button>
+
+                    {/* Footer: Date + Action icons */}
+                    <div className="pv-watchlist-actions">
+                      <span className="pv-watchlist-added">
+                        {new Date(holding.created_at).toLocaleDateString()}
+                      </span>
+                      <div className="pv-action-btns">
+                        <button
+                          type="button"
+                          className="pv-icon-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openModal(holding.symbol, holding.price || undefined);
+                          }}
+                          title="Set price alert"
+                        >
+                          <Bell size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          className="pv-icon-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onSelectStock) onSelectStock(holding.symbol);
+                          }}
+                          title="View Trading Chart"
+                        >
+                          <ExternalLink size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          className="pv-icon-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (onViewIndicators) onViewIndicators(holding.symbol);
+                          }}
+                          title="View Technical Indicators"
+                        >
+                          <Activity size={13} />
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Dot indicators */}
+            {totalPages > 1 && (
+              <div className="pv-page-dots">
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <button
+                    key={i}
+                    className={`pv-page-dot ${i === watchlistPage ? 'active' : ''}`}
+                    onClick={() => setWatchlistPage(i)}
+                    aria-label={`Go to page ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </motion.div>
+        );
+      })()}
 
       {/* AI STRATEGY SIGNAL MODAL */}
       <AISignalModal
@@ -522,8 +555,6 @@ export const PortfolioView: React.FC<PortfolioViewProps> = ({ onSelectStock, onV
         isOpen={isReviewModalOpen}
         onClose={closeReviewModal}
       />
-    </div>
+    </motion.div>
   );
 };
-
-export default PortfolioView;

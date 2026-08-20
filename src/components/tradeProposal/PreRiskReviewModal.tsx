@@ -15,9 +15,13 @@ import {
   XCircle,
   RotateCcw,
   ShieldCheck,
+  Zap,
+  Activity,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useTradeProposalStore } from '@/stores/useTradeProposalStore';
 import { useUserStore } from '@/stores/userStore';
+import { usePortfolioStore } from '@/stores/usePortfolioStore';
 import type { TradeProposal } from '@/types/tradeProposal.types';
 import '@/styles/components/tradeProposal.css';
 
@@ -41,19 +45,27 @@ export const PreRiskReviewModal: React.FC<PreRiskReviewModalProps> = ({
     riskError,
     evaluateProposalRisk,
     fetchProposalRisk,
+    executionResult,
+    executionLoading,
+    executionError,
+    executeTradeProposal,
   } = useTradeProposalStore();
 
   const { user } = useUserStore();
+  const { fetchPortfolio } = usePortfolioStore();
 
   const [showRawJson, setShowRawJson] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showExecuteConfirm, setShowExecuteConfirm] = useState(false);
 
   // Auto-trigger or load persisted risk evaluation when modal opens
   React.useEffect(() => {
-    if (!isOpen || !proposal?.id) return;
+    if (!isOpen || !proposal?.id) {
+      setShowExecuteConfirm(false);
+      return;
+    }
     const loadRisk = async () => {
       const persisted = await fetchProposalRisk(proposal.id, user?.id);
-      // Only call POST evaluation for PENDING_RISK proposals with no existing evaluation
       if (proposal.status === 'PENDING_RISK' && !persisted) {
         await evaluateProposalRisk(proposal.id, user?.id);
       }
@@ -71,9 +83,21 @@ export const PreRiskReviewModal: React.FC<PreRiskReviewModalProps> = ({
   const qty = proposal.requested_quantity || 0;
 
   const handleCopyJson = () => {
-    navigator.clipboard.writeText(JSON.stringify({ proposal, riskEvaluation }, null, 2));
+    navigator.clipboard.writeText(JSON.stringify({ proposal, riskEvaluation, executionResult }, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleExecute = async () => {
+    console.log('[Agent5] Confirm Execution clicked', { proposalId: proposal?.id, userId: user?.id });
+    if (!proposal?.id || !user?.id) {
+      console.warn('[Agent5] Missing proposalId or userId. Cannot execute.', { proposalId: proposal?.id, userId: user?.id });
+      return;
+    }
+    setShowExecuteConfirm(false);
+    const result = await executeTradeProposal(proposal.id, user.id);
+    console.log('[Agent5] executeTradeProposal response:', result);
+    if (result) fetchPortfolio();
   };
 
   const truncateId = (id?: string) => {
@@ -94,17 +118,10 @@ export const PreRiskReviewModal: React.FC<PreRiskReviewModalProps> = ({
     };
     const s = map[sev] ?? { color: '#94a3b8', bg: 'rgba(148,163,184,0.07)', border: 'rgba(148,163,184,0.15)' };
     return {
-      display: 'inline-block',
-      fontSize: '0.6rem',
-      fontWeight: 700,
-      color: s.color,
-      background: s.bg,
-      border: `1px solid ${s.border}`,
-      borderRadius: 4,
-      padding: '0.1rem 0.35rem',
-      marginLeft: '0.45rem',
-      verticalAlign: 'middle',
-      letterSpacing: '0.04em',
+      display: 'inline-block', fontSize: '0.6rem', fontWeight: 700, color: s.color,
+      background: s.bg, border: `1px solid ${s.border}`, borderRadius: 4,
+      padding: '0.1rem 0.35rem', marginLeft: '0.45rem',
+      verticalAlign: 'middle', letterSpacing: '0.04em',
     };
   };
 
@@ -116,309 +133,459 @@ export const PreRiskReviewModal: React.FC<PreRiskReviewModalProps> = ({
 
   const dc = riskEvaluation ? (decisionColors[riskEvaluation.decision] ?? decisionColors.NEEDS_REVIEW) : null;
 
+  // Compute status badge content
+  const renderStatusBadge = () => {
+    if (executionLoading) return (
+      <span className="prm-status-badge pending" data-testid="status-badge-loading">
+        <Clock size={12} style={{ animation: 'spin 1s linear infinite' }} />
+        EXECUTING…
+      </span>
+    );
+    if (proposal.status === 'EXECUTED') return (
+      <span className="prm-status-badge success" data-testid="status-badge-result">
+        <CheckCircle2 size={12} />EXECUTED
+      </span>
+    );
+    if (proposal.status === 'EXECUTION_FAILED') return (
+      <span className="prm-status-badge danger" data-testid="status-badge-result">
+        <XCircle size={12} />EXECUTION FAILED
+      </span>
+    );
+    if (riskLoading) return (
+      <span className="prm-status-badge pending" data-testid="status-badge-loading">
+        <Clock size={12} style={{ animation: 'spin 1s linear infinite' }} />
+        EVALUATING…
+      </span>
+    );
+    if (riskEvaluation) return (
+      <span className="prm-status-badge" style={{ background: dc!.bg, color: dc!.accent, border: `1px solid ${dc!.border}` }} data-testid="status-badge-result">
+        {riskEvaluation.decision === 'RISK_APPROVED' ? <ShieldCheck size={12} />
+          : riskEvaluation.decision === 'RISK_REJECTED' ? <XCircle size={12} />
+          : <AlertTriangle size={12} />}
+        {riskEvaluation.decision.replace('_', ' ')}
+      </span>
+    );
+    return (
+      <span className="prm-status-badge pending" data-testid="status-badge-pending">
+        <Clock size={12} />PENDING RISK
+      </span>
+    );
+  };
+
+  const statusSubtext = executionLoading ? 'Executing trade…'
+    : proposal.status === 'EXECUTED' ? 'Paper trade completed'
+    : proposal.status === 'EXECUTION_FAILED' ? 'Execution failed'
+    : riskLoading ? 'Running Agent 4 checks…'
+    : riskEvaluation ? `Evaluated ${new Date(riskEvaluation.evaluated_at).toLocaleString()}`
+    : 'Waiting for Agent 4 Risk Analysis';
+
   return (
     <div className="tp-modal-overlay" onClick={onClose} data-testid="review-modal-overlay">
-      <div
-        className="tp-modal-card"
+      <motion.div
+        className="prm-card"
         onClick={(e) => e.stopPropagation()}
-        style={{ maxWidth: '660px' }}
         data-testid="review-modal-card"
+        initial={{ opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.97 }}
+        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+        style={{ position: 'relative' }}
       >
         {/* ── Header ── */}
-        <div className="tp-modal-header">
-          <div className="tp-header-title-group">
-            <div className="tp-modal-title">
-              <ShieldAlert size={20} color="#f59e0b" />
-              <span>Pre-Risk Stage</span>
-              <span className="tp-paper-badge">PAPER TRADING</span>
+        <div className="prm-header">
+          <div className="prm-header-grid" aria-hidden="true" />
+          <div className="prm-header-left">
+            <div className="prm-header-icon">
+              <ShieldAlert size={18} color="#f59e0b" />
             </div>
-            <div className="tp-subtitle">Agent 4 Risk Engine</div>
+            <div>
+              <div className="prm-header-title-row">
+                <h2 className="prm-header-title">Pre-Risk Stage</h2>
+                <span className="prm-paper-badge">
+                  <ShieldCheck size={11} /> PAPER
+                </span>
+              </div>
+              <p className="prm-header-sub">
+                <Activity size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 4 }} />
+                Agent 4 Risk Engine
+              </p>
+            </div>
           </div>
-          <button className="tp-close-btn" onClick={onClose} aria-label="Close modal">
-            <X size={18} />
+          <button className="prm-close-btn" onClick={onClose} aria-label="Close modal">
+            <X size={16} />
           </button>
         </div>
 
-        <div className="tp-modal-body">
-          {/* Paper Trading Notice */}
-          <div style={{ background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.2)', borderRadius:8, padding:'0.6rem 0.9rem', fontSize:'0.8rem', color:'#fbbf24', display:'flex', alignItems:'center', gap:'0.5rem' }}>
-            <Info size={15} />
+        {/* ── Scrollable body ── */}
+        <div className="prm-body">
+
+          {/* Notice */}
+          <div className="prm-notice">
+            <Info size={13} />
             <span>Simulated trade — no real money involved. Paper trading environment only.</span>
           </div>
 
-          {/* ── Proposal Summary Banner ── */}
-          <div className="tp-review-summary-banner">
-            <div className="tp-banner-symbol-group">
-              <span className="tp-banner-symbol">{proposal.symbol}</span>
-              <span className={`tp-banner-action-badge ${isBuy ? 'buy' : 'sell'}`} data-testid="proposal-action-badge">
-                {isBuy ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-                <span>{proposal.action}</span>
+          {/* ── Proposal Banner: symbol + status ── */}
+          <div className="prm-banner">
+            <div className="prm-banner-left">
+              <span className="prm-banner-symbol" data-testid="proposal-action-badge">{proposal.symbol}</span>
+              <span className={`prm-action-badge ${isBuy ? 'buy' : 'sell'}`}>
+                {isBuy ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+                {proposal.action}
               </span>
             </div>
-
-            <div className="tp-banner-status-group">
-              {riskLoading ? (
-                <span className="tp-banner-status-badge pending" data-testid="status-badge-loading">
-                  <Clock size={13} style={{ animation:'spin 1s linear infinite' }} />
-                  <span>EVALUATING…</span>
-                </span>
-              ) : riskEvaluation ? (
-                <span
-                  className="tp-banner-status-badge"
-                  style={{ background: dc!.bg, color: dc!.accent, border: `1px solid ${dc!.border}` }}
-                  data-testid="status-badge-result"
-                >
-                  {riskEvaluation.decision === 'RISK_APPROVED' ? <ShieldCheck size={13} />
-                    : riskEvaluation.decision === 'RISK_REJECTED' ? <XCircle size={13} />
-                    : <AlertTriangle size={13} />}
-                  <span>{riskEvaluation.decision.replace('_', ' ')}</span>
-                </span>
-              ) : (
-                <span className="tp-banner-status-badge pending" data-testid="status-badge-pending">
-                  <Clock size={13} /><span>PENDING RISK</span>
-                </span>
-              )}
-              <span className="tp-status-subtext">
-                {riskLoading ? 'Running Agent 4 checks…'
-                  : riskEvaluation ? `Evaluated ${new Date(riskEvaluation.evaluated_at).toLocaleString()}`
-                  : 'Waiting for Agent 4 Risk Analysis'}
-              </span>
+            <div className="prm-banner-right">
+              {renderStatusBadge()}
+              <span className="prm-status-subtext">{statusSubtext}</span>
             </div>
           </div>
 
-          {/* ── Trade Inputs ── */}
-          <div className="tp-section-divider"><span>Trade Inputs</span></div>
-          <div className="tp-metrics-grid" style={{ gridTemplateColumns:'repeat(4,1fr)', marginTop:'0.5rem' }}>
+          {/* ── Trade Inputs grid ── */}
+          <div className="prm-section-header">
+            <span>Trade Inputs</span>
+          </div>
+          <div className="prm-inputs-grid">
             {[
-              { label: 'Quantity',    value: `${qty} shares`,   cls: '' },
+              { label: 'Quantity',    value: `${qty} shares`,        cls: '' },
               { label: 'Entry Price', value: `$${entry.toFixed(2)}`, cls: '' },
               { label: 'Stop Loss',   value: `$${sl.toFixed(2)}`,   cls: 'danger' },
               { label: 'Take Profit', value: `$${tp.toFixed(2)}`,   cls: 'success' },
             ].map((m) => (
-              <div key={m.label} className="tp-metric-card" style={{ padding:'0.75rem' }}>
-                <div className="tp-metric-label" style={{ fontSize:'0.65rem' }}>{m.label}</div>
-                <div className={`tp-metric-value ${m.cls}`} style={{ fontSize:'1.05rem' }}>{m.value}</div>
+              <div key={m.label} className="prm-input-cell">
+                <span className="prm-input-label">{m.label}</span>
+                <span className={`prm-input-value ${m.cls}`}>{m.value}</span>
               </div>
             ))}
           </div>
 
           {/* ── Strategy & Confidence ── */}
-          <div className="tp-section-divider">
-            <Brain size={14} color="#f59e0b" /><span>Strategy &amp; Confidence</span>
+          <div className="prm-section-header">
+            <Brain size={13} color="#f59e0b" />
+            <span style={{ color: '#f59e0b' }}>Strategy &amp; Confidence</span>
           </div>
-          <div className="tp-metadata-list" style={{ marginTop:'0.5rem' }}>
-            <div className="tp-metadata-row">
-              <span className="tp-meta-label">Primary Strategy:</span>
-              <span className="tp-meta-value" style={{ fontWeight:700 }}>{proposal.primary_strategy}</span>
+          <div className="prm-meta-box">
+            <div className="prm-meta-row">
+              <span className="prm-meta-label">Primary Strategy</span>
+              <span className="prm-meta-value">{proposal.primary_strategy}</span>
             </div>
-            <div className="tp-metadata-row">
-              <span className="tp-meta-label">AI Confidence:</span>
-              <span className="tp-meta-value" style={{ fontWeight:700, color:'#c084fc' }}>
+            <div className="prm-meta-row">
+              <span className="prm-meta-label">AI Confidence</span>
+              <span className="prm-meta-value" style={{ color: '#c084fc' }}>
                 {Math.round((proposal.confidence_score || 0) * 100)}%
               </span>
             </div>
           </div>
 
+          {/* ── Execution Result Panel ── */}
+          {proposal.status === 'EXECUTED' && executionResult && (
+            <>
+              <div className="prm-section-header">
+                <Zap size={13} color="#10b981" />
+                <span style={{ color: '#10b981' }}>Execution Results</span>
+              </div>
+              <div className="prm-exec-success-box" data-testid="execution-result-panel">
+                <div className="prm-exec-success-title">
+                  <CheckCircle2 size={16} color="#10b981" />
+                  PAPER TRADE EXECUTED ✓
+                </div>
+                <div className="prm-exec-prices">
+                  <div className="prm-exec-price-cell">
+                    <span className="prm-exec-price-label">Proposal Entry</span>
+                    <span className="prm-exec-price-val muted">${entry.toFixed(2)}</span>
+                  </div>
+                  <div className="prm-exec-price-arrow">→</div>
+                  <div className="prm-exec-price-cell">
+                    <span className="prm-exec-price-label">Execution Price</span>
+                    <span className="prm-exec-price-val success">${executionResult.execution_price.toFixed(2)}</span>
+                  </div>
+                </div>
+                <div className="prm-meta-box" style={{ marginTop: 0 }}>
+                  <div className="prm-meta-row">
+                    <span className="prm-meta-label">Execution ID</span>
+                    <span className="prm-meta-value code">{executionResult.execution_id}</span>
+                  </div>
+                  <div className="prm-meta-row">
+                    <span className="prm-meta-label">Filled Quantity</span>
+                    <span className="prm-meta-value">{executionResult.filled_quantity} shares</span>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── Execution Failed Panel ── */}
+          {proposal.status === 'EXECUTION_FAILED' && executionError && (
+            <div className="prm-error-box" data-testid="execution-error-panel">
+              <div className="prm-error-title"><XCircle size={16} />Execution Failed</div>
+              <p className="prm-error-body">{executionError}</p>
+            </div>
+          )}
+
           {/* ── Agent 4 Results Panel ── */}
           {riskLoading ? (
-            <div
-              style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'3rem 1rem', gap:'1rem', background:'rgba(255,255,255,0.02)', borderRadius:12, border:'1px dashed rgba(255,255,255,0.07)', marginTop:'1.25rem' }}
-              data-testid="loading-risk-container"
-            >
-              <div style={{ width:34, height:34, border:'3px solid rgba(245,158,11,0.12)', borderTop:'3px solid #f59e0b', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} />
-              <span style={{ fontSize:'0.875rem', color:'#94a3b8', fontWeight:600 }}>Evaluating Trade Risk…</span>
+            <div className="prm-loading-box" data-testid="loading-risk-container">
+              <div className="prm-spinner" />
+              <span>Evaluating Trade Risk…</span>
             </div>
-
           ) : riskError ? (
-            <div
-              style={{ background:'rgba(239,68,68,0.04)', border:'1px solid rgba(239,68,68,0.18)', borderRadius:12, padding:'1.25rem', marginTop:'1.25rem', display:'flex', flexDirection:'column', gap:'0.75rem' }}
-              data-testid="error-risk-container"
-            >
-              <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', color:'#ef4444', fontWeight:700, fontSize:'0.875rem' }}>
-                <XCircle size={18} /><span>Risk Evaluation Error</span>
-              </div>
-              <p style={{ margin:0, fontSize:'0.8rem', color:'#94a3b8', lineHeight:1.5 }}>{riskError}</p>
+            <div className="prm-error-box" data-testid="error-risk-container">
+              <div className="prm-error-title"><XCircle size={16} />Risk Evaluation Error</div>
+              <p className="prm-error-body">{riskError}</p>
               {proposal.status === 'PENDING_RISK' && (
                 <button
                   type="button"
-                  className="tp-btn-primary"
-                  style={{ alignSelf:'flex-start', display:'flex', alignItems:'center', gap:'0.4rem', padding:'0.4rem 0.85rem', fontSize:'0.775rem' }}
+                  className="prm-retry-btn"
                   onClick={() => evaluateProposalRisk(proposal.id, user?.id)}
                   data-testid="retry-evaluation-btn"
                 >
-                  <RotateCcw size={13} /><span>Retry Evaluation</span>
+                  <RotateCcw size={13} />Retry Evaluation
                 </button>
               )}
             </div>
-
           ) : riskEvaluation ? (
             <>
-              {/* Decision Result Card */}
+              {/* Decision card */}
               <div
-                style={{ background: dc!.bg, border:`1px solid ${dc!.border}`, borderRadius:12, padding:'1rem 1.25rem', marginTop:'1.25rem', display:'flex', alignItems:'flex-start', gap:'0.75rem' }}
+                className="prm-decision-card"
+                style={{ background: dc!.bg, border: `1px solid ${dc!.border}` }}
                 data-testid={
                   riskEvaluation.decision === 'RISK_APPROVED' ? 'approved-status-card'
-                  : riskEvaluation.decision === 'RISK_REJECTED' ? 'rejected-status-card'
-                  : 'needs-review-status-card'
+                    : riskEvaluation.decision === 'RISK_REJECTED' ? 'rejected-status-card'
+                    : 'needs-review-status-card'
                 }
               >
-                {riskEvaluation.decision === 'RISK_APPROVED' ? <ShieldCheck size={20} color="#10b981" style={{ marginTop:'0.15rem', flexShrink:0 }} />
-                  : riskEvaluation.decision === 'RISK_REJECTED' ? <XCircle size={20} color="#ef4444" style={{ marginTop:'0.15rem', flexShrink:0 }} />
-                  : <AlertTriangle size={20} color="#f59e0b" style={{ marginTop:'0.15rem', flexShrink:0 }} />}
+                {riskEvaluation.decision === 'RISK_APPROVED' ? <ShieldCheck size={20} color="#10b981" className="prm-decision-icon" />
+                  : riskEvaluation.decision === 'RISK_REJECTED' ? <XCircle size={20} color="#ef4444" className="prm-decision-icon" />
+                  : <AlertTriangle size={20} color="#f59e0b" className="prm-decision-icon" />}
                 <div>
-                  <h4 style={{ margin:'0 0 0.2rem 0', fontSize:'0.875rem', fontWeight:700, color: dc!.accent }}>
+                  <div className="prm-decision-title" style={{ color: dc!.accent }}>
                     {riskEvaluation.decision === 'RISK_APPROVED' ? 'RISK APPROVED'
                       : riskEvaluation.decision === 'RISK_REJECTED' ? 'RISK REJECTED'
                       : 'NEEDS REVIEW'}
-                  </h4>
-                  <p style={{ margin:0, fontSize:'0.775rem', color:'#94a3b8', lineHeight:1.5 }}>
+                  </div>
+                  <div className="prm-decision-desc">
                     {riskEvaluation.decision === 'RISK_APPROVED'
                       ? 'Proposal fully complies with all portfolio safety parameters. Cleared for execution review.'
                       : riskEvaluation.decision === 'RISK_REJECTED'
                       ? 'One or more critical limits exceeded. Rejection reasons are listed in the checks below.'
                       : 'Moderate risk exceptions detected. Review flagged checks before deciding to proceed.'}
-                  </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Agent 4 Calculation Metrics */}
-              <div className="tp-section-divider"><span>Agent 4 Metrics</span></div>
-              <div className="tp-metrics-grid" style={{ gridTemplateColumns:'repeat(5,1fr)', gap:'0.45rem', marginTop:'0.5rem' }}>
+              {/* Agent 4 Metrics */}
+              <div className="prm-section-header">
+                <Activity size={13} color="#a855f7" />
+                <span style={{ color: '#a855f7' }}>Agent 4 Metrics</span>
+              </div>
+              <div className="prm-metrics-strip">
                 {[
-                  { label:'Risk Score',   value:`${riskEvaluation.risk_score}/100`, color: riskEvaluation.risk_score >= 90 ? '#10b981' : riskEvaluation.risk_score >= 70 ? '#fbbf24' : '#ef4444' },
-                  { label:'Max Risk',     value:`$${riskEvaluation.max_risk.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`, color:'#ef4444' },
-                  { label:'Est. Reward',  value:`$${riskEvaluation.estimated_reward.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`, color:'#10b981' },
-                  { label:'R:R Ratio',    value:`1 : ${riskEvaluation.risk_reward_ratio}`, color:'#c084fc' },
-                  { label:'Exposure',     value:`$${riskEvaluation.portfolio_exposure.toLocaleString(undefined,{maximumFractionDigits:0})}`, color:'#f8fafc' },
-                ].map((m) => (
-                  <div key={m.label} className="tp-metric-card" style={{ padding:'0.55rem 0.4rem', alignItems:'center', textAlign:'center' }}>
-                    <div className="tp-metric-label" style={{ fontSize:'0.52rem' }}>{m.label}</div>
-                    <div className="tp-metric-value" style={{ fontSize:'0.95rem', color: m.color }}>{m.value}</div>
-                  </div>
+                  { label: 'Risk Score',  value: `${riskEvaluation.risk_score}/100`, color: riskEvaluation.risk_score >= 90 ? '#10b981' : riskEvaluation.risk_score >= 70 ? '#fbbf24' : '#ef4444' },
+                  { label: 'Max Risk',    value: `$${riskEvaluation.max_risk.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`, color: '#ef4444' },
+                  { label: 'Est. Reward', value: `$${riskEvaluation.estimated_reward.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}`, color: '#10b981' },
+                  { label: 'R:R Ratio',  value: `1 : ${riskEvaluation.risk_reward_ratio}`, color: '#c084fc' },
+                  { label: 'Exposure',   value: `$${riskEvaluation.portfolio_exposure.toLocaleString(undefined,{maximumFractionDigits:0})}`, color: '#94a3b8' },
+                ].map((m, i, arr) => (
+                  <React.Fragment key={m.label}>
+                    <div className="prm-metric-cell">
+                      <span className="prm-metric-label">{m.label}</span>
+                      <span className="prm-metric-val" style={{ color: m.color }}>{m.value}</span>
+                    </div>
+                    {i < arr.length - 1 && <div className="prm-metric-divider" />}
+                  </React.Fragment>
                 ))}
               </div>
 
-              {/* Dynamic Risk Checks List */}
-              <div className="tp-section-divider"><span>Agent 4 Risk Checks</span></div>
-              <div style={{ display:'flex', flexDirection:'column', gap:'0.55rem', marginTop:'0.5rem' }}>
+              {/* Risk Checks */}
+              <div className="prm-section-header">
+                <ShieldAlert size={13} color="#64748b" />
+                <span>Agent 4 Risk Checks</span>
+              </div>
+              <div className="prm-checks-list">
                 {riskEvaluation.checks.map((check) => (
                   <div
                     key={check.check_name}
-                    style={{
-                      background: check.passed ? 'rgba(255,255,255,0.01)' : 'rgba(239,68,68,0.025)',
-                      border:`1px solid ${check.passed ? 'rgba(255,255,255,0.04)' : 'rgba(239,68,68,0.14)'}`,
-                      borderRadius:10,
-                      padding:'0.75rem 1rem',
-                    }}
+                    className={`prm-check-row ${check.passed ? 'passed' : 'failed'}`}
                     data-testid={`risk-check-row-${check.check_name}`}
                   >
-                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'0.35rem' }}>
-                      <div style={{ display:'flex', alignItems:'center', gap:'0.4rem' }}>
+                    <div className="prm-check-header">
+                      <div className="prm-check-title">
                         {check.passed
-                          ? <CheckCircle2 size={15} color="#10b981" />
-                          : <XCircle size={15} color="#ef4444" />}
-                        <span style={{ fontSize:'0.825rem', fontWeight:700, color:'#f8fafc' }}>
-                          {formatCheckName(check.check_name)}
-                        </span>
+                          ? <CheckCircle2 size={14} color="#10b981" />
+                          : <XCircle size={14} color="#ef4444" />}
+                        <span className="prm-check-name">{formatCheckName(check.check_name)}</span>
                         <span style={severityStyle(check.severity)}>{check.severity}</span>
                       </div>
-                      <span style={{ fontSize:'0.7rem', fontWeight:700, color: check.passed ? '#10b981' : '#ef4444' }}>
+                      <span className={`prm-check-result ${check.passed ? 'passed' : 'failed'}`}>
                         {check.passed ? 'PASSED' : 'FAILED'}
                       </span>
                     </div>
-                    <p style={{ margin:'0.3rem 0 0.15rem 0', fontSize:'0.775rem', color:'#94a3b8', lineHeight:1.45 }}>
-                      {check.message}
-                    </p>
-                    <div style={{ display:'flex', gap:'1.25rem', fontSize:'0.7rem', color:'#64748b' }}>
-                      <span><strong style={{ color:'#94a3b8' }}>Actual:</strong> {check.actual_value}</span>
-                      <span><strong style={{ color:'#94a3b8' }}>Limit:</strong>  {check.limit_value}</span>
+                    <p className="prm-check-msg">{check.message}</p>
+                    <div className="prm-check-vals">
+                      <span><strong>Actual:</strong> {check.actual_value}</span>
+                      <span><strong>Limit:</strong> {check.limit_value}</span>
                     </div>
                   </div>
                 ))}
               </div>
 
-              {/* Rejection reasons (if any) */}
+              {/* Rejection Reasons */}
               {riskEvaluation.reasons.length > 0 && (
                 <>
-                  <div className="tp-section-divider"><span>Rejection Reasons</span></div>
-                  <div style={{ background:'rgba(239,68,68,0.04)', border:'1px solid rgba(239,68,68,0.12)', borderRadius:10, padding:'0.85rem 1rem', marginTop:'0.5rem' }}>
-                    <ul style={{ margin:0, padding:'0 0 0 1rem', display:'flex', flexDirection:'column', gap:'0.4rem' }}>
+                  <div className="prm-section-header">
+                    <XCircle size={13} color="#ef4444" />
+                    <span style={{ color: '#ef4444' }}>Rejection Reasons</span>
+                  </div>
+                  <div className="prm-reasons-box">
+                    <ul className="prm-reasons-list">
                       {riskEvaluation.reasons.map((r, i) => (
-                        <li key={i} style={{ fontSize:'0.8rem', color:'#fca5a5', lineHeight:1.4 }}>{r}</li>
+                        <li key={i}>{r}</li>
                       ))}
                     </ul>
                   </div>
                 </>
               )}
             </>
-
           ) : (
-            <div
-              style={{ display:'flex', flexDirection:'column', alignItems:'center', padding:'2.5rem 1rem', gap:'0.5rem', background:'rgba(255,255,255,0.01)', borderRadius:12, border:'1px dashed rgba(255,255,255,0.05)', marginTop:'1.25rem' }}
-              data-testid="no-evaluation-container"
-            >
-              <Info size={20} color="#94a3b8" />
-              <span style={{ fontSize:'0.825rem', color:'#94a3b8' }}>No risk evaluation found for this proposal.</span>
+            <div className="prm-empty-box" data-testid="no-evaluation-container">
+              <Info size={20} color="#475569" />
+              <span>No risk evaluation found for this proposal.</span>
             </div>
           )}
 
           {/* ── Proposal Details ── */}
-          <div className="tp-section-divider"><span>Proposal Details</span></div>
-          <div className="tp-metadata-list" style={{ marginTop:'0.5rem' }}>
-            <div className="tp-metadata-row">
-              <span className="tp-meta-label">Proposal ID:</span>
-              <span className="tp-meta-value code" title={proposal.id}>{truncateId(proposal.id)}</span>
+          <div className="prm-section-header">
+            <span>Proposal Details</span>
+          </div>
+          <div className="prm-meta-box">
+            <div className="prm-meta-row">
+              <span className="prm-meta-label">Proposal ID</span>
+              <span className="prm-meta-value code" title={proposal.id}>{truncateId(proposal.id)}</span>
             </div>
             {proposal.portfolio_id && (
-              <div className="tp-metadata-row">
-                <span className="tp-meta-label">Portfolio ID:</span>
-                <span className="tp-meta-value code" title={proposal.portfolio_id}>{truncateId(proposal.portfolio_id)}</span>
+              <div className="prm-meta-row">
+                <span className="prm-meta-label">Portfolio ID</span>
+                <span className="prm-meta-value code" title={proposal.portfolio_id}>{truncateId(proposal.portfolio_id)}</span>
               </div>
             )}
             {proposal.signal_id && (
-              <div className="tp-metadata-row">
-                <span className="tp-meta-label">Signal ID:</span>
-                <span className="tp-meta-value code" title={proposal.signal_id}>{truncateId(proposal.signal_id)}</span>
+              <div className="prm-meta-row">
+                <span className="prm-meta-label">Signal ID</span>
+                <span className="prm-meta-value code" title={proposal.signal_id}>{truncateId(proposal.signal_id)}</span>
               </div>
             )}
             {proposal.created_at && (
-              <div className="tp-metadata-row">
-                <span className="tp-meta-label">Created At:</span>
-                <span className="tp-meta-value">{new Date(proposal.created_at).toLocaleString()}</span>
+              <div className="prm-meta-row">
+                <span className="prm-meta-label">Created At</span>
+                <span className="prm-meta-value">{new Date(proposal.created_at).toLocaleString()}</span>
               </div>
             )}
           </div>
 
           {/* ── Raw JSON Inspector ── */}
-          <div className="tp-raw-json-container">
-            <div className="tp-json-header">
-              <button type="button" className="tp-btn-text" onClick={() => setShowRawJson(!showRawJson)} data-testid="toggle-json-btn">
-                <Code size={14} />
+          <div className="prm-json-container">
+            <div className="prm-json-header">
+              <button type="button" className="prm-json-toggle-btn" onClick={() => setShowRawJson(!showRawJson)} data-testid="toggle-json-btn">
+                <Code size={13} />
                 <span>{showRawJson ? 'Hide Raw API JSON' : 'Inspect Raw API JSON'}</span>
               </button>
               {showRawJson && (
-                <button type="button" className="tp-btn-icon" onClick={handleCopyJson} title="Copy JSON" data-testid="copy-json-btn">
-                  {copied ? <Check size={14} color="#34d399" /> : <Copy size={14} />}
+                <button type="button" className="prm-json-copy-btn" onClick={handleCopyJson} title="Copy JSON" data-testid="copy-json-btn">
+                  {copied ? <Check size={13} color="#34d399" /> : <Copy size={13} />}
                 </button>
               )}
             </div>
             {showRawJson && (
-              <pre className="tp-json-block" data-testid="raw-json-block">
-                {JSON.stringify({ proposal, riskEvaluation }, null, 2)}
+              <pre className="prm-json-block" data-testid="raw-json-block">
+                {JSON.stringify({ proposal, riskEvaluation, executionResult }, null, 2)}
               </pre>
             )}
           </div>
         </div>
 
         {/* ── Footer ── */}
-        <div className="tp-modal-footer">
-          <button type="button" className="tp-btn-secondary" onClick={onClose} data-testid="close-review-modal-btn">
+        <div className="prm-footer">
+          {proposal.status === 'RISK_APPROVED' && !executionResult && (
+            <button
+              type="button"
+              className="prm-btn-execute"
+              onClick={() => setShowExecuteConfirm(true)}
+              disabled={executionLoading}
+              data-testid="execute-trade-btn"
+            >
+              {executionLoading ? (
+                <><Clock size={15} style={{ animation: 'spin 1s linear infinite' }} />Executing…</>
+              ) : (
+                <><Zap size={15} />Execute Paper Trade</>
+              )}
+            </button>
+          )}
+          <button type="button" className="prm-btn-close" onClick={onClose} data-testid="close-review-modal-btn">
             Close
           </button>
         </div>
-      </div>
+
+        {/* ── Execution Confirmation Overlay ── */}
+        {showExecuteConfirm && (
+          <motion.div
+            className="prm-confirm-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="prm-confirm-card"
+              data-testid="execution-confirm-dialog"
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.22 }}
+            >
+              <div className="prm-confirm-title">
+                <AlertTriangle size={18} color="#f59e0b" />
+                Confirm Execution
+              </div>
+
+              <div className="prm-confirm-details">
+                {[
+                  { label: 'Symbol', value: proposal.symbol },
+                  { label: 'Action', value: proposal.action, cls: isBuy ? 'success' : 'danger' },
+                  { label: 'Quantity', value: String(qty) },
+                  { label: 'Proposal Entry Price', value: `$${entry.toFixed(2)}` },
+                ].map((row) => (
+                  <div key={row.label} className="prm-confirm-row">
+                    <span className="prm-confirm-label">{row.label}</span>
+                    <span className={`prm-confirm-value ${row.cls || ''}`}>{row.value}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="prm-confirm-warning">
+                <strong>Warning:</strong> This will execute the paper trade at the current live market price. The actual execution price may differ from the proposal entry price. No real money is involved.
+              </div>
+
+              <div className="prm-confirm-actions">
+                <button
+                  type="button"
+                  className="prm-confirm-cancel"
+                  onClick={() => setShowExecuteConfirm(false)}
+                  data-testid="cancel-execute-btn"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="prm-confirm-execute"
+                  onClick={handleExecute}
+                  disabled={executionLoading}
+                  data-testid="confirm-execute-btn"
+                >
+                  {executionLoading ? 'Executing...' : 'Confirm Execution'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </motion.div>
     </div>
   );
 };
-
-

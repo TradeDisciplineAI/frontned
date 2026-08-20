@@ -55,7 +55,7 @@ describe('AISignalModal Component', () => {
       />
     );
 
-    expect(screen.getByText('AI Strategy Signal')).toBeInTheDocument();
+    expect(screen.getByText('AI Trade Signal')).toBeInTheDocument();
     expect(screen.getByText('NVDA')).toBeInTheDocument();
     expect(screen.getByTestId('signal-action-badge')).toHaveTextContent('BUY');
     expect(screen.getByText('Entry Price')).toBeInTheDocument();

@@ -11,7 +11,10 @@ import { AuthCallback } from '@/components/AuthCallback';
 import { DashboardPage } from '@/features/dashboard/DashboardPage';
 import { LiveMarketDashboard } from '@/pages/LiveMarketDashboard';
 import { SettingsPage } from '@/pages/SettingsPage';
+import { SecuritySessionsPage } from '@/pages/SecuritySessionsPage';
 import { TradeProposalsPage } from '@/pages/TradeProposalsPage';
+import { PositionDetailsPage } from '@/pages/PositionDetailsPage';
+import { PaperPositionsPage } from '@/pages/PaperPositionsPage';
 import { GuestPromoModal } from '@/components/GuestPromoModal';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { useUserStore } from '@/stores/userStore';
@@ -146,12 +149,44 @@ function AppContent() {
             </AuthGuard>
           }
         />
+        <Route
+          path="/portfolio"
+          element={
+            <AuthGuard>
+              <DashboardPage user={user} onLogout={handleLogout} />
+            </AuthGuard>
+          }
+        />
         <Route path={ROUTES.PROPOSALS} element={<TradeProposalsPage />} />
         <Route
           path={ROUTES.SETTINGS}
           element={
             <AuthGuard>
               <SettingsPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path={ROUTES.SECURITY}
+          element={
+            <AuthGuard>
+              <SecuritySessionsPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path={ROUTES.POSITIONS}
+          element={
+            <AuthGuard>
+              <PaperPositionsPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path={ROUTES.POSITION_DETAILS}
+          element={
+            <AuthGuard>
+              <PositionDetailsPage />
             </AuthGuard>
           }
         />

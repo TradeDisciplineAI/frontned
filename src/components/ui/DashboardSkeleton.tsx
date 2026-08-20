@@ -17,9 +17,11 @@ export const DashboardSkeleton: React.FC = () => {
           border-radius: 8px;
         }
         .skeleton-card {
-          background: rgba(15, 23, 42, 0.3);
-          border: 1px solid rgba(255, 255, 255, 0.03);
-          border-radius: 16px;
+          background: rgba(10, 16, 32, 0.65);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.06);
+          border-radius: 14px;
           padding: 24px;
           display: flex;
           flex-direction: column;

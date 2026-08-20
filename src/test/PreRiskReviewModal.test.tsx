@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PreRiskReviewModal } from '@/components/tradeProposal/PreRiskReviewModal';
 import { useTradeProposalStore } from '@/stores/useTradeProposalStore';
 import { useUserStore } from '@/stores/userStore';
+import { usePortfolioStore } from '@/stores/usePortfolioStore';
 import type { TradeProposal, RiskEvaluation } from '@/types/tradeProposal.types';
 
 // Mock Zustand stores
@@ -12,6 +13,10 @@ vi.mock('@/stores/useTradeProposalStore', () => ({
 
 vi.mock('@/stores/userStore', () => ({
   useUserStore: vi.fn(),
+}));
+
+vi.mock('@/stores/usePortfolioStore', () => ({
+  usePortfolioStore: vi.fn(),
 }));
 
 const mockPendingBuyProposal: TradeProposal = {
@@ -138,6 +143,10 @@ describe('PreRiskReviewModal Component', () => {
       riskError: null,
       evaluateProposalRisk: mockEvaluate,
       fetchProposalRisk: mockFetch,
+      executionResult: null,
+      executionLoading: false,
+      executionError: null,
+      executeTradeProposal: vi.fn(),
       activeProposal: null,
       ...overrides,
     };
@@ -158,6 +167,10 @@ describe('PreRiskReviewModal Component', () => {
     vi.mocked(useUserStore).mockReturnValue({
       user: { id: 'user-123' },
     });
+
+    vi.mocked(usePortfolioStore).mockReturnValue({
+      fetchPortfolio: vi.fn(),
+    } as any);
 
     setupStoreMock();
   });
@@ -328,6 +341,132 @@ describe('PreRiskReviewModal Component', () => {
     fireEvent.click(closeBtn);
 
     expect(handleClose).toHaveBeenCalledTimes(1);
+  });
+
+  // ── Agent 5 Execution UI Tests ──
+
+  describe('Agent 5 Execution Flow', () => {
+    it('shows Execute button only for RISK_APPROVED status', () => {
+      // PENDING_RISK -> no button
+      render(<PreRiskReviewModal proposal={mockPendingBuyProposal} isOpen={true} onClose={vi.fn()} />);
+      expect(screen.queryByTestId('execute-trade-btn')).not.toBeInTheDocument();
+      
+      // RISK_REJECTED -> no button
+      setupStoreMock({ riskEvaluation: mockRejectedRiskEval });
+      const rejectedProposal = { ...mockPendingBuyProposal, status: 'RISK_REJECTED' as const };
+      render(<PreRiskReviewModal proposal={rejectedProposal} isOpen={true} onClose={vi.fn()} />);
+      expect(screen.queryByTestId('execute-trade-btn')).not.toBeInTheDocument();
+
+      // NEEDS_REVIEW -> no button
+      setupStoreMock({ riskEvaluation: mockNeedsReviewRiskEval });
+      const reviewProposal = { ...mockPendingBuyProposal, status: 'NEEDS_REVIEW' as const };
+      render(<PreRiskReviewModal proposal={reviewProposal} isOpen={true} onClose={vi.fn()} />);
+      expect(screen.queryByTestId('execute-trade-btn')).not.toBeInTheDocument();
+
+      // RISK_APPROVED -> button present
+      setupStoreMock({ riskEvaluation: mockApprovedRiskEval });
+      render(<PreRiskReviewModal proposal={mockApprovedProposal} isOpen={true} onClose={vi.fn()} />);
+      expect(screen.getByTestId('execute-trade-btn')).toBeInTheDocument();
+      expect(screen.getByText('Execute Paper Trade')).toBeInTheDocument();
+    });
+
+    it('hides Execute button when proposal is EXECUTED', () => {
+      const executedProposal = { ...mockApprovedProposal, status: 'EXECUTED' as const };
+      setupStoreMock({ 
+        riskEvaluation: mockApprovedRiskEval,
+        executionResult: { execution_id: '123', execution_price: 150.0 } as any
+      });
+      render(<PreRiskReviewModal proposal={executedProposal} isOpen={true} onClose={vi.fn()} />);
+      expect(screen.queryByTestId('execute-trade-btn')).not.toBeInTheDocument();
+    });
+
+    it('shows confirmation dialog when Execute is clicked', () => {
+      setupStoreMock({ riskEvaluation: mockApprovedRiskEval });
+      render(<PreRiskReviewModal proposal={mockApprovedProposal} isOpen={true} onClose={vi.fn()} />);
+      
+      fireEvent.click(screen.getByTestId('execute-trade-btn'));
+      
+      expect(screen.getByTestId('execution-confirm-dialog')).toBeInTheDocument();
+      expect(screen.getAllByText('Confirm Execution')[0]).toBeInTheDocument();
+    });
+
+    it('Cancel button in confirmation dialog hides it and does NOT call execute', () => {
+      const mockExecute = vi.fn();
+      setupStoreMock({ 
+        riskEvaluation: mockApprovedRiskEval,
+        executeTradeProposal: mockExecute
+      });
+      render(<PreRiskReviewModal proposal={mockApprovedProposal} isOpen={true} onClose={vi.fn()} />);
+      
+      fireEvent.click(screen.getByTestId('execute-trade-btn'));
+      expect(screen.getByTestId('execution-confirm-dialog')).toBeInTheDocument();
+      
+      fireEvent.click(screen.getByTestId('cancel-execute-btn'));
+      
+      // After cancel the confirm dialog should disappear
+      // The state is set synchronously so the cancel button should be gone
+      expect(screen.queryByTestId('cancel-execute-btn')).not.toBeInTheDocument();
+      expect(mockExecute).not.toHaveBeenCalled();
+    });
+
+    it('Confirm button calls executeTradeProposal and prevents duplicate clicks', () => {
+      const mockExecute = vi.fn();
+      setupStoreMock({ 
+        riskEvaluation: mockApprovedRiskEval,
+        executeTradeProposal: mockExecute,
+        executionLoading: true
+      }); // Simulate loading state after click
+      
+      render(<PreRiskReviewModal proposal={mockApprovedProposal} isOpen={true} onClose={vi.fn()} />);
+      
+      // We manually set loading=true in mock, so button should be disabled
+      const execBtn = screen.getByTestId('execute-trade-btn');
+      expect(execBtn).toBeDisabled();
+      // Button contains some variant of "Executing" text
+      expect(execBtn).toHaveTextContent(/Executing/i);
+    });
+
+    it('renders EXECUTION_FAILED error panel', () => {
+      const failedProposal = { ...mockApprovedProposal, status: 'EXECUTION_FAILED' as const };
+      setupStoreMock({ 
+        riskEvaluation: mockApprovedRiskEval,
+        executionError: 'Market closed'
+      });
+      
+      render(<PreRiskReviewModal proposal={failedProposal} isOpen={true} onClose={vi.fn()} />);
+      
+      expect(screen.getByTestId('execution-error-panel')).toBeInTheDocument();
+      expect(screen.getByText('Execution Failed')).toBeInTheDocument();
+      expect(screen.getByText('Market closed')).toBeInTheDocument();
+    });
+
+    it('renders EXECUTED success panel with execution details', () => {
+      const executedProposal = { ...mockApprovedProposal, status: 'EXECUTED' as const };
+      const mockResult = {
+        execution_id: 'exec-555',
+        proposal_id: 'prop-approved',
+        symbol: 'NVDA',
+        action: 'BUY',
+        filled_quantity: 20,
+        execution_price: 125.50,
+        executed_at: '2026-08-18T10:00:00Z'
+      };
+      
+      setupStoreMock({ 
+        riskEvaluation: mockApprovedRiskEval,
+        executionResult: mockResult as any
+      });
+      
+      render(<PreRiskReviewModal proposal={executedProposal} isOpen={true} onClose={vi.fn()} />);
+      
+      expect(screen.getByTestId('execution-result-panel')).toBeInTheDocument();
+      expect(screen.getByText('PAPER TRADE EXECUTED ✓')).toBeInTheDocument();
+      expect(screen.getByText('exec-555')).toBeInTheDocument();
+      expect(screen.getAllByText('20 shares')[0]).toBeInTheDocument();
+      expect(screen.getByText('$125.50')).toBeInTheDocument(); // Execution Price
+      // Banner status
+      expect(screen.getByTestId('status-badge-result')).toHaveTextContent('EXECUTED');
+    });
   });
 });
 

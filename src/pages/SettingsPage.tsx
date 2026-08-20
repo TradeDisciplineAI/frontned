@@ -1,14 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Crown, Bell, Sparkles, CheckCircle2, Menu } from 'lucide-react';
+import {
+  User,
+  Crown,
+  Bell,
+  Shield,
+  Sparkles,
+  CheckCircle2,
+  Menu,
+  Monitor,
+  Smartphone,
+  Laptop,
+  Terminal,
+  ShieldCheck,
+  AlertOctagon,
+  RotateCw,
+  LogOut,
+} from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { useUserStore } from '@/stores/userStore';
 import { useSubscriptionStore } from '@/stores/useSubscriptionStore';
+import { authService } from '@/features/auth/auth.service';
+import type { UserSessionResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
 
 interface MenuItem {
-  id: 'profile' | 'subscription' | 'notifications';
+  id: 'profile' | 'subscription' | 'notifications' | 'security';
   label: string;
   icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   desc: string;
@@ -17,11 +35,19 @@ interface MenuItem {
 
 export const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, logout } = useUserStore();
+  const { user, logout, logoutAll } = useUserStore();
   const { status, fetchSubscriptionStatus, openPaywall } = useSubscriptionStore();
 
   const [activeTab, setActiveTab] = useState<MenuItem['id']>('profile');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isLogoutAllModalOpen, setIsLogoutAllModalOpen] = useState(false);
+
+  // Active Sessions state
+  const [sessions, setSessions] = useState<UserSessionResponse[]>([]);
+  const [isSessionsLoading, setIsSessionsLoading] = useState(false);
+  const [sessionsError, setSessionsError] = useState<string | null>(null);
+  const [revokingSessionId, setRevokingSessionId] = useState<string | null>(null);
+  const [isLoggingOutAll, setIsLoggingOutAll] = useState(false);
 
   // Preference Toggles State
   const [emailAlerts, setEmailAlerts] = useState<boolean>(() => {
@@ -49,6 +75,58 @@ export const SettingsPage: React.FC = () => {
       fetchSubscriptionStatus();
     }
   }, [user, fetchSubscriptionStatus]);
+
+  const fetchSessions = async () => {
+    setIsSessionsLoading(true);
+    setSessionsError(null);
+    try {
+      const data = await authService.getSessions();
+      setSessions(data || []);
+    } catch (err: any) {
+      console.error('Failed to fetch sessions', err);
+      setSessionsError('Unable to load sessions.');
+    } finally {
+      setIsSessionsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && activeTab === 'security') {
+      fetchSessions();
+    }
+  }, [user, activeTab]);
+
+  const handleRevokeSession = async (sessionId: string) => {
+    const targetSession = sessions.find((s) => s.id === sessionId);
+    setRevokingSessionId(sessionId);
+    try {
+      await authService.revokeSession(sessionId);
+      if (targetSession?.is_current) {
+        showSavedNotification('Current session revoked. Logging out...');
+        await logout();
+        navigate(ROUTES.LOGIN);
+        return;
+      }
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+      showSavedNotification('Session revoked successfully.');
+    } catch (err) {
+      console.error('Failed to revoke session', err);
+      showSavedNotification('Failed to revoke session.');
+    } finally {
+      setRevokingSessionId(null);
+    }
+  };
+
+  const handleLogoutAll = async () => {
+    setIsLoggingOutAll(true);
+    try {
+      await logoutAll();
+      navigate(ROUTES.LOGIN);
+    } catch (err) {
+      console.error('Logout all failed', err);
+      setIsLoggingOutAll(false);
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -84,6 +162,12 @@ export const SettingsPage: React.FC = () => {
       icon: Bell,
       desc: 'Email digests & Web Audio chimes',
     },
+    {
+      id: 'security',
+      label: 'Security & Sessions',
+      icon: Shield,
+      desc: 'Active sessions & device security',
+    },
   ];
 
   return (
@@ -98,7 +182,7 @@ export const SettingsPage: React.FC = () => {
     >
       <style>{`
         .settings-main-container {
-          margin-left: 240px;
+          margin-left: 280px;
           flex: 1;
           display: flex;
           flex-direction: column;
@@ -233,7 +317,13 @@ export const SettingsPage: React.FC = () => {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => {
+                    if (item.id === 'security') {
+                      navigate(ROUTES.SECURITY);
+                    } else {
+                      setActiveTab(item.id);
+                    }
+                  }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -683,9 +773,479 @@ export const SettingsPage: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {/* TAB 4: SECURITY & ACTIVE SESSIONS */}
+            {activeTab === 'security' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                <div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 12,
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                        <h3 style={{ fontSize: '18px', fontWeight: 900, margin: 0, color: '#f8fafc', letterSpacing: '-0.01em' }}>
+                          SECURITY CENTER
+                        </h3>
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            fontSize: '11px',
+                            fontWeight: 800,
+                            color: '#10b981',
+                            background: 'rgba(16, 185, 129, 0.1)',
+                            border: '1px solid rgba(16, 185, 129, 0.25)',
+                            padding: '2px 8px',
+                            borderRadius: '9999px',
+                          }}
+                        >
+                          <span
+                            style={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: '50%',
+                              background: '#10b981',
+                              boxShadow: '0 0 8px #10b981',
+                            }}
+                          />
+                          SESSION MONITORING ACTIVE
+                        </span>
+                      </div>
+                      <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '4px' }}>
+                        Manage where your account is currently signed in.
+                      </p>
+                    </div>
+
+                    {!isSessionsLoading && !sessionsError && (
+                      <span
+                        style={{
+                          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+                          fontSize: '12px',
+                          fontWeight: 800,
+                          color: '#60a5fa',
+                          background: 'rgba(59, 130, 246, 0.12)',
+                          border: '1px solid rgba(59, 130, 246, 0.25)',
+                          padding: '4px 12px',
+                          borderRadius: '8px',
+                        }}
+                        data-testid="active-sessions-count-badge"
+                      >
+                        {sessions.length} ACTIVE {sessions.length === 1 ? 'SESSION' : 'SESSIONS'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Revoke All Sessions Controls */}
+                <div
+                  style={{
+                    background: 'rgba(239, 68, 68, 0.08)',
+                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                    borderRadius: '14px',
+                    padding: '20px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '16px',
+                    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)',
+                  }}
+                >
+                  <div>
+                    <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#f8fafc' }}>
+                      Revoke All Active Sessions
+                    </h4>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>
+                      Sign out across all devices and browsers immediately.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsLogoutAllModalOpen(true)}
+                    disabled={isLoggingOutAll}
+                    data-testid="logout-all-btn"
+                    style={{
+                      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                      color: '#ffffff',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '9px 18px',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      cursor: isLoggingOutAll ? 'not-allowed' : 'pointer',
+                      opacity: isLoggingOutAll ? 0.6 : 1,
+                      transition: 'all 0.18s ease',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 7,
+                      boxShadow: '0 4px 14px rgba(239, 68, 68, 0.35)',
+                    }}
+                  >
+                    <LogOut size={14} />
+                    {isLoggingOutAll ? 'Logging out...' : 'Log Out All Sessions'}
+                  </button>
+                </div>
+
+                {/* Active Sessions List Container */}
+                <div>
+                  <h4 style={{ fontSize: '14px', fontWeight: 800, color: '#f8fafc', marginBottom: '14px', letterSpacing: '-0.01em' }}>
+                    Active Sessions
+                  </h4>
+
+                  {isSessionsLoading ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }} data-testid="sessions-loading-state">
+                      <div style={{ color: '#94a3b8', fontSize: '13px', marginBottom: 4 }}>Loading sessions...</div>
+                      {[1, 2].map((i) => (
+                        <div
+                          key={i}
+                          style={{
+                            background: 'rgba(10, 16, 32, 0.65)',
+                            border: '1px solid rgba(255, 255, 255, 0.06)',
+                            borderRadius: '14px',
+                            padding: '20px',
+                            display: 'flex',
+                            gap: '16px',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <div className="pulse-box" style={{ width: 44, height: 44, borderRadius: 12 }} />
+                          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            <div className="pulse-box" style={{ width: 160, height: 18 }} />
+                            <div className="pulse-box" style={{ width: 240, height: 14 }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : sessionsError ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '32px 20px',
+                        background: 'rgba(239, 68, 68, 0.05)',
+                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                        borderRadius: '14px',
+                        gap: '12px',
+                      }}
+                      data-testid="sessions-error-state"
+                    >
+                      <AlertOctagon size={24} color="#ef4444" />
+                      <span style={{ color: '#ef4444', fontSize: '13px', fontWeight: 700 }}>
+                        Unable to load active sessions.
+                      </span>
+                      <button
+                        type="button"
+                        onClick={fetchSessions}
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.15)',
+                          border: '1px solid rgba(239, 68, 68, 0.3)',
+                          color: '#ffffff',
+                          borderRadius: '8px',
+                          padding: '6px 16px',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  ) : sessions.length === 0 ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: '40px 20px',
+                        background: 'rgba(10, 16, 32, 0.65)',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        borderRadius: '14px',
+                        textAlign: 'center',
+                        gap: '12px',
+                      }}
+                      data-testid="sessions-empty-state"
+                    >
+                      <div
+                        style={{
+                          width: 48,
+                          height: 48,
+                          borderRadius: '50%',
+                          background: 'rgba(59, 130, 246, 0.1)',
+                          border: '1px solid rgba(59, 130, 246, 0.2)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <ShieldCheck size={24} color="#3b82f6" />
+                      </div>
+                      <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 800, color: '#f8fafc' }}>
+                        NO ACTIVE SESSIONS
+                      </h4>
+                      <p style={{ margin: 0, fontSize: '13px', color: '#94a3b8', maxWidth: '300px' }}>
+                        Your account has no active sessions.
+                      </p>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }} data-testid="active-sessions-list">
+                      {sessions.map((sess, idx) => {
+                        const getIcon = () => {
+                          const info = `${sess.device_name || ''} ${sess.user_agent || ''}`.toLowerCase();
+                          if (info.includes('mac') || info.includes('apple')) return Laptop;
+                          if (info.includes('win') || info.includes('windows')) return Monitor;
+                          if (info.includes('linux') || info.includes('ubuntu')) return Terminal;
+                          if (info.includes('android') || info.includes('iphone') || info.includes('mobile')) return Smartphone;
+                          return Monitor;
+                        };
+                        const DeviceIcon = getIcon();
+
+                        return (
+                          <motion.div
+                            key={sess.id}
+                            data-testid={`session-card-${sess.id}`}
+                            initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 0.24, delay: idx * 0.05 }}
+                            style={{
+                              background: 'rgba(10, 16, 32, 0.65)',
+                              backdropFilter: 'blur(12px)',
+                              border: sess.is_current
+                                ? '1px solid rgba(16, 185, 129, 0.35)'
+                                : '1px solid rgba(255, 255, 255, 0.06)',
+                              borderRadius: '14px',
+                              padding: '20px',
+                              display: 'flex',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              gap: '20px',
+                              boxShadow: sess.is_current
+                                ? '0 8px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(16, 185, 129, 0.08)'
+                                : '0 4px 16px rgba(0, 0, 0, 0.3)',
+                              flexWrap: 'wrap',
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', minWidth: 0, flex: 1 }}>
+                              <div
+                                style={{
+                                  width: 44,
+                                  height: 44,
+                                  borderRadius: 12,
+                                  background: sess.is_current ? 'rgba(16, 185, 129, 0.12)' : 'rgba(59, 130, 246, 0.1)',
+                                  border: sess.is_current
+                                    ? '1px solid rgba(16, 185, 129, 0.3)'
+                                    : '1px solid rgba(59, 130, 246, 0.2)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  color: sess.is_current ? '#10b981' : '#60a5fa',
+                                  flexShrink: 0,
+                                }}
+                              >
+                                <DeviceIcon size={20} />
+                              </div>
+
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                                  <span style={{ fontSize: '15px', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.01em' }}>
+                                    {sess.device_name || sess.user_agent || 'Terminal Session'}
+                                  </span>
+                                  {sess.is_current ? (
+                                    <span
+                                      style={{
+                                        fontSize: '10px',
+                                        fontWeight: 800,
+                                        padding: '2px 8px',
+                                        borderRadius: '9999px',
+                                        background: 'rgba(16, 185, 129, 0.15)',
+                                        color: '#10b981',
+                                        border: '1px solid rgba(16, 185, 129, 0.3)',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 5,
+                                      }}
+                                    >
+                                      <span
+                                        style={{
+                                          width: 5,
+                                          height: 5,
+                                          borderRadius: '50%',
+                                          background: '#10b981',
+                                          boxShadow: '0 0 6px #10b981',
+                                        }}
+                                      />
+                                      CURRENT SESSION
+                                    </span>
+                                  ) : (
+                                    <span
+                                      style={{
+                                        fontSize: '10px',
+                                        fontWeight: 700,
+                                        padding: '2px 8px',
+                                        borderRadius: '9999px',
+                                        background: 'rgba(255, 255, 255, 0.04)',
+                                        color: '#94a3b8',
+                                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                                      }}
+                                    >
+                                      Active
+                                    </span>
+                                  )}
+                                </div>
+
+                                {sess.ip_address && (
+                                  <span style={{ fontSize: '12px', color: '#64748b', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+                                    IP: {sess.ip_address}
+                                  </span>
+                                )}
+
+                                <div style={{ fontSize: '11px', color: '#94a3b8', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                                  <span>Created: {new Date(sess.created_at).toLocaleString()}</span>
+                                  {sess.last_used_at && (
+                                    <span>Last Active: {new Date(sess.last_used_at).toLocaleString()}</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => handleRevokeSession(sess.id)}
+                              disabled={revokingSessionId === sess.id}
+                              data-testid={`revoke-session-btn-${sess.id}`}
+                              style={{
+                                background: 'rgba(239, 68, 68, 0.1)',
+                                border: '1px solid rgba(239, 68, 68, 0.3)',
+                                color: '#ef4444',
+                                borderRadius: '8px',
+                                padding: '8px 16px',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                                cursor: revokingSessionId === sess.id ? 'not-allowed' : 'pointer',
+                                opacity: revokingSessionId === sess.id ? 0.6 : 1,
+                                transition: 'all 0.18s ease',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                              }}
+                            >
+                              {revokingSessionId === sess.id ? (
+                                <>
+                                  <RotateCw size={13} className="animate-spin" /> Revoking...
+                                </>
+                              ) : (
+                                'Revoke Session'
+                              )}
+                            </button>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Logout All Confirmation Modal */}
+      {isLogoutAllModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(4, 8, 16, 0.85)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '20px',
+          }}
+          onClick={() => setIsLogoutAllModalOpen(false)}
+          data-testid="logout-all-modal-overlay"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#0a1020',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              borderRadius: '16px',
+              padding: '24px',
+              maxWidth: '440px',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '16px',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(239, 68, 68, 0.1)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444' }}>
+                <AlertOctagon size={20} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#f8fafc' }}>
+                  LOG OUT ALL SESSIONS
+                </h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#94a3b8' }}>
+                  Sign out of all active sessions across all devices immediately?
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
+              <button
+                type="button"
+                onClick={() => setIsLogoutAllModalOpen(false)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: '#94a3b8',
+                  borderRadius: '8px',
+                  padding: '8px 16px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  setIsLogoutAllModalOpen(false);
+                  await handleLogoutAll();
+                }}
+                data-testid="confirm-logout-all-btn"
+                style={{
+                  background: '#ef4444',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '8px 16px',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                Log Out All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

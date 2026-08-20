@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { tradeProposalService } from '@/services/tradeProposal.service';
-import type { TradeProposal, CreateTradeProposalDTO, RiskEvaluation } from '@/types/tradeProposal.types';
+import type { TradeProposal, CreateTradeProposalDTO, RiskEvaluation, PaperExecutionResult } from '@/types/tradeProposal.types';
 
 interface TradeProposalState {
   proposals: TradeProposal[];
@@ -19,6 +19,11 @@ interface TradeProposalState {
   riskLoading: boolean;
   riskError: string | null;
 
+  // Agent 5 Execution States
+  executionResult: PaperExecutionResult | null;
+  executionLoading: boolean;
+  executionError: string | null;
+
   // Actions
   createProposal: (payload: CreateTradeProposalDTO) => Promise<TradeProposal | null>;
   fetchProposalById: (id: string) => Promise<TradeProposal | null>;
@@ -31,6 +36,7 @@ interface TradeProposalState {
   clearError: () => void;
   evaluateProposalRisk: (proposalId: string, userId?: string) => Promise<RiskEvaluation | null>;
   fetchProposalRisk: (proposalId: string, userId?: string) => Promise<RiskEvaluation | null>;
+  executeTradeProposal: (proposalId: string, userId: string) => Promise<PaperExecutionResult | null>;
 }
 
 export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
@@ -49,6 +55,11 @@ export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
   riskEvaluation: null,
   riskLoading: false,
   riskError: null,
+
+  // Agent 5 Execution States Default
+  executionResult: null,
+  executionLoading: false,
+  executionError: null,
 
   createProposal: async (payload: CreateTradeProposalDTO) => {
     set({ isSubmitting: true, error: null });
@@ -154,7 +165,15 @@ export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
   },
 
   setActiveProposal: (proposal) => {
-    set({ activeProposal: proposal, riskEvaluation: null, riskLoading: false, riskError: null });
+    set({
+      activeProposal: proposal,
+      riskEvaluation: null,
+      riskLoading: false,
+      riskError: null,
+      executionResult: null,
+      executionLoading: false,
+      executionError: null,
+    });
   },
 
   openCreateModal: (initialData) => {
@@ -176,12 +195,23 @@ export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
       riskEvaluation: null,
       riskLoading: false,
       riskError: null,
+      executionResult: null,
+      executionLoading: false,
+      executionError: null,
       error: null,
     });
   },
 
   closeReviewModal: () => {
-    set({ isReviewModalOpen: false, riskEvaluation: null, riskLoading: false, riskError: null });
+    set({
+      isReviewModalOpen: false,
+      riskEvaluation: null,
+      riskLoading: false,
+      riskError: null,
+      executionResult: null,
+      executionLoading: false,
+      executionError: null,
+    });
   },
 
   clearError: () => {
@@ -240,6 +270,69 @@ export const useTradeProposalStore = create<TradeProposalState>((set, get) => ({
         errorMsg = typeof err.response.data.detail === 'string' ? err.response.data.detail : JSON.stringify(err.response.data.detail);
       }
       set({ riskError: errorMsg, riskLoading: false });
+      return null;
+    }
+  },
+
+  executeTradeProposal: async (proposalId: string, userId: string) => {
+    console.log("[Agent5] executeTradeProposal store action", {
+      proposalId,
+      userId,
+    });
+    set({ executionLoading: true, executionError: null });
+    try {
+      const result = await tradeProposalService.executeTradeProposal(proposalId, userId);
+      console.log("[Agent5] execution API success:", result);
+      set((state) => {
+        const updatedProposals = state.proposals.map((p) =>
+          p.id === proposalId ? { ...p, status: 'EXECUTED' as const } : p
+        );
+        const updatedActive = state.activeProposal && state.activeProposal.id === proposalId
+          ? { ...state.activeProposal, status: 'EXECUTED' as const }
+          : state.activeProposal;
+
+        return {
+          executionResult: result,
+          proposals: updatedProposals,
+          activeProposal: updatedActive,
+          executionLoading: false,
+        };
+      });
+      return result;
+    } catch (err: any) {
+      console.error("[Agent5] execution API error:", err);
+      let errorMsg = 'Failed to execute paper trade';
+      if (err.response?.data?.detail) {
+        // Business-level error from the server — always prefer this message
+        errorMsg = typeof err.response.data.detail === 'string'
+          ? err.response.data.detail
+          : JSON.stringify(err.response.data.detail);
+      } else if (err.response?.status === 404) {
+        // Route-level 404 — endpoint not registered
+        errorMsg = 'Execution API endpoint not found. Please verify AI-Service is running.';
+      } else if (err.response?.status === 403) {
+        errorMsg = 'Permission denied: you do not own this proposal.';
+      } else if (err.response?.status === 409) {
+        errorMsg = 'This proposal has already been executed (idempotency conflict).';
+      } else if (err.code === 'ERR_NETWORK') {
+        errorMsg = 'Unable to connect to AI-Service API (http://localhost:8002).';
+      }
+      set({ executionError: errorMsg, executionLoading: false });
+      
+      // Update proposal status to EXECUTION_FAILED if it was a rejection
+      set((state) => {
+        const updatedProposals = state.proposals.map((p) =>
+          p.id === proposalId ? { ...p, status: 'EXECUTION_FAILED' as const } : p
+        );
+        const updatedActive = state.activeProposal && state.activeProposal.id === proposalId
+          ? { ...state.activeProposal, status: 'EXECUTION_FAILED' as const }
+          : state.activeProposal;
+
+        return {
+          proposals: updatedProposals,
+          activeProposal: updatedActive,
+        };
+      });
       return null;
     }
   },

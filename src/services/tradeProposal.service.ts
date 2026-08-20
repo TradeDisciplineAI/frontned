@@ -1,5 +1,5 @@
 import { aiServiceClient } from '@/lib/api.client';
-import type { TradeProposal, CreateTradeProposalDTO, RiskEvaluation } from '@/types/tradeProposal.types';
+import type { TradeProposal, CreateTradeProposalDTO, RiskEvaluation, PaperExecutionResult } from '@/types/tradeProposal.types';
 
 export const tradeProposalService = {
   /**
@@ -55,6 +55,21 @@ export const tradeProposalService = {
       `/trade-proposals/${proposalId}/risk`,
       {
         params: userId ? { user_id: userId } : undefined,
+      }
+    );
+    return response.data;
+  },
+
+  /**
+   * Execute a Trade Proposal via AI-Service (http://localhost:8002)
+   * POST /trade-proposals/{proposal_id}/execute
+   */
+  async executeTradeProposal(proposalId: string, userId: string): Promise<PaperExecutionResult> {
+    const response = await aiServiceClient.post<PaperExecutionResult>(
+      `/trade-proposals/${proposalId}/execute`,
+      {},
+      {
+        params: { user_id: userId },
       }
     );
     return response.data;

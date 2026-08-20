@@ -10,6 +10,7 @@ vi.mock('@/services/tradeProposal.service', () => ({
     getProposals: vi.fn(),
     evaluateProposalRisk: vi.fn(),
     getProposalRisk: vi.fn(),
+    executeTradeProposal: vi.fn(),
   },
 }));
 
@@ -64,6 +65,9 @@ describe('useTradeProposalStore', () => {
       riskEvaluation: null,
       riskLoading: false,
       riskError: null,
+      executionResult: null,
+      executionLoading: false,
+      executionError: null,
     });
   });
 
@@ -290,6 +294,93 @@ describe('useTradeProposalStore', () => {
     expect(result).toBeNull();
     const state = useTradeProposalStore.getState();
     expect(state.riskError).toContain('Unable to connect');
+  });
+
+  // ── Agent 5 Execution Tests ──
+
+  it('executeTradeProposal: calls service and updates executionResult + proposal status to EXECUTED', async () => {
+    const mockExecutionResult = {
+      execution_id: 'exec-123',
+      proposal_id: 'prop-999',
+      symbol: 'NVDA',
+      action: 'BUY' as const,
+      filled_quantity: 20,
+      execution_price: 121.5,
+      executed_at: new Date().toISOString(),
+    };
+
+    useTradeProposalStore.setState({ proposals: [mockProposal], activeProposal: mockProposal });
+    vi.mocked(tradeProposalService.executeTradeProposal).mockResolvedValueOnce(mockExecutionResult);
+
+    const result = await useTradeProposalStore.getState().executeTradeProposal('prop-999', 'user-001');
+
+    expect(tradeProposalService.executeTradeProposal).toHaveBeenCalledWith('prop-999', 'user-001');
+    expect(result).toEqual(mockExecutionResult);
+
+    const state = useTradeProposalStore.getState();
+    expect(state.executionResult).toEqual(mockExecutionResult);
+    expect(state.executionLoading).toBe(false);
+    expect(state.executionError).toBeNull();
+    // Proposal status should be updated to EXECUTED
+    expect(state.activeProposal?.status).toBe('EXECUTED');
+    expect(state.proposals[0]?.status).toBe('EXECUTED');
+  });
+
+  it('executeTradeProposal: handles API error and sets executionError and EXECUTION_FAILED status', async () => {
+    useTradeProposalStore.setState({ proposals: [mockProposal], activeProposal: mockProposal });
+    vi.mocked(tradeProposalService.executeTradeProposal).mockRejectedValueOnce({
+      response: { data: { detail: 'Market closed' }, status: 400 },
+    });
+
+    const result = await useTradeProposalStore.getState().executeTradeProposal('prop-999', 'user-001');
+
+    expect(result).toBeNull();
+    const state = useTradeProposalStore.getState();
+    expect(state.executionError).toContain('Market closed');
+    expect(state.executionLoading).toBe(false);
+    expect(state.executionResult).toBeNull();
+    
+    // Status should be EXECUTION_FAILED
+    expect(state.activeProposal?.status).toBe('EXECUTION_FAILED');
+    expect(state.proposals[0]?.status).toBe('EXECUTION_FAILED');
+  });
+
+  it('openReviewModal: clears stale execution state', () => {
+    useTradeProposalStore.setState({ executionResult: { execution_id: 'x' } as any, executionError: 'old error' });
+
+    useTradeProposalStore.getState().openReviewModal(mockProposal);
+
+    const state = useTradeProposalStore.getState();
+    expect(state.executionResult).toBeNull();
+    expect(state.executionError).toBeNull();
+    expect(state.executionLoading).toBe(false);
+  });
+
+  it('closeReviewModal: clears execution state', () => {
+    useTradeProposalStore.setState({
+      isReviewModalOpen: true,
+      executionResult: { execution_id: 'x' } as any,
+      executionLoading: false,
+      executionError: 'some error',
+    });
+
+    useTradeProposalStore.getState().closeReviewModal();
+
+    const state = useTradeProposalStore.getState();
+    expect(state.isReviewModalOpen).toBe(false);
+    expect(state.executionResult).toBeNull();
+    expect(state.executionError).toBeNull();
+  });
+
+  it('setActiveProposal: clears execution state when switching proposals', () => {
+    useTradeProposalStore.setState({ executionResult: { execution_id: 'x' } as any });
+
+    const newProposal: TradeProposal = { ...mockProposal, id: 'prop-different' };
+    useTradeProposalStore.getState().setActiveProposal(newProposal);
+
+    const state = useTradeProposalStore.getState();
+    expect(state.activeProposal?.id).toBe('prop-different');
+    expect(state.executionResult).toBeNull();
   });
 });
 

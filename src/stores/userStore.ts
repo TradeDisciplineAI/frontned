@@ -23,6 +23,8 @@ interface UserState {
 
   /** Clear the session and log out locally and remotely */
   logout: () => Promise<void>;
+  /** Revoke all active sessions and log out locally and remotely */
+  logoutAll: () => Promise<void>;
 
   /** Open the guest unlock modal */
   openGuestModal: () => void;
@@ -78,6 +80,18 @@ export const useUserStore = create<UserState>()(
           }
         } catch (e) {
           console.error('Logout failed', e);
+        } finally {
+          set({ user: null, isAuthenticated: false, accessToken: null });
+        }
+      },
+
+      logoutAll: async () => {
+        try {
+          if (get().accessToken) {
+            await authService.logoutAll();
+          }
+        } catch (e) {
+          console.error('Logout all failed', e);
         } finally {
           set({ user: null, isAuthenticated: false, accessToken: null });
         }

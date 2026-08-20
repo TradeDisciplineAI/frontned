@@ -11,11 +11,15 @@ import {
   Settings,
   LogOut,
   ShieldAlert,
+  Briefcase,
+  Shield,
 } from 'lucide-react';
 import type { UserResponse } from '@/features/auth/auth.types';
 import { ROUTES } from '@/constants/routes.constants';
 import { useUserStore } from '@/stores/userStore';
 import { useSubscriptionStore } from '@/stores/useSubscriptionStore';
+import { usePortfolioStore } from '@/stores/usePortfolioStore';
+import { useTradeProposalStore } from '@/stores/useTradeProposalStore';
 import '@/styles/components/sidebar.css';
 
 interface SidebarProps {
@@ -44,11 +48,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isExploreActive = location.pathname === ROUTES.EXPLORE;
   const isDashboardActive = location.pathname === ROUTES.DASHBOARD;
+  const isPositionsActive = location.pathname === ROUTES.POSITIONS || location.pathname.startsWith('/portfolio/positions');
   const isProposalsActive = location.pathname === ROUTES.PROPOSALS;
 
   const isLoggedIn = !!user;
   const username = isLoggedIn ? user?.username || 'Anjal Dev VK' : 'Guest Terminal';
   const isPro = status?.is_pro ?? false;
+
+  const handleNavClick = (path: string) => {
+    if (onClose) onClose();
+    if (!isLoggedIn) {
+      useUserStore.getState().openGuestModal();
+      return;
+    }
+    if (path === ROUTES.DASHBOARD || path === ROUTES.POSITIONS) {
+      usePortfolioStore.getState().fetchPortfolio();
+    } else if (path === ROUTES.PROPOSALS) {
+      useTradeProposalStore.getState().fetchProposals(user?.id);
+    }
+    navigate(path);
+  };
 
   return (
     <aside className={`vercel-sidebar ${isOpen ? 'mobile-open' : ''}`}>
@@ -107,7 +126,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="sidebar-nav-list">
           <button
             className={`sidebar-nav-item ${isExploreActive ? 'active' : ''}`}
-            onClick={() => navigate(ROUTES.EXPLORE)}
+            onClick={() => handleNavClick(ROUTES.EXPLORE)}
           >
             <div className="sidebar-item-left">
               <span className="sidebar-item-icon">
@@ -119,7 +138,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           <button
             className={`sidebar-nav-item ${isDashboardActive ? 'active' : ''}`}
-            onClick={() => (isLoggedIn ? navigate(ROUTES.DASHBOARD) : useUserStore.getState().openGuestModal())}
+            onClick={() => handleNavClick(ROUTES.DASHBOARD)}
           >
             <div className="sidebar-item-left">
               <span className="sidebar-item-icon">
@@ -130,8 +149,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </button>
 
           <button
+            className={`sidebar-nav-item ${isPositionsActive ? 'active' : ''}`}
+            onClick={() => handleNavClick(ROUTES.POSITIONS)}
+            data-testid="sidebar-nav-positions"
+          >
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <Briefcase size={15} strokeWidth={2} />
+              </span>
+              <span>Paper Positions</span>
+            </div>
+          </button>
+
+          <button
             className={`sidebar-nav-item ${isProposalsActive ? 'active' : ''}`}
-            onClick={() => (isLoggedIn ? navigate(ROUTES.PROPOSALS) : useUserStore.getState().openGuestModal())}
+            onClick={() => handleNavClick(ROUTES.PROPOSALS)}
             data-testid="sidebar-nav-proposals"
           >
             <div className="sidebar-item-left">
@@ -187,6 +219,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <Settings size={15} strokeWidth={2} />
               </span>
               <span>Settings</span>
+            </div>
+          </button>
+
+          <button
+            className={`sidebar-nav-item ${location.pathname === ROUTES.SECURITY ? 'active' : ''}`}
+            onClick={() => (isLoggedIn ? navigate(ROUTES.SECURITY) : useUserStore.getState().openGuestModal())}
+            data-testid="sidebar-nav-security"
+          >
+            <div className="sidebar-item-left">
+              <span className="sidebar-item-icon">
+                <Shield size={15} strokeWidth={2} />
+              </span>
+              <span>Security & Sessions</span>
             </div>
           </button>
         </div>
