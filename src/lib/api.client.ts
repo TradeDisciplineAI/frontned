@@ -3,6 +3,7 @@ import { useUserStore } from '@/stores/userStore';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://localhost:8001';
+const AI_API_URL = import.meta.env.VITE_AI_API_BASE_URL || ''; // Uses Vite proxy
 const AI_SERVICE_API_URL = import.meta.env.VITE_AI_SERVICE_API_URL || 'http://localhost:8002';
 
 export const apiClient = axios.create({
@@ -17,6 +18,12 @@ export const marketApiClient = axios.create({
   timeout: 15000,
 });
 
+export const aiApiClient = axios.create({
+  baseURL: AI_API_URL,
+  withCredentials: true,
+  timeout: 15000,
+});
+
 export const aiServiceClient = axios.create({
   baseURL: AI_SERVICE_API_URL,
   withCredentials: true,
@@ -25,6 +32,15 @@ export const aiServiceClient = axios.create({
 
 // Request Interceptor for marketApiClient: Attach access token
 marketApiClient.interceptors.request.use((config) => {
+  const token = useUserStore.getState().accessToken;
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Request Interceptor for aiApiClient: Attach access token
+aiApiClient.interceptors.request.use((config) => {
   const token = useUserStore.getState().accessToken;
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
