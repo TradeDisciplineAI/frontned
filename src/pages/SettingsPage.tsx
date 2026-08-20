@@ -826,7 +826,7 @@ export const SettingsPage: React.FC = () => {
                     {!isSessionsLoading && !sessionsError && (
                       <span
                         style={{
-                          fontFamily: "'JetBrains Mono', monospace",
+                          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                           fontSize: '12px',
                           fontWeight: 800,
                           color: '#60a5fa',
@@ -1104,7 +1104,7 @@ export const SettingsPage: React.FC = () => {
                                 </div>
 
                                 {sess.ip_address && (
-                                  <span style={{ fontSize: '12px', color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>
+                                  <span style={{ fontSize: '12px', color: '#64748b', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
                                     IP: {sess.ip_address}
                                   </span>
                                 )}

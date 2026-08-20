@@ -202,7 +202,7 @@ export const PaperPositionsPage: React.FC = () => {
           font-size: 1.4rem;
           font-weight: 800;
           color: #f8fafc;
-          font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         @media (max-width: 900px) {
@@ -272,7 +272,7 @@ export const PaperPositionsPage: React.FC = () => {
                     <span>•</span>
                     <span>Agent 5 Execution Engine</span>
                     <span>•</span>
-                    <span style={{ fontWeight: 800, color: '#f1f5f9', fontFamily: "'JetBrains Mono', monospace" }}>
+                    <span style={{ fontWeight: 800, color: '#f1f5f9', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}>
                       {positions.length} positions
                     </span>
                   </div>

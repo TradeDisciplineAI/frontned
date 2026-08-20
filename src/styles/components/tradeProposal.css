@@ -1177,7 +1177,7 @@
   color: #f1f5f9;
   font-size: 1.1rem;
   font-weight: 800;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   outline: none;
   width: 100%;
   box-sizing: border-box;
@@ -1239,7 +1239,7 @@
   font-size: 0.9rem;
   font-weight: 800;
   color: #94a3b8;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   white-space: nowrap;
 }
 
@@ -1483,7 +1483,7 @@
   font-weight: 900;
   color: #f1f5f9;
   letter-spacing: -0.02em;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .prm-action-badge {
@@ -1572,7 +1572,7 @@
   font-size: 1.0rem;
   font-weight: 800;
   color: #f1f5f9;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 .prm-input-value.danger  { color: #ef4444; }
 .prm-input-value.success { color: #10b981; }
@@ -1608,7 +1608,7 @@
 }
 
 .prm-meta-value.code {
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 0.75rem;
   color: #a78bfa;
 }
@@ -1676,7 +1676,7 @@
 .prm-metric-val {
   font-size: 0.88rem;
   font-weight: 800;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   white-space: nowrap;
 }
 
@@ -1810,7 +1810,7 @@
 .prm-exec-price-val {
   font-size: 1.1rem;
   font-weight: 800;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 .prm-exec-price-val.muted { color: #64748b; }
 .prm-exec-price-val.success { color: #10b981; }
@@ -1956,7 +1956,7 @@
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   margin: 0;
   padding: 12px 16px;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 0.72rem;
   color: #a78bfa;
   line-height: 1.4;
@@ -2186,7 +2186,7 @@
 .tpl-meta-count {
   font-weight: 800;
   color: #f1f5f9;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .tpl-btn-primary-header {
@@ -2443,7 +2443,7 @@
   font-weight: 900;
   color: #f8fafc;
   letter-spacing: -0.01em;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .tpl-id-tag {
@@ -2454,7 +2454,7 @@
   border: 1px solid rgba(255, 255, 255, 0.07);
   padding: 1px 5px;
   border-radius: 4px;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .tpl-strategy-name {
@@ -2507,7 +2507,7 @@
   font-size: 0.88rem;
   font-weight: 800;
   color: #f1f5f9;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 .tpl-mono-val.danger    { color: #ef4444; }
 .tpl-mono-val.success   { color: #10b981; }
@@ -2528,7 +2528,7 @@
   font-size: 0.85rem;
   font-weight: 800;
   color: #c084fc;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .tpl-time-text {

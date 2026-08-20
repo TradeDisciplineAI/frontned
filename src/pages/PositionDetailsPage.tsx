@@ -254,11 +254,11 @@ export const PositionDetailsPage: React.FC = () => {
         .pdp-value {
           font-weight: 700;
           color: #f1f5f9;
-          font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         .pdp-mono {
-          font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         @media (max-width: 900px) {
@@ -411,7 +411,7 @@ export const PositionDetailsPage: React.FC = () => {
                 Current Value
               </div>
               <div
-                style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: '3px', fontFamily: "'JetBrains Mono', monospace" }}
+                style={{ fontSize: '1.8rem', fontWeight: 800, color: '#f8fafc', marginTop: '3px', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif" }}
                 data-testid="current-position-value"
               >
                 {currencySymbol}{formatPrice(currentVal)}
@@ -430,7 +430,7 @@ export const PositionDetailsPage: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                 }}
                 data-testid="unrealized-pnl-header"
               >

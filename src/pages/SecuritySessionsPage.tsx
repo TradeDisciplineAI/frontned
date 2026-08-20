@@ -158,27 +158,24 @@ export const SecuritySessionsPage: React.FC = () => {
         }
 
         .sec-card-btn {
-          background: rgba(59, 130, 246, 0.12);
-          border: 1px solid rgba(59, 130, 246, 0.35);
+          background: rgba(59, 130, 246, 0.1);
+          border: 1px solid rgba(59, 130, 246, 0.25);
           color: #60a5fa;
-          border-radius: 10px;
-          padding: 9px 20px;
-          font-size: 13px;
-          font-weight: 700;
+          border-radius: 8px;
+          padding: 8px 16px;
+          font-size: 12px;
+          font-weight: 600;
           cursor: pointer;
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: all 0.18s ease;
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+          gap: 6px;
         }
 
         .sec-card-btn:hover {
-          background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-          color: #ffffff;
-          border-color: #3b82f6;
-          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45), 0 0 14px rgba(59, 130, 246, 0.3);
-          transform: translateY(-1px);
+          background: rgba(59, 130, 246, 0.2);
+          border-color: rgba(59, 130, 246, 0.45);
+          color: #93c5fd;
         }
 
         .sec-card-btn:disabled {
@@ -275,7 +272,7 @@ export const SecuritySessionsPage: React.FC = () => {
             {!isSessionsLoading && !sessionsError && (
               <span
                 style={{
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
                   fontSize: '13px',
                   fontWeight: 800,
                   color: '#60a5fa',
@@ -324,20 +321,19 @@ export const SecuritySessionsPage: React.FC = () => {
             disabled={isLoggingOutAll}
             data-testid="logout-all-btn"
             style={{
-              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-              color: '#ffffff',
-              border: 'none',
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#f87171',
               borderRadius: '8px',
-              padding: '10px 20px',
-              fontSize: '13px',
-              fontWeight: 700,
+              padding: '8px 16px',
+              fontSize: '12px',
+              fontWeight: 600,
               cursor: isLoggingOutAll ? 'not-allowed' : 'pointer',
               opacity: isLoggingOutAll ? 0.6 : 1,
               transition: 'all 0.18s ease',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 8,
-              boxShadow: '0 4px 14px rgba(239, 68, 68, 0.35)',
+              gap: 6,
             }}
           >
             <LogOut size={15} />
@@ -531,7 +527,7 @@ export const SecuritySessionsPage: React.FC = () => {
                         </div>
 
                         {sess.ip_address && (
-                          <span style={{ fontSize: '13px', color: '#64748b', fontFamily: "'JetBrains Mono', monospace", fontWeight: 600 }}>
+                          <span style={{ fontSize: '13px', color: '#64748b', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif", fontWeight: 600 }}>
                             IP: {sess.ip_address}
                           </span>
                         )}

@@ -132,7 +132,7 @@
 .pv-portfolio-id {
   font-size: 0.72rem;
   color: #475569;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .pv-copy-id-btn {
@@ -343,7 +343,7 @@
   font-size: 0.9rem;
   font-weight: 700;
   color: #cbd5e1;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   white-space: nowrap;
 }
 
@@ -454,7 +454,7 @@
   font-size: 1.1rem;
   font-weight: 800;
   color: #f1f5f9;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .pv-watchlist-change {

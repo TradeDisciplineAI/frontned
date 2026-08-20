@@ -305,7 +305,7 @@
   border-radius: 12px;
   font-size: 11px;
   color: #94a3b8;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   width: fit-content;
 }
 
@@ -317,14 +317,14 @@
 }
 
 .vercel-price {
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 1.1rem;
   font-weight: 800;
   color: #f8fafc;
 }
 
 .vercel-change-pill {
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
   padding: 3px 8px;
@@ -415,7 +415,7 @@
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: #94a3b8;
-  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .vercel-tab-line-btn.active .vercel-tab-badge {
