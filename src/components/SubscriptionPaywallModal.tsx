@@ -14,8 +14,15 @@ import {
 import { useSubscriptionStore } from '@/stores/useSubscriptionStore';
 
 export const SubscriptionPaywallModal: React.FC = () => {
-  const { isPaywallOpen, paywallReason, closePaywall, upgradeToPro, isUpgrading, status, error } =
-    useSubscriptionStore();
+  const {
+    isPaywallOpen,
+    paywallReason,
+    closePaywall,
+    upgradeWithRazorpay,
+    isUpgrading,
+    status,
+    error,
+  } = useSubscriptionStore();
   const [selectedPlan, setSelectedPlan] = useState<'annual' | 'monthly'>('annual');
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -30,10 +37,9 @@ export const SubscriptionPaywallModal: React.FC = () => {
     if (status?.is_pro) {
       return;
     }
-    const dummyPaymentToken = `pay_tok_entitle_${Date.now()}`;
-    const success = await upgradeToPro(dummyPaymentToken, selectedPlan);
+    const success = await upgradeWithRazorpay();
     if (success) {
-      setSuccessMessage('🎉 Subscription Upgraded to PRO! Unlimited Trading Unlocked.');
+      setSuccessMessage('🎉 Payment Verified! Upgraded to PRO Tier with Unlimited Trades.');
       setTimeout(() => {
         setSuccessMessage(null);
         closePaywall();
@@ -260,7 +266,7 @@ export const SubscriptionPaywallModal: React.FC = () => {
                     Annual Billing
                   </div>
                   <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff' }}>
-                    $19{' '}
+                    ₹1,299{' '}
                     <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b' }}>/mo</span>
                   </div>
                 </div>
@@ -304,7 +310,7 @@ export const SubscriptionPaywallModal: React.FC = () => {
                     Monthly Billing
                   </div>
                   <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff' }}>
-                    $29{' '}
+                    ₹1,999{' '}
                     <span style={{ fontSize: '11px', fontWeight: 400, color: '#64748b' }}>/mo</span>
                   </div>
                 </div>
@@ -380,11 +386,11 @@ export const SubscriptionPaywallModal: React.FC = () => {
             }}
           >
             {isUpgrading ? (
-              <span>Verifying & Upgrading...</span>
+              <span>Opening Payment Gateway...</span>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                <span>Upgrade to Pro Plan Now</span>
+                <span>Upgrade to Pro Plan Now (Razorpay)</span>
               </>
             )}
           </button>
