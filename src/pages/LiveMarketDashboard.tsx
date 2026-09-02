@@ -55,7 +55,17 @@ const playAlertChime = () => {
   }
 };
 
-const MARKET_WS_URL = import.meta.env.VITE_MARKET_WS_BASE_URL || 'ws://localhost:8001';
+const getWsBaseUrl = () => {
+  if (import.meta.env.VITE_MARKET_WS_BASE_URL) {
+    return import.meta.env.VITE_MARKET_WS_BASE_URL;
+  }
+  if (import.meta.env.PROD || import.meta.env.VITE_APP_ENV === 'production') {
+    return 'wss://tradingcopilot.duckdns.org';
+  }
+  return 'ws://localhost:8001';
+};
+
+const MARKET_WS_URL = getWsBaseUrl();
 
 interface MarketStock {
   symbol: string;
