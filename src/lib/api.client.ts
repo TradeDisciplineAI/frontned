@@ -1,10 +1,31 @@
 import axios from 'axios';
 import { useUserStore } from '@/stores/userStore';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-const MARKET_API_URL = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://localhost:8001';
-const AI_SERVICE_API_URL = import.meta.env.VITE_AI_SERVICE_API_URL || 'http://localhost:8002';
-const AI_API_URL = import.meta.env.VITE_AI_API_BASE_URL !== undefined && import.meta.env.VITE_AI_API_BASE_URL !== '' ? import.meta.env.VITE_AI_API_BASE_URL : AI_SERVICE_API_URL;
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_BASE_URL) return import.meta.env.VITE_API_BASE_URL;
+  if (import.meta.env.PROD || import.meta.env.VITE_APP_ENV === 'production') return 'https://tradingcopilot.duckdns.org';
+  return 'http://localhost:8000';
+};
+
+const getMarketApiBaseUrl = () => {
+  if (import.meta.env.VITE_MARKET_API_BASE_URL) return import.meta.env.VITE_MARKET_API_BASE_URL;
+  if (import.meta.env.PROD || import.meta.env.VITE_APP_ENV === 'production') return 'https://tradingcopilot.duckdns.org';
+  return 'http://localhost:8001';
+};
+
+const getAiServiceBaseUrl = () => {
+  if (import.meta.env.VITE_AI_SERVICE_API_URL) return import.meta.env.VITE_AI_SERVICE_API_URL;
+  if (import.meta.env.PROD || import.meta.env.VITE_APP_ENV === 'production') return 'https://tradingcopilot.duckdns.org';
+  return 'http://localhost:8002';
+};
+
+const API_URL = getApiBaseUrl();
+const MARKET_API_URL = getMarketApiBaseUrl();
+const AI_SERVICE_API_URL = getAiServiceBaseUrl();
+const AI_API_URL =
+  import.meta.env.VITE_AI_API_BASE_URL !== undefined && import.meta.env.VITE_AI_API_BASE_URL !== ''
+    ? import.meta.env.VITE_AI_API_BASE_URL
+    : AI_SERVICE_API_URL;
 
 export const apiClient = axios.create({
   baseURL: API_URL,
