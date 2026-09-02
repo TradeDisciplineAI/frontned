@@ -1,3 +1,4 @@
+import { useUserStore } from '@/stores/userStore';
 import { create } from 'zustand';
 import { portfolioService, type Portfolio } from '@/services/portfolio.service';
 import { useSubscriptionStore } from '@/stores/useSubscriptionStore';
@@ -21,6 +22,7 @@ export interface ToastState {
 
 interface PortfolioState {
   portfolio: Portfolio | null;
+  hasAttemptedAutoCreate?: boolean;
   isLoading: boolean;
   isSubmitting: boolean;
   error: string | null;
@@ -73,14 +75,31 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
   toast: initialToastState,
 
   fetchPortfolio: async () => {
+    // Auth initialization check: avoid unauthenticated API calls during session restoration
+    const userState = useUserStore.getState();
+    if (!userState.accessToken && !userState.user) {
+      set({ portfolio: null, isLoading: false, error: null });
+      return;
+    }
+
     set({ isLoading: true, error: null });
     try {
       const data = await portfolioService.getPortfolio();
-      set({ portfolio: data, isLoading: false });
+      set({ portfolio: data, isLoading: false, hasAttemptedAutoCreate: false });
     } catch (err: any) {
       const status = err.response?.status;
       if (status === 404) {
-        // Safe fallback - no portfolio created yet
+        // Handle 404: Auto-create default paper portfolio once if not already attempted
+        if (!get().hasAttemptedAutoCreate) {
+          set({ hasAttemptedAutoCreate: true });
+          try {
+            const newPortfolio = await portfolioService.createPortfolio('My Paper Portfolio');
+            set({ portfolio: newPortfolio, isLoading: false });
+            return;
+          } catch (createErr) {
+            console.warn('Auto-creating portfolio failed:', createErr);
+          }
+        }
         set({ portfolio: null, isLoading: false });
       } else {
         const errorMsg = err.response?.data?.detail || 'Failed to fetch portfolio details.';
