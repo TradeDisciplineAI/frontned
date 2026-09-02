@@ -1,3 +1,4 @@
+import { marketApiClient } from '@/lib/api.client';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -54,7 +55,7 @@ const playAlertChime = () => {
   }
 };
 
-const MARKET_WS_URL = import.meta.env.VITE_MARKET_WS_BASE_URL || 'ws://127.0.0.1:8001';
+const MARKET_WS_URL = import.meta.env.VITE_MARKET_WS_BASE_URL || 'ws://localhost:8001';
 
 interface MarketStock {
   symbol: string;
@@ -99,17 +100,11 @@ export const LiveMarketDashboard: React.FC = () => {
     setIsFetchingIndicators(true);
     setIndicatorsData(null);
     try {
-      const baseUrl = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://127.0.0.1:8001';
-      const response = await fetch(`${baseUrl}/dashboard/indicators/${symbol}`);
-      if (response.ok) {
-        const data = await response.json();
-        setIndicatorsData(data);
-      } else {
-        console.error("Failed to fetch indicators", response.status);
-      }
-    } catch (error) {
-      console.error("Error fetching indicators", error);
-    } finally {
+        const response = await marketApiClient.get(`/dashboard/indicators/${symbol}`);
+        setIndicatorsData(response.data);
+      } catch (error) {
+        console.error("Error fetching indicators", error);
+      } finally {
       setIsFetchingIndicators(false);
     }
   };

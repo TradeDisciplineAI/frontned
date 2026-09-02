@@ -1,3 +1,4 @@
+import { apiClient } from '@/lib/api.client';
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 import { authService } from '@/features/auth/auth.service';
@@ -241,7 +242,7 @@ export const Login: React.FC<LoginProps> = ({
         <button
           type="button"
           onClick={() => {
-            const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+            const API_URL = apiClient.defaults.baseURL || import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
             window.location.href = `${API_URL}/auth/oauth2/google/login`;
           }}
           style={{

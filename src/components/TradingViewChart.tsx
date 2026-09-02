@@ -1,3 +1,4 @@
+import { marketApiClient } from '@/lib/api.client';
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { createChart, CandlestickSeries } from 'lightweight-charts';
 import type { IChartApi } from 'lightweight-charts';
@@ -160,15 +161,11 @@ export const TradingViewChart: React.FC<TradingViewChartProps> = ({ symbol, onVi
         setAnalysisData(response.analysis);
 
         try {
-          const baseUrl = import.meta.env.VITE_MARKET_API_BASE_URL || 'http://127.0.0.1:8001';
-          const indRes = await fetch(`${baseUrl}/dashboard/indicators/${symbol}`);
-          if (indRes.ok) {
-            const indData = await indRes.json();
-            setIndicatorData(indData);
+            const indRes = await marketApiClient.get(`/dashboard/indicators/${symbol}`);
+            setIndicatorData(indRes.data);
+          } catch (err) {
+            console.error('Failed to fetch indicators', err);
           }
-        } catch (err) {
-          console.error('Failed to fetch indicators', err);
-        }
 
         // Filter out any candles with null/undefined open, high, low, or close to prevent lightweight-charts library from throwing assertion failures
         const rawData = response.chart_data || [];
