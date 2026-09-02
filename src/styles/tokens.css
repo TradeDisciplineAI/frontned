@@ -1,0 +1,84 @@
+/* ── Design Tokens ──────────────────────────────────────────────────────────
+ * Vercel / Linear Style Ultra-Clean Monochromatic Dark Theme Design System
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Colors — Base Backgrounds */
+  --color-bg-primary: #000000;
+  --color-bg-secondary: #0a0a0a;
+  --color-bg-tertiary: #111111;
+  --color-bg-card: #0a0a0a;
+  --color-bg-card-hover: #141414;
+  --color-bg-input: #0e0e0e;
+
+  /* Colors — Text */
+  --color-text-primary: #ededed;
+  --color-text-secondary: #888888;
+  --color-text-muted: #555555;
+  --color-text-white: #ffffff;
+
+  /* Colors — Accents & Indicators */
+  --color-brand-primary: #ffffff;
+  --color-brand-primary-text: #000000;
+  --color-accent-teal: #10b981;
+  --color-accent-blue: #0070f3;
+  --color-accent-rose: #ff4444;
+
+  /* Colors — Market Status */
+  --color-positive: #00e599;
+  --color-positive-bg: rgba(0, 229, 153, 0.1);
+  --color-negative: #ff4444;
+  --color-negative-bg: rgba(255, 68, 68, 0.1);
+
+  /* Colors — Borders */
+  --color-border-subtle: #1a1a1a;
+  --color-border-default: #262626;
+  --color-border-strong: #333333;
+  --color-border-white: #ffffff;
+
+  /* Typography */
+  --font-family-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-family-mono: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 0.9375rem; /* 15px */
+  --font-size-lg: 1.0625rem; /* 17px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Border Radius (Vercel Style) */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows / Glows */
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-dropdown: 0 12px 32px rgba(0, 0, 0, 0.8);
+
+  /* Transitions */
+  --transition-fast: 120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index layers */
+  --z-base: 0;
+  --z-overlay: 10;
+  --z-modal: 100;
+  --z-toast: 200;
+}

@@ -1,0 +1,713 @@
+/* ── Portfolio View — Premium Trading Terminal Styles ── */
+
+/* ─── Keyframe Animations ─── */
+@keyframes pv-grid-pan {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+
+@keyframes pv-pulse-active {
+  0%, 100% { opacity: 0.6; box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50% { opacity: 1; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+}
+
+@keyframes pv-glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+/* ─── Portfolio Header Card ─── */
+.pv-portfolio-header {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(10, 16, 32, 0.9) 0%, rgba(15, 23, 50, 0.85) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 16px;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  transition: border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.05) inset;
+}
+
+/* Subtle grid-pattern background */
+.pv-portfolio-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  animation: pv-grid-pan 8s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Subtle ambient glow on right */
+.pv-portfolio-header::after {
+  content: '';
+  position: absolute;
+  top: -30%;
+  right: -5%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(ellipse, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: pv-glow-pulse 4s ease-in-out infinite;
+}
+
+.pv-portfolio-header:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.08);
+}
+
+.pv-portfolio-header > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Portfolio Header Left ─── */
+.pv-portfolio-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pv-portfolio-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.15);
+  flex-shrink: 0;
+}
+
+.pv-portfolio-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pv-portfolio-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.pv-active-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  flex-shrink: 0;
+  animation: pv-pulse-active 2.5s ease-in-out infinite;
+}
+
+.pv-active-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #10b981;
+  letter-spacing: 0.3px;
+}
+
+.pv-portfolio-id-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.pv-portfolio-id {
+  font-size: 0.72rem;
+  color: #475569;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.pv-copy-id-btn {
+  background: none;
+  border: none;
+  color: #475569;
+  cursor: pointer;
+  padding: 1px 3px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s ease;
+}
+
+.pv-copy-id-btn:hover {
+  color: #94a3b8;
+}
+
+/* ─── Paper Trading Badge ─── */
+.pv-paper-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #60a5fa;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.1);
+}
+
+/* ─── Section Headers ─── */
+.pv-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pv-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #3b82f6;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.pv-section-count {
+  font-size: 0.75rem;
+  color: #475569;
+  margin-left: 6px;
+  font-weight: 500;
+}
+
+.pv-section-action {
+  font-size: 0.75rem;
+  color: #3b82f6;
+  cursor: pointer;
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.pv-section-action:hover {
+  color: #60a5fa;
+}
+
+/* ─── Paper Position Cards ─── */
+.pv-position-card {
+  background: rgba(10, 16, 32, 0.7);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.pv-position-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.pv-position-card:hover {
+  border-color: rgba(59, 130, 246, 0.45);
+  background: rgba(15, 25, 50, 0.65);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.pv-position-card:hover::before {
+  opacity: 1;
+}
+
+.pv-position-card.pnl-positive {
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.pv-position-card.pnl-positive:hover {
+  border-color: rgba(16, 185, 129, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(16, 185, 129, 0.06);
+}
+
+.pv-position-card.pnl-negative {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.pv-position-card.pnl-negative:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(239, 68, 68, 0.06);
+}
+
+/* ─── Position Card Header ─── */
+.pv-position-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pv-position-symbol-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pv-position-symbol {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: 0.3px;
+}
+
+.pv-paper-tag {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #60a5fa;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.pv-qty-badge {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  color: #93c5fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+
+/* ─── Metric Row ─── */
+.pv-metric-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 12px;
+  gap: 0;
+}
+
+.pv-metric-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0 10px;
+}
+
+.pv-metric-cell:first-child {
+  padding-left: 0;
+}
+
+.pv-metric-cell:last-child {
+  padding-right: 0;
+}
+
+.pv-metric-cell + .pv-metric-cell {
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pv-metric-label {
+  font-size: 0.68rem;
+  color: #475569;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+}
+
+.pv-metric-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  white-space: nowrap;
+}
+
+.pv-metric-value.positive {
+  color: #10b981;
+}
+
+.pv-metric-value.negative {
+  color: #ef4444;
+}
+
+.pv-pnl-pct {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+/* ─── Watchlist Grid (row-by-row, paginated) ─── */
+.pv-watchlist-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .pv-watchlist-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pv-watchlist-card {
+  background: rgba(10, 16, 32, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pv-watchlist-card:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(20, 28, 52, 0.6);
+  transform: translateY(-2px);
+}
+
+.pv-watchlist-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.pv-watchlist-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
+
+.pv-watchlist-symbol {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  letter-spacing: 0.2px;
+}
+
+.pv-watchlist-subtitle {
+  font-size: 0.72rem;
+  color: #475569;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.pv-watchlist-delete-btn {
+  background: none;
+  border: none;
+  color: #334155;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.pv-watchlist-delete-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.pv-watchlist-price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.pv-watchlist-price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.pv-watchlist-change {
+  font-size: 0.76rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 3px;
+}
+
+.pv-watchlist-change.positive { color: #10b981; }
+.pv-watchlist-change.negative { color: #ef4444; }
+
+.pv-watchlist-chart-area {
+  display: flex;
+  align-items: center;
+}
+
+/* ─── Pagination controls ─── */
+.pv-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pv-page-btn {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  font-family: inherit;
+}
+
+.pv-page-btn:hover:not(:disabled) {
+  background: rgba(59, 130, 246, 0.12);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: #60a5fa;
+}
+
+.pv-page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pv-page-indicator {
+  font-size: 0.75rem;
+  color: #475569;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: center;
+}
+
+.pv-page-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+.pv-page-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.pv-page-dot.active {
+  background: #3b82f6;
+  width: 18px;
+  border-radius: 3px;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+/* ─── Analyze with AI button ─── */
+.pv-analyze-btn {
+  width: 100%;
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: #c084fc;
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+  letter-spacing: 0.2px;
+}
+
+.pv-analyze-btn:hover:not(:disabled) {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.45);
+  color: #d8b4fe;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.15);
+}
+
+.pv-analyze-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ─── Watchlist Action Buttons Row ─── */
+.pv-watchlist-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  padding-top: 10px;
+}
+
+.pv-action-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.pv-icon-btn {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.pv-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+}
+
+.pv-watchlist-added {
+  font-size: 0.67rem;
+  color: #334155;
+  font-weight: 500;
+}
+
+/* ─── Empty / Loading States ─── */
+.pv-empty-state {
+  background: rgba(10, 16, 32, 0.3);
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.pv-loading-state {
+  text-align: center;
+  padding: 40px;
+  color: #475569;
+  background: rgba(10, 16, 32, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+}
+
+/* ─── Positions Grid ─── */
+.pv-positions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+/* ─── Analysis Error Banner ─── */
+.pv-error-banner {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #f87171;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pv-error-dismiss {
+  background: none;
+  border: none;
+  color: #f87171;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 1rem;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.pv-error-dismiss:hover {
+  opacity: 1;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .pv-metric-row {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 10px;
+  }
+
+  .pv-metric-cell:nth-child(2) {
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .pv-metric-cell:nth-child(3) {
+    border-left: none;
+    padding-left: 0;
+  }
+
+  .pv-positions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pv-portfolio-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ─── Legacy class compatibility ─── */
+.portfolio-card {
+  background: var(--color-bg-card, rgba(15, 23, 42, 0.65));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-xl, 20px);
+  padding: 28px;
+  margin-top: 24px;
+  box-shadow: var(--shadow-card, 0 12px 32px rgba(0, 0, 0, 0.4));
+  color: var(--color-text-primary, #f8fafc);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+}
