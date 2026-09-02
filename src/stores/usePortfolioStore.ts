@@ -98,6 +98,7 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
             return;
           } catch (createErr) {
             console.warn('Auto-creating portfolio failed:', createErr);
+            set({ hasAttemptedAutoCreate: false });
           }
         }
         set({ portfolio: null, isLoading: false });
@@ -160,49 +161,94 @@ export const usePortfolioStore = create<PortfolioState>((set, get) => ({
     const currentUsage = portfolio?.holdings?.length || 0;
 
     if (modal.mode === 'add') {
+      let addedHolding;
       try {
-        const addedHolding = await portfolioService.addHolding(modal.symbol);
+        addedHolding = await portfolioService.addHolding(modal.symbol);
+      } catch (err: unknown) {
+        interface ApiErrorResponse {
+          response?: {
+            status?: number;
+            data?: {
+              detail?: string;
+            };
+          };
+        }
+        const errorRes = err as ApiErrorResponse;
+        const status = errorRes.response?.status;
 
-        // Optimistically update the store
-        if (portfolio) {
-          const updatedHoldings = [...portfolio.holdings, addedHolding];
-          set({
-            portfolio: { ...portfolio, holdings: updatedHoldings },
-            isSubmitting: false,
-            modal: initialModalState,
-          });
-          get().showToast(
-            'success',
-            'Portfolio Updated',
-            modal.symbol,
-            'Successfully added to your portfolio.',
-            updatedHoldings.length,
-          );
+        // Auto-initialize portfolio on 404 "Portfolio not found" exactly once
+        if (status === 404 && !get().hasAttemptedAutoCreate) {
+          set({ hasAttemptedAutoCreate: true });
+          try {
+            const newPortfolio = await portfolioService.createPortfolio('My Paper Portfolio');
+            set({ portfolio: newPortfolio });
+            // Retry addHolding exactly once
+            addedHolding = await portfolioService.addHolding(modal.symbol);
+          } catch (retryErr: unknown) {
+            // Reset hasAttemptedAutoCreate on creation/retry failure so future actions can retry
+            set({ hasAttemptedAutoCreate: false, isSubmitting: false, modal: initialModalState });
+
+            const retryRes = retryErr as ApiErrorResponse;
+            const retryStatus = retryRes.response?.status;
+            const retryMsg =
+              retryRes.response?.data?.detail || `Failed to add ${modal.symbol} to portfolio.`;
+
+            if (retryStatus === 402) {
+              useSubscriptionStore.getState().openPaywall('trade_limit');
+              useSubscriptionStore.getState().fetchSubscriptionStatus();
+              get().showToast(
+                'error',
+                'Free Trade Limit Reached (6/6)',
+                modal.symbol,
+                retryMsg,
+                currentUsage,
+              );
+            } else {
+              get().showToast('error', 'Add Stock Failed', modal.symbol, retryMsg, currentUsage);
+            }
+            return;
+          }
         } else {
-          // If no portfolio object existed yet, fetch complete structure
+          const errorMsg =
+            errorRes.response?.data?.detail || `Failed to add ${modal.symbol} to portfolio.`;
           set({ isSubmitting: false, modal: initialModalState });
-          await get().fetchPortfolio();
-        }
-      } catch (err: any) {
-        const status = err.response?.status;
-        const errorMsg =
-          err.response?.data?.detail || `Failed to add ${modal.symbol} to portfolio.`;
-        set({ isSubmitting: false, modal: initialModalState });
 
-        if (status === 402) {
-          // Free trade limit reached! Trigger subscription paywall & refresh metrics
-          useSubscriptionStore.getState().openPaywall('trade_limit');
-          useSubscriptionStore.getState().fetchSubscriptionStatus();
-          get().showToast(
-            'error',
-            'Free Trade Limit Reached (6/6)',
-            modal.symbol,
-            errorMsg,
-            currentUsage,
-          );
-        } else {
-          get().showToast('error', 'Add Stock Failed', modal.symbol, errorMsg, currentUsage);
+          if (status === 402) {
+            useSubscriptionStore.getState().openPaywall('trade_limit');
+            useSubscriptionStore.getState().fetchSubscriptionStatus();
+            get().showToast(
+              'error',
+              'Free Trade Limit Reached (6/6)',
+              modal.symbol,
+              errorMsg,
+              currentUsage,
+            );
+          } else {
+            get().showToast('error', 'Add Stock Failed', modal.symbol, errorMsg, currentUsage);
+          }
+          return;
         }
+      }
+
+      // Handle successful addedHolding (original or after retry)
+      const currentPort = get().portfolio;
+      if (currentPort) {
+        const updatedHoldings = [...currentPort.holdings, addedHolding];
+        set({
+          portfolio: { ...currentPort, holdings: updatedHoldings },
+          isSubmitting: false,
+          modal: initialModalState,
+        });
+        get().showToast(
+          'success',
+          'Portfolio Updated',
+          modal.symbol,
+          'Successfully added to your portfolio.',
+          updatedHoldings.length,
+        );
+      } else {
+        set({ isSubmitting: false, modal: initialModalState });
+        await get().fetchPortfolio();
       }
     } else {
       // Remove Mode
