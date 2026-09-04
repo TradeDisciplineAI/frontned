@@ -80,6 +80,12 @@ export const SubscriptionPaywallModal: React.FC = () => {
       });
       const orderData = orderRes.data;
 
+      if (!orderData.key_id || orderData.key_id.startsWith('rzp_test_mock')) {
+        alert('Razorpay Key ID is set to mock mode on the backend. Please configure RAZORPAY_KEY_ID in backend environment variables to enable test mode payments.');
+        setLoading(false);
+        return;
+      }
+
       const options = {
         key: orderData.key_id,
         amount: orderData.amount,
@@ -120,12 +126,18 @@ export const SubscriptionPaywallModal: React.FC = () => {
         },
       };
 
-      const rzp = new (window as any).Razorpay(options);
-      rzp.on('payment.failed', function (resp: any) {
-        alert('Payment Failed: ' + (resp.error.description || 'Transaction declined'));
+      try {
+        const rzp = new (window as any).Razorpay(options);
+        rzp.on('payment.failed', function (resp: any) {
+          alert('Payment Failed: ' + (resp.error?.description || 'Transaction declined'));
+          setLoading(false);
+        });
+        rzp.open();
+      } catch (rzpErr: any) {
+        console.error('Failed to open Razorpay modal:', rzpErr);
+        alert('Failed to initialize Razorpay checkout. Please verify key credentials.');
         setLoading(false);
-      });
-      rzp.open();
+      }
 
     } catch (err: any) {
       console.error('Razorpay Checkout error:', err);
@@ -156,14 +168,15 @@ export const SubscriptionPaywallModal: React.FC = () => {
           transition={{ duration: 0.22, ease: 'easeOut' }}
           style={{
             position: 'relative',
-            width: '100%',
+            width: '92%',
             maxWidth: '540px',
+            maxHeight: '88vh',
             borderRadius: '20px',
             background: 'linear-gradient(145deg, #0b1120 0%, #070a14 100%)',
             border: '1px solid rgba(0, 229, 153, 0.25)',
             boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 35px rgba(0, 229, 153, 0.15)',
             padding: '24px',
-            overflow: 'hidden',
+            overflowY: 'auto',
           }}
         >
           {/* Top Decorative Banner Accent */}
@@ -180,7 +193,10 @@ export const SubscriptionPaywallModal: React.FC = () => {
 
           {/* Close Button */}
           <button
-            onClick={closePaywall}
+            onClick={() => {
+              setLoading(false);
+              closePaywall();
+            }}
             style={{
               position: 'absolute',
               top: '16px',
@@ -232,7 +248,7 @@ export const SubscriptionPaywallModal: React.FC = () => {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: '1.1fr 0.9fr',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
               gap: '14px',
               marginBottom: '20px',
             }}
